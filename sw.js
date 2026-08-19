@@ -1,7 +1,7 @@
 /* הבניין שלי — service worker
    מעלים גרסה בכל פריסה. הלקוח מזהה שיש גרסה חדשה ומציג באנר,
    ומחליף אותה רק כשהמשתמש לוחץ "הפעלה מחדש". */
-const VERSION = '2026.08.19.9';
+const VERSION = '2026.08.19.10';
 const CACHE = 'bld-' + VERSION;
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
