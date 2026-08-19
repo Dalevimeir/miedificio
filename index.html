@@ -1273,7 +1273,7 @@ he:{
 'stt.open':'פתוח','stt.prog':'בטיפול','stt.done':'טופל',
 'ts.repsent':'הדיווח נשלח','ts.repup':'הסטטוס עודכן','ts.photobig':'התמונה כבדה מדי — נסה תמונה קטנה יותר',
 'pe.paid':'שולם','pe.paid.s':'כיבוי מבטל את התשלום לחודש הזה.',
-'pe.amount':'סכום ששולם (₪)','pe.note':'הערה','pe.clear':'ביטול התשלום',
+'pe.amount':'סכום ששולם (₪)','pe.note':'הערה','pe.clear':'ביטול התשלום','pe.mark':'סימון כשולם','pe.update':'עדכון התשלום',
 'pe.rate.h':'סכום חודשי לדירה','pe.rate.p':'כאן מגדירים הנחה או סכום שונה לדירה הזו. ריק = לפי דמי הוועד של הבניין.',
 'pe.rate':'סכום חודשי (₪)','pe.rate.save':'שמירת הסכום','pe.rate.clear':'חזרה לסכום הבניין',
 'pe.hint':'ההיסטוריה נשמרת לפי מספר דירה. דייר שיירשם בהמשך יראה אותה מיד, גם אם לא היה רשום כשסימנת.',
@@ -1431,7 +1431,7 @@ en:{
 'stt.open':'Open','stt.prog':'In progress','stt.done':'Resolved',
 'ts.repsent':'Report sent','ts.repup':'Status updated','ts.photobig':'Photo too large — try a smaller one',
 'pe.paid':'Paid','pe.paid.s':'Turning this off cancels the payment for this month.',
-'pe.amount':'Amount paid (₪)','pe.note':'Note','pe.clear':'Cancel payment',
+'pe.amount':'Amount paid (₪)','pe.note':'Note','pe.clear':'Cancel payment','pe.mark':'Mark as paid','pe.update':'Update payment',
 'pe.rate.h':'Monthly amount for this apartment','pe.rate.p':'Set a discount or a different amount here. Empty = the building dues.',
 'pe.rate':'Monthly amount (₪)','pe.rate.save':'Save amount','pe.rate.clear':'Back to building amount',
 'pe.hint':'History is kept by apartment number. A resident who registers later sees it immediately, even if they were not registered when you marked it.',
@@ -2863,7 +2863,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.30';
+const APP_VERSION = '2026.08.19.31';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3279,13 +3279,19 @@ const paidAmount = (rec, k, apt) => {
 const openPay = v => { $('#paySheet').classList.toggle('open', v); $('#paySheetBg').classList.toggle('open', v); };
 $('#paySheetBg').addEventListener('click', () => openPay(false));
 $('#peClose').addEventListener('click', () => openPay(false));
-$('#pePaid').addEventListener('click', () => { pePaidOn = !pePaidOn; sw($('#pePaid'), pePaidOn); });
+$('#pePaid').addEventListener('click', () => {
+  pePaidOn = !pePaidOn; sw($('#pePaid'), pePaidOn);
+  $('#peSave').textContent = t(pePaidOn ? 'pe.mark' : 'pe.clear');
+});
 
 function editPay(apt, m) {
   if (!isVaad) return;
   peApt = apt; peMon = m;
   const rec = pays[apt] || { m: {} }, k = ymKey(payYear, m), cur = rec.m && rec.m[k];
-  pePaidOn = !!cur; sw($('#pePaid'), pePaidOn);
+  // חודש שלא שולם נפתח כשהמתג דלוק — מי שפותח אותו רוצה לסמן, לא לבטל
+  pePaidOn = cur ? true : true; sw($('#pePaid'), pePaidOn);
+  $('#peSave').textContent = t(cur ? 'pe.update' : 'pe.mark');
+  $('#peClear').hidden = !cur;
   $('#peTitle').textContent = aptLabel(apt);
   $('#peSub').textContent = MON(m) + ' ' + payYear + ' · ' + t('py.rate', { n: rateOf(apt) });
   $('#peAmount').value = cur ? paidAmount(rec, k, apt) : rateOf(apt);
@@ -3300,16 +3306,17 @@ $('#peSave').addEventListener('click', async () => {
   const k = ymKey(payYear, peMon);
   const rec = pays[peApt] || { apt: peApt, m: {} };
   if (!pePaidOn) {
-    delete rec.m[k]; pays[peApt] = rec;
     await DB.unsetPaid(cfg.id, peApt, payYear, peMon + 1);
+    pays = await DB.payments(cfg.id, payYear);
     openPay(false); renderPay(); renderHome(); return toast(t('ts.paycleared'));
   }
   const amount = $('#peAmount').value === '' ? rateOf(peApt) : +$('#peAmount').value;
   const note = $('#peNote').value.trim();
-  rec.m[k] = { amount, note }; pays[peApt] = rec;
   const ok = await DB.setPaid(cfg.id, peApt, payYear, peMon + 1, amount, note, me.id);
+  if (!ok) return toast(dbError || t('ts.conn'), 6000);
+  pays = await DB.payments(cfg.id, payYear);   // מקור האמת הוא השרת
   openPay(false); renderPay(); renderHome();
-  toast(ok ? t('ts.paysaved') : dbError);
+  toast(t('ts.paysaved'));
 });
 $('#peClear').addEventListener('click', () => { pePaidOn = false; sw($('#pePaid'), false); $('#peSave').click(); });
 $('#peRateSave').addEventListener('click', async () => {
