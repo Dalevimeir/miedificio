@@ -2767,21 +2767,23 @@ function go(name, dir) {
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const m = document.querySelector('main');
-  // כיוון התנועה: לפי מיקום החוצץ, גם בלחיצה וגם בהחלקה
-  const d = dir !== undefined ? dir : (i > cur ? 1 : -1);
 
   if (reduce || !m.animate) { swapPanels(name); scrollTo({ top: 0 }); return; }
 
   swapping = true;
-  const DUR = 820, MID = 0.46;   // אנימציה אחת רציפה — בלי הבהוב באמצע
+  const DUR = 980, MID = 0.47;   // אנימציה אחת רציפה — בלי הבהוב באמצע
+
+  // כיוון פיזי על המסך: בעברית החוצץ הבא נמצא שמאלה, באנגלית ימינה
+  const rtl = document.documentElement.dir === 'rtl';
+  const sign = (i > cur ? 1 : -1) * (rtl ? -1 : 1);
 
   const anim = m.animate([
     { offset: 0,    transform: 'none', opacity: 1,
-      easing: 'cubic-bezier(.45,0,.75,.35)' },
-    { offset: MID,  transform: `translateX(${d > 0 ? -11 : 11}%) scale(.86)`, opacity: 0,
+      easing: 'cubic-bezier(.45,0,.72,.4)' },
+    { offset: MID,  transform: `translateX(${sign * -14}%) scale(.78)`, opacity: 0,
       easing: 'linear' },
-    { offset: MID + .05, transform: `translateX(${d > 0 ? 13 : -13}%) scale(.86)`, opacity: 0,
-      easing: 'cubic-bezier(.16,.9,.28,1)' },
+    { offset: MID + .06, transform: `translateX(${sign * 16}%) scale(.78)`, opacity: 0,
+      easing: 'cubic-bezier(.16,.92,.26,1)' },
     { offset: 1,    transform: 'none', opacity: 1 }
   ], { duration: DUR });
 
@@ -3293,7 +3295,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.47';
+const APP_VERSION = '2026.08.19.48';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
