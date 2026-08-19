@@ -1100,7 +1100,7 @@ he:{
 'wz.f1':'לוח משותף לכל הדיירים','wz.f2':'תזכורות וואטסאפ בימי חמישי','wz.f3':'דוח עלויות חשמל לוועד הבית',
 'wz.pay.go':'מעבר לתשלום','wz.pay.done':'כבר שילמנו','wz.finish':'סיום ההרשמה','wz.later':'שמירה והמשך אחר כך',
 'wz.per':'{p} · כ-₪{d} לדירה',
-'ac.h':'החשבון שלי','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
+'ac.h':'החשבון שלי','ac.admin':'מנהל מערכת','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
 'st.addr':'כתובת הבניין','st.units':'מספר דירות','st.name':'שם תצוגה','st.gap':'איחוד הפסקה קצרה מ־(דק׳)',
 'st.candle':'הדלקת נרות (דק׳ לפני שקיעה)','st.tzeit':'צאת שבת (דק׳ אחרי שקיעה)','st.kw':'הספק ממוצע (kW)',
 'st.rate':'תעריף חשמל (₪ לקוט״ש)','st.geo':'קו רוחב / אורך','st.save':'שמירה','st.close':'סגירה',
@@ -1213,7 +1213,7 @@ en:{
 'wz.f1':'One shared schedule for every resident','wz.f2':'WhatsApp reminders on Thursdays','wz.f3':'Electricity cost report for the committee',
 'wz.pay.go':'Go to payment','wz.pay.done':'We already paid','wz.finish':'Finish sign-up','wz.later':'Save and continue later',
 'wz.per':'{p} · about ₪{d} per apartment',
-'ac.h':'My account','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
+'ac.h':'My account','ac.admin':'Platform admin','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
 'st.addr':'Building address','st.units':'Apartments','st.name':'Display name','st.gap':'Merge gaps shorter than (min)',
 'st.candle':'Candle lighting (min before sunset)','st.tzeit':'Shabbat ends (min after sunset)','st.kw':'Average power (kW)',
 'st.rate':'Electricity rate (₪ per kWh)','st.geo':'Latitude / longitude','st.save':'Save','st.close':'Close',
@@ -1381,6 +1381,10 @@ const DB = {
   async updateMe(rid, patch) {
     const { error } = await sb.from('residents').update(patch).eq('id', rid);
     return !error;
+  },
+  async isAdmin() {
+    try { const { data, error } = await sb.rpc('am_i_admin'); return !error && data === true; }
+    catch (e) { return false; }
   },
   async residents(bid) {
     const { data } = await sb.from('residents').select('*').eq('building_id', bid);
@@ -1609,7 +1613,7 @@ const DEF = { id: null, name: '', address: '', units: 15, lat: 31.7497, lng: 34.
   candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150,
   plan: 'pending', floors: 8, firstFloor: 1, perFloor: 2, penthouse: true, penthouseUnits: 1 };
 let cfg = { ...DEF }, weekOff = 0, sabb = null, slots = [], reqs = {}, people = {};
-let me = null, isVaad = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
+let me = null, isVaad = false, isAdmin = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
 const canEdit = () => !!(me && me.apt && cfg.plan !== 'pending');
 const usesElevator = () => !!(me && me.elevator !== false);
 let notes = {}, codes = [], reports = {}, pays = {}, repFilter = 'open', repKind = 'clean';
@@ -2110,7 +2114,7 @@ function fillAccount() {
   sw($('#swAnon2'), me.anon); sw($('#swWa2'), me.wa); sw($('#swElev2'), me.elevator !== false);
   $('#phoneWrap2').hidden = !me.wa; $('#aPhone').value = me.phone || '';
   const v = $('#verLine');
-  v.textContent = t('ver.l', { v: APP_VERSION }) + ' · ';
+  v.textContent = (isAdmin ? t('ac.admin') + ' · ' : '') + t('ver.l', { v: APP_VERSION }) + ' · ';
   const b = document.createElement('button');
   b.className = 'xbtn'; b.textContent = t('up.check');
   b.onclick = () => checkUpdate(true);
@@ -2231,7 +2235,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.16';
+const APP_VERSION = '2026.08.19.17';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2306,7 +2310,8 @@ async function boot(first) {
       applyLang(); applyTheme();
       const b = await DB.building(mine.row.building_id);
       if (b) cfg = { ...DEF, ...b };
-      isVaad = !!me.isVaad;
+      isAdmin = await DB.isAdmin();
+      isVaad = !!me.isVaad || isAdmin;
       draft = { anon: !!me.anon, wa: !!me.wa, elevator: me.elevator !== false };
       $('#wFam').value = me.family || ''; $('#wPhone').value = me.phone || '';
       sw($('#swAnon'), draft.anon); sw($('#swWa'), draft.wa); sw($('#swElev'), draft.elevator);
@@ -2318,7 +2323,7 @@ async function boot(first) {
   reqs = {}; people = {};
   if (cfg.id) {
     people = await DB.residents(cfg.id);
-    if (me && people[me.id]) { me = { ...me, ...people[me.id] }; isVaad = !!me.isVaad; }
+    if (me && people[me.id]) { me = { ...me, ...people[me.id] }; isVaad = !!me.isVaad || isAdmin; }
     (await DB.requests(cfg.id, sabb.iso)).forEach(r => {
       const p = people[r.resident_id];
       reqs[r.resident_id] = { rid: r.resident_id, apt: p ? p.apt : 0, slots: msOf(r.slots) };
