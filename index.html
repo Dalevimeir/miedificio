@@ -108,11 +108,10 @@ main{max-width:680px;margin:0 auto;padding:18px 16px calc(var(--bar-h) + env(saf
 .panel{display:none}
 .panel.on{display:block;animation:pin .38s cubic-bezier(.2,.8,.3,1) both}
 @keyframes pin{from{opacity:0;transform:translateY(12px)}}
-.panel.on.fromR{animation:slideR .32s cubic-bezier(.2,.8,.3,1) both}
-.panel.on.fromL{animation:slideL .32s cubic-bezier(.2,.8,.3,1) both}
-@keyframes slideR{from{opacity:0;transform:translateX(26px)}}
-@keyframes slideL{from{opacity:0;transform:translateX(-26px)}}
-main{touch-action:pan-y}
+/* במעבר בין חוצצים המכולה כולה זזה, אז מבטלים את האנימציה של העמוד והילדים */
+.panel.quick{animation:none!important}
+.panel.quick>*{animation:none!important;opacity:1!important;transform:none!important}
+main{touch-action:pan-y;transform-origin:50% 42%;will-change:transform,opacity}
 .panel>*{animation:stag .5s cubic-bezier(.2,.8,.3,1) both}
 .panel>*:nth-child(1){animation-delay:.02s}.panel>*:nth-child(2){animation-delay:.07s}
 .panel>*:nth-child(3){animation-delay:.12s}.panel>*:nth-child(4){animation-delay:.17s}
@@ -2789,20 +2788,52 @@ $('#nextW').addEventListener('click', () => { weekOff++; boot(false); });
 const visibleTabs = () =>
   [...document.querySelectorAll('.tab')].filter(x => !x.hidden).map(x => x.dataset.tab);
 
-function go(name, dir) {
-  const tabs = visibleTabs(), i = tabs.indexOf(name);
-  if (i < 0) return;
+let swapping = false;
+
+function swapPanels(name, quick) {
   document.querySelectorAll('.panel').forEach(p => {
     const on = p.id === 'p-' + name;
-    p.classList.remove('fromR', 'fromL');
     p.classList.toggle('on', on);
-    if (on && dir) p.classList.add(dir > 0 ? 'fromR' : 'fromL');
+    p.classList.toggle('quick', on && quick);
   });
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x.dataset.tab === name));
-  const bar = $('#tabbar');
+  const tabs = visibleTabs(), bar = $('#tabbar');
   bar.style.setProperty('--tabs', tabs.length);
-  bar.style.setProperty('--sel', i);
-  scrollTo({ top: 0, behavior: 'smooth' });
+  bar.style.setProperty('--sel', Math.max(0, tabs.indexOf(name)));
+}
+
+function go(name, dir) {
+  const tabs = visibleTabs(), i = tabs.indexOf(name);
+  if (i < 0 || swapping) return;
+  const cur = tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on'));
+  if (cur === i) return;
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const m = document.querySelector('main');
+  // כיוון התנועה: לפי מיקום החוצץ, גם בלחיצה וגם בהחלקה
+  const d = dir !== undefined ? dir : (i > cur ? 1 : -1);
+
+  if (reduce || !m.animate) { swapPanels(name); scrollTo({ top: 0 }); return; }
+
+  swapping = true;
+  const out = m.animate(
+    [{ transform: 'none', opacity: 1 },
+     { transform: `translateX(${d > 0 ? -7 : 7}%) scale(.9)`, opacity: 0 }],
+    { duration: 160, easing: 'cubic-bezier(.4,0,.9,.6)', fill: 'forwards' });
+
+  out.finished.then(() => {
+    swapPanels(name, true);
+    scrollTo({ top: 0 });
+    out.cancel();
+    const inn = m.animate(
+      [{ transform: `translateX(${d > 0 ? 9 : -9}%) scale(.9)`, opacity: 0 },
+       { transform: 'none', opacity: 1 }],
+      { duration: 260, easing: 'cubic-bezier(.2,.85,.3,1)' });
+    inn.finished.then(() => {
+      swapping = false;
+      document.querySelectorAll('.panel.quick').forEach(p => p.classList.remove('quick'));
+    });
+  });
 }
 document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', () => go(x.dataset.tab)));
 
@@ -3305,7 +3336,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.44';
+const APP_VERSION = '2026.08.19.45';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
