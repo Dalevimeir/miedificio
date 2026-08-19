@@ -960,6 +960,39 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
   <p id="shFoot" style="margin-top:12pt;font-size:12pt"></p>
 </div>
 
+<div class="sheetbg" id="paySheetBg"></div>
+<div class="sheet" id="paySheet">
+  <div class="handle"></div>
+  <h2 id="peTitle">—</h2>
+  <p class="muted" id="peSub">—</p>
+
+  <div class="sw" id="pePaid" style="margin-top:12px">
+    <span class="lb"><span data-i18n="pe.paid"></span><small data-i18n="pe.paid.s"></small></span>
+    <span class="tg"></span>
+  </div>
+  <label class="fld" for="peAmount" style="margin-top:10px" data-i18n="pe.amount"></label>
+  <input id="peAmount" type="number" step="10" min="0" inputmode="decimal">
+  <label class="fld" for="peNote" style="margin-top:10px" data-i18n="pe.note"></label>
+  <input id="peNote" placeholder="">
+  <div class="row" style="margin-top:16px">
+    <button class="btn sm" id="peSave" data-i18n="st.save"></button>
+    <button class="btn ghost sm" id="peClear" data-i18n="pe.clear"></button>
+    <button class="btn ghost sm" id="peClose" data-i18n="st.close"></button>
+  </div>
+
+  <h2 style="margin-top:26px" data-i18n="pe.rate.h"></h2>
+  <p class="muted" data-i18n="pe.rate.p"></p>
+  <label class="fld" for="peRate" style="margin-top:10px" data-i18n="pe.rate"></label>
+  <input id="peRate" type="number" step="10" min="0" inputmode="decimal">
+  <label class="fld" for="peRateNote" style="margin-top:10px" data-i18n="pe.note"></label>
+  <input id="peRateNote">
+  <div class="row" style="margin-top:14px">
+    <button class="btn sm" id="peRateSave" data-i18n="pe.rate.save"></button>
+    <button class="btn ghost sm" id="peRateClear" data-i18n="pe.rate.clear"></button>
+  </div>
+  <p class="note" data-i18n="pe.hint"></p>
+</div>
+
 <div class="upd" id="upd">
   <span class="dotp"></span>
   <span data-i18n="up.msg"></span>
@@ -1009,6 +1042,12 @@ he:{
 'tp.garden':'גינה','tp.inter':'אינטרקום','tp.park':'חניה','tp.other':'אחר',
 'stt.open':'פתוח','stt.prog':'בטיפול','stt.done':'טופל',
 'ts.repsent':'הדיווח נשלח','ts.repup':'הסטטוס עודכן','ts.photobig':'התמונה כבדה מדי — נסה תמונה קטנה יותר',
+'pe.paid':'שולם','pe.paid.s':'כיבוי מבטל את התשלום לחודש הזה.',
+'pe.amount':'סכום ששולם (₪)','pe.note':'הערה','pe.clear':'ביטול התשלום',
+'pe.rate.h':'סכום חודשי לדירה','pe.rate.p':'כאן מגדירים הנחה או סכום שונה לדירה הזו. ריק = לפי דמי הוועד של הבניין.',
+'pe.rate':'סכום חודשי (₪)','pe.rate.save':'שמירת הסכום','pe.rate.clear':'חזרה לסכום הבניין',
+'pe.hint':'ההיסטוריה נשמרת לפי מספר דירה. דייר שיירשם בהמשך יראה אותה מיד, גם אם לא היה רשום כשסימנת.',
+'py.rate':'{n} ₪ לחודש','py.disc':'הנחה','ts.ratesaved':'הסכום לדירה עודכן','ts.paycleared':'התשלום בוטל',
 'py.eyebrow':'ועד בית','py.h1':'החשבון שלי','py.p':'מה שולם, ובאילו חודשים.',
 'py.dues':'דמי ועד לחודש (₪)','py.paidn':'חודשים ששולמו','py.total':'סה״כ השנה (₪)',
 'py.all':'כל הדירות','py.vaadview':'ועד','py.only':'גלוי לוועד בלבד','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
@@ -1116,6 +1155,12 @@ en:{
 'tp.garden':'Garden','tp.inter':'Intercom','tp.park':'Parking','tp.other':'Other',
 'stt.open':'Open','stt.prog':'In progress','stt.done':'Resolved',
 'ts.repsent':'Report sent','ts.repup':'Status updated','ts.photobig':'Photo too large — try a smaller one',
+'pe.paid':'Paid','pe.paid.s':'Turning this off cancels the payment for this month.',
+'pe.amount':'Amount paid (₪)','pe.note':'Note','pe.clear':'Cancel payment',
+'pe.rate.h':'Monthly amount for this apartment','pe.rate.p':'Set a discount or a different amount here. Empty = the building dues.',
+'pe.rate':'Monthly amount (₪)','pe.rate.save':'Save amount','pe.rate.clear':'Back to building amount',
+'pe.hint':'History is kept by apartment number. A resident who registers later sees it immediately, even if they were not registered when you marked it.',
+'py.rate':'₪{n} per month','py.disc':'Discount','ts.ratesaved':'Apartment amount updated','ts.paycleared':'Payment cancelled',
 'py.eyebrow':'Committee','py.h1':'My account','py.p':'What has been paid, and for which months.',
 'py.dues':'Monthly dues (₪)','py.paidn':'Months paid','py.total':'Total this year (₪)',
 'py.all':'All apartments','py.vaadview':'Committee','py.only':'Committee only','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
@@ -1443,19 +1488,38 @@ const DB = {
     const out = {};
     (data || []).forEach(p => {
       const rec = out[p.apartment] || { apt: p.apartment, m: {} };
-      rec.m[p.year + '-' + String(p.month).padStart(2, '0')] = 1;
+      rec.m[p.year + '-' + String(p.month).padStart(2, '0')] =
+        { amount: p.amount === null ? null : +p.amount, note: p.note || '' };
       out[p.apartment] = rec;
     });
     return out;
   },
-  async setPaid(bid, apt, year, month, amount, rid) {
-    const { error } = await sb.from('payments')
-      .insert({ building_id: bid, apartment: apt, year, month, amount, marked_by: rid });
+  async setPaid(bid, apt, year, month, amount, note, rid) {
+    const { error } = await sb.from('payments').upsert(
+      { building_id: bid, apartment: apt, year, month, amount, note, marked_by: rid },
+      { onConflict: 'building_id,apartment,year,month' });
+    if (error) dbError = 'pay: ' + error.message;
     return !error;
   },
   async unsetPaid(bid, apt, year, month) {
     await sb.from('payments').delete().eq('building_id', bid)
       .eq('apartment', apt).eq('year', year).eq('month', month);
+  },
+
+  /* סכום חודשי לדירה — הנחות */
+  async rates(bid) {
+    const { data } = await sb.from('apartment_settings').select('*').eq('building_id', bid);
+    const out = {};
+    (data || []).forEach(r => out[r.apartment] = {
+      amount: r.monthly_amount === null ? null : +r.monthly_amount, note: r.note || '' });
+    return out;
+  },
+  async setRate(bid, apt, amount, note) {
+    const { error } = await sb.from('apartment_settings').upsert(
+      { building_id: bid, apartment: apt, monthly_amount: amount, note, updated_at: new Date().toISOString() },
+      { onConflict: 'building_id,apartment' });
+    if (error) dbError = 'rate: ' + error.message;
+    return !error;
   },
 
   /* עדכון חי */
@@ -2165,7 +2229,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.13';
+const APP_VERSION = '2026.08.19.14';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2488,6 +2552,61 @@ function renderReports() {
 }
 
 /* ---------- תשלומים ---------- */
+/* ---------- עורך תשלומים לוועד ---------- */
+let rates = {}, peApt = 0, peMon = 0, pePaidOn = false;
+const rateOf = a => (rates[a] && rates[a].amount !== null && rates[a].amount !== undefined)
+  ? rates[a].amount : cfg.dues;
+const paidAmount = (rec, k, apt) => {
+  const p = rec && rec.m && rec.m[k];
+  if (!p) return 0;
+  return (p.amount === null || p.amount === undefined) ? rateOf(apt) : p.amount;
+};
+const openPay = v => { $('#paySheet').classList.toggle('open', v); $('#paySheetBg').classList.toggle('open', v); };
+$('#paySheetBg').addEventListener('click', () => openPay(false));
+$('#peClose').addEventListener('click', () => openPay(false));
+$('#pePaid').addEventListener('click', () => { pePaidOn = !pePaidOn; sw($('#pePaid'), pePaidOn); });
+
+function editPay(apt, m) {
+  if (!isVaad) return;
+  peApt = apt; peMon = m;
+  const rec = pays[apt] || { m: {} }, k = ymKey(payYear, m), cur = rec.m && rec.m[k];
+  pePaidOn = !!cur; sw($('#pePaid'), pePaidOn);
+  $('#peTitle').textContent = aptLabel(apt);
+  $('#peSub').textContent = MON(m) + ' ' + payYear + ' · ' + t('py.rate', { n: rateOf(apt) });
+  $('#peAmount').value = cur ? paidAmount(rec, k, apt) : rateOf(apt);
+  $('#peNote').value = cur ? (cur.note || '') : '';
+  const r = rates[apt] || {};
+  $('#peRate').value = (r.amount === null || r.amount === undefined) ? '' : r.amount;
+  $('#peRateNote').value = r.note || '';
+  openPay(true);
+}
+$('#peSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const k = ymKey(payYear, peMon);
+  const rec = pays[peApt] || { apt: peApt, m: {} };
+  if (!pePaidOn) {
+    delete rec.m[k]; pays[peApt] = rec;
+    await DB.unsetPaid(cfg.id, peApt, payYear, peMon + 1);
+    openPay(false); renderPay(); renderHome(); return toast(t('ts.paycleared'));
+  }
+  const amount = $('#peAmount').value === '' ? rateOf(peApt) : +$('#peAmount').value;
+  const note = $('#peNote').value.trim();
+  rec.m[k] = { amount, note }; pays[peApt] = rec;
+  const ok = await DB.setPaid(cfg.id, peApt, payYear, peMon + 1, amount, note, me.id);
+  openPay(false); renderPay(); renderHome();
+  toast(ok ? t('ts.paysaved') : dbError);
+});
+$('#peClear').addEventListener('click', () => { pePaidOn = false; sw($('#pePaid'), false); $('#peSave').click(); });
+$('#peRateSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const v = $('#peRate').value === '' ? null : +$('#peRate').value;
+  const note = $('#peRateNote').value.trim();
+  rates[peApt] = { amount: v, note };
+  const ok = await DB.setRate(cfg.id, peApt, v, note);
+  renderPay(); toast(ok ? t('ts.ratesaved') : dbError);
+});
+$('#peRateClear').addEventListener('click', () => { $('#peRate').value = ''; $('#peRateSave').click(); });
+
 document.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
   payView = b.dataset.pv;
   document.querySelectorAll('[data-pv]').forEach(x => x.classList.toggle('on', x.dataset.pv === payView));
@@ -2501,15 +2620,7 @@ $('#duesSave').addEventListener('click', async () => {
   const ok = await DB.saveBuilding(cfg.id, { dues: cfg.dues });
   renderPay(); toast(ok ? t('ts.dues') : t('ts.conn'));
 });
-async function togglePay(apt, m) {
-  if (!isVaad) return;
-  const rec = pays[apt] || { apt, m: {} };
-  const k = ymKey(payYear, m), on = !!rec.m[k];
-  if (on) { delete rec.m[k]; DB.unsetPaid(cfg.id, apt, payYear, m + 1); }
-  else { rec.m[k] = 1; DB.setPaid(cfg.id, apt, payYear, m + 1, cfg.dues, me.id); }
-  pays[apt] = rec;
-  renderPay(); renderHome(); toast(t('ts.paysaved'));
-}
+
 function renderPay() {
   $('#yLbl').textContent = payYear;
   $('#cDues').value = cfg.dues;
@@ -2521,49 +2632,64 @@ function renderPay() {
   if (!canEdit()) return;
   const now = new Date(), curY = now.getFullYear(), curM = now.getMonth();
   if (!vaadAll) {
-    const rec = (me && pays[me.apt]) || { m: {} };
-    let paid = 0;
+    const apt = me ? me.apt : 0;
+    const rec = (me && pays[apt]) || { m: {} };
+    let paid = 0, total = 0;
     const g = $('#myMonths'); g.innerHTML = '';
     for (let m = 0; m < 12; m++) {
       const k = ymKey(payYear, m), on = !!(rec.m && rec.m[k]);
-      if (on) paid++;
+      const amt = paidAmount(rec, k, apt);
+      if (on) { paid++; total += amt; }
       const c = document.createElement('div');
       c.className = 'mycell' + (on ? ' paid' : '') + (payYear === curY && m === curM ? ' now' : '');
-      c.innerHTML = `<b>${MON(m)}</b><small>${on ? '₪' + cfg.dues : '—'}</small>`;
-      if (isVaad && me) c.onclick = () => togglePay(me.apt, m);
+      c.innerHTML = `<b>${MON(m)}</b><small>${on ? '₪' + amt : '—'}</small>`;
+      if (isVaad && me) c.onclick = () => editPay(apt, m);
       g.appendChild(c);
     }
     $('#pyPaid').textContent = paid + '/12';
-    $('#pyTotal').textContent = paid * cfg.dues;
-    $('#pyNote').textContent = t('py.note');
+    $('#pyTotal').textContent = total;
+    const r = rates[apt];
+    $('#pyNote').textContent = t('py.rate', { n: rateOf(apt) })
+      + ((r && r.amount !== null && r.amount !== undefined && +r.amount !== +cfg.dues) ? ' · ' + t('py.disc') : '')
+      + ' · ' + t('py.note');
     return;
   }
   const box = $('#allRows'); box.innerHTML = '';
+  let grand = 0;
   for (let a = 1; a <= cfg.units; a++) {
     const rec = pays[a] || { m: {} };
     const row = document.createElement('div'); row.className = 'mrow';
-    const lab = document.createElement('b'); lab.textContent = a;
+    const lab = document.createElement('b');
+    const disc = rates[a] && rates[a].amount !== null && rates[a].amount !== undefined
+                 && +rates[a].amount !== +cfg.dues;
+    lab.innerHTML = a + (disc ? '<br><span style="font-size:.6rem;color:var(--rest-tx)">₪' + rateOf(a) + '</span>' : '');
     const mons = document.createElement('div'); mons.className = 'mons';
     for (let m = 0; m < 12; m++) {
       const k = ymKey(payYear, m), on = !!(rec.m && rec.m[k]);
+      if (on) grand += paidAmount(rec, k, a);
       const b = document.createElement('button');
       b.className = 'mon' + (on ? ' paid' : '') + (payYear === curY && m === curM ? ' now' : '');
-      b.textContent = m + 1; b.title = MON(m);
-      b.onclick = () => togglePay(a, m);
+      b.textContent = m + 1;
+      b.title = MON(m) + (on ? ' · ₪' + paidAmount(rec, k, a) : '');
+      b.onclick = () => editPay(a, m);
       mons.appendChild(b);
     }
     row.append(lab, mons); box.appendChild(row);
   }
+  const sum = document.createElement('div'); sum.className = 'sum';
+  sum.innerHTML = t('py.total') + ': <b>₪' + grand + '</b>';
+  box.appendChild(sum);
 }
 
 /* ---------- טעינת נתוני הבניין ---------- */
 async function loadBuilding() {
-  notes = {}; reports = {}; pays = {}; codes = [];
+  notes = {}; reports = {}; pays = {}; codes = []; rates = {};
   if (cfg.id) {
-    const [n, c, r, p] = await Promise.all([
-      DB.notices(cfg.id), DB.codes(cfg.id), DB.reports(cfg.id), DB.payments(cfg.id, payYear)
+    const [n, c, r, p, rt] = await Promise.all([
+      DB.notices(cfg.id), DB.codes(cfg.id), DB.reports(cfg.id),
+      DB.payments(cfg.id, payYear), DB.rates(cfg.id)
     ]);
-    notes = n; codes = c; reports = r; pays = p;
+    notes = n; codes = c; reports = r; pays = p; rates = rt;
   }
   renderCodes(); fillTopics(); renderReports(); renderNotes(); renderPay(); renderHome();
 }
