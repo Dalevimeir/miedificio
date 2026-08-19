@@ -910,6 +910,16 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
     <h3 style="margin-top:16px" data-i18n="ac.theme"></h3>
     <div class="segs"><button class="seg" data-theme2="light" data-i18n="th.light"></button><button class="seg" data-theme2="dark" data-i18n="th.dark"></button></div>
 
+    <div id="adminBox" style="margin-top:24px">
+      <h2 data-i18n="ad.h"></h2>
+      <p class="muted" id="adminState">—</p>
+      <div id="adminForm">
+        <label class="fld" for="adCode" data-i18n="ad.code"></label>
+        <input id="adCode" type="password" autocomplete="off">
+        <button class="btn sm" id="adClaim" style="margin-top:10px" data-i18n="ad.claim"></button>
+      </div>
+    </div>
+
     <h2 style="margin-top:24px" data-i18n="vd.h"></h2>
     <p class="muted" data-i18n="vd.p"></p>
     <div id="vaadBox"></div>
@@ -1100,7 +1110,7 @@ he:{
 'wz.f1':'לוח משותף לכל הדיירים','wz.f2':'תזכורות וואטסאפ בימי חמישי','wz.f3':'דוח עלויות חשמל לוועד הבית',
 'wz.pay.go':'מעבר לתשלום','wz.pay.done':'כבר שילמנו','wz.finish':'סיום ההרשמה','wz.later':'שמירה והמשך אחר כך',
 'wz.per':'{p} · כ-₪{d} לדירה',
-'ac.h':'החשבון שלי','ac.admin':'מנהל מערכת','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
+'ac.h':'החשבון שלי','ac.admin':'מנהל מערכת','ad.h':'מנהל מערכת','ad.code':'קוד מנהל','ad.claim':'הפעלת גישת מנהל','ad.on':'מחובר כמנהל מערכת · גישה לכל בניין','ad.off':'הזן את קוד המנהל כדי לפתוח גישה לכל הבניינים.','ts.adok':'גישת מנהל הופעלה','ts.adbad':'קוד שגוי','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
 'st.addr':'כתובת הבניין','st.units':'מספר דירות','st.name':'שם תצוגה','st.gap':'איחוד הפסקה קצרה מ־(דק׳)',
 'st.candle':'הדלקת נרות (דק׳ לפני שקיעה)','st.tzeit':'צאת שבת (דק׳ אחרי שקיעה)','st.kw':'הספק ממוצע (kW)',
 'st.rate':'תעריף חשמל (₪ לקוט״ש)','st.geo':'קו רוחב / אורך','st.save':'שמירה','st.close':'סגירה',
@@ -1213,7 +1223,7 @@ en:{
 'wz.f1':'One shared schedule for every resident','wz.f2':'WhatsApp reminders on Thursdays','wz.f3':'Electricity cost report for the committee',
 'wz.pay.go':'Go to payment','wz.pay.done':'We already paid','wz.finish':'Finish sign-up','wz.later':'Save and continue later',
 'wz.per':'{p} · about ₪{d} per apartment',
-'ac.h':'My account','ac.admin':'Platform admin','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
+'ac.h':'My account','ac.admin':'Platform admin','ad.h':'Platform admin','ad.code':'Admin code','ad.claim':'Enable admin access','ad.on':'Signed in as platform admin · access to every building','ad.off':'Enter the admin code to unlock access to all buildings.','ts.adok':'Admin access enabled','ts.adbad':'Wrong code','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
 'st.addr':'Building address','st.units':'Apartments','st.name':'Display name','st.gap':'Merge gaps shorter than (min)',
 'st.candle':'Candle lighting (min before sunset)','st.tzeit':'Shabbat ends (min after sunset)','st.kw':'Average power (kW)',
 'st.rate':'Electricity rate (₪ per kWh)','st.geo':'Latitude / longitude','st.save':'Save','st.close':'Close',
@@ -1245,7 +1255,15 @@ const prefs = {
   set(k, v) { try { localStorage.setItem(k, v); } catch (e) { memPrefs[k] = v; } },
   del(k) { try { localStorage.removeItem(k); } catch (e) { delete memPrefs[k]; } }
 };
-let sb = null, uid = null, online = false, dbError = '';
+let sb = null, uid = null, online = false, dbError = '', signingIn = null;
+
+// שתי קריאות במקביל יצרו שתי זהויות שונות. עכשיו יש רק אחת בכל רגע.
+function anonOnce() {
+  if (!signingIn) {
+    signingIn = sb.auth.signInAnonymously().finally(() => { signingIn = null; });
+  }
+  return signingIn;
+}
 
 function wipeLocal() {
   try {
@@ -1287,7 +1305,7 @@ async function dbInit() {
       }
     }
     if (!s) {
-      const r = await sb.auth.signInAnonymously();
+      const r = await anonOnce();
       if (r.error) {
         dbError = /anonymous/i.test(r.error.message || '')
           ? 'הרשמה אנונימית כבויה בפרויקט Supabase. Authentication ← Providers ← Allow anonymous sign-ins'
@@ -1333,9 +1351,9 @@ async function ensureAuth() {
   try {
     let s = (await sb.auth.getSession()).data.session;
     if (!s) {
-      const r = await sb.auth.signInAnonymously();
+      const r = await anonOnce();
       if (r.error) { dbError = 'auth: ' + r.error.message; return false; }
-      s = r.data.session;
+      s = r.data && r.data.session;
     }
     uid = s && s.user ? s.user.id : null;
     if (!uid) { dbError = 'אין משתמש מחובר'; return false; }
@@ -1381,6 +1399,11 @@ const DB = {
   async updateMe(rid, patch) {
     const { error } = await sb.from('residents').update(patch).eq('id', rid);
     return !error;
+  },
+  async claimAdmin(code) {
+    try { const { data, error } = await sb.rpc('claim_admin', { p_code: code });
+      if (error) dbError = error.message; return !error && data === true; }
+    catch (e) { dbError = e && e.message; return false; }
   },
   async isAdmin() {
     try { const { data, error } = await sb.rpc('am_i_admin'); return !error && data === true; }
@@ -2119,8 +2142,20 @@ function fillAccount() {
   b.className = 'xbtn'; b.textContent = t('up.check');
   b.onclick = () => checkUpdate(true);
   v.appendChild(b);
-  fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit();
+  fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit(); renderAdmin();
 }
+function renderAdmin() {
+  $('#adminState').textContent = t(isAdmin ? 'ad.on' : 'ad.off');
+  $('#adminForm').hidden = isAdmin;
+}
+$('#adClaim').addEventListener('click', async () => {
+  const c = $('#adCode').value.trim();
+  if (!c) return;
+  if (!await DB.claimAdmin(c)) return toast(t('ts.adbad'));
+  isAdmin = true; isVaad = true; $('#adCode').value = '';
+  renderAdmin(); renderGate(); renderVaad(); renderPay(); renderCodesEdit(); renderAll();
+  toast(t('ts.adok'));
+});
 $('#logout').addEventListener('click', async () => {
   await DB.signOut();
   me = null; isVaad = false; sel.clear(); cfg = { ...DEF };
@@ -2235,7 +2270,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.18';
+const APP_VERSION = '2026.08.19.19';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
