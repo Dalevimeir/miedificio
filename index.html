@@ -301,10 +301,11 @@ html[dir=ltr] .sw.on .tg::after{transform:translateX(19px)}
 .tab.on{color:var(--gold-tx)}
 /* מחוון אחד שנע בין החוצצים — המיקום נמדד מהכפתור עצמו, בפיקסלים */
 .tabbar::before{content:"";position:absolute;top:0;left:0;height:2px;border-radius:0 0 3px 3px;
-  background:var(--gold);box-shadow:0 0 10px 0 var(--gold);
-  width:var(--iw,0px);transform:translateX(var(--ix,0px));
+  background:var(--gold);width:var(--iw,0px);transform:translateX(var(--ix,0px));
   opacity:var(--io,0);
-  transition:transform .4s cubic-bezier(.2,.8,.3,1),width .4s cubic-bezier(.2,.8,.3,1),opacity .2s}
+  transition:transform .32s cubic-bezier(.2,.8,.3,1),width .32s cubic-bezier(.2,.8,.3,1),opacity .18s}
+/* קפיצה למרחק גדול נעשית בהתפוגגות, לא בהחלקה — אחרת זה נראה כמו פס אור חוצה */
+.tabbar.jump::before{transition:opacity .16s}
 .tab .dot{position:absolute;top:9px;inset-inline-end:calc(50% - 20px);width:7px;height:7px;border-radius:50%;
   background:var(--rest);display:none}
 .tab .dot.show{display:block}
@@ -2660,9 +2661,25 @@ function syncIndicator() {
   const bar = $('#tabbar');
   const el = bar.querySelector('.tab.on');
   if (!el || el.hidden || !el.offsetWidth) { bar.style.setProperty('--io', 0); return; }
-  bar.style.setProperty('--iw', el.offsetWidth + 'px');
-  bar.style.setProperty('--ix', el.offsetLeft + 'px');
-  bar.style.setProperty('--io', 1);
+  const x = el.offsetLeft, w = el.offsetWidth;
+  const prev = parseFloat(bar.style.getPropertyValue('--ix')) || 0;
+  const far = Math.abs(x - prev) > w * 1.6;   // קפיצה של יותר משני חוצצים
+
+  if (!far) {
+    bar.classList.remove('jump');
+    bar.style.setProperty('--iw', w + 'px');
+    bar.style.setProperty('--ix', x + 'px');
+    bar.style.setProperty('--io', 1);
+    return;
+  }
+  // מרחק גדול: כיבוי, מעבר בלי אנימציה, הדלקה במקום החדש
+  bar.classList.add('jump');
+  bar.style.setProperty('--io', 0);
+  setTimeout(() => {
+    bar.style.setProperty('--iw', w + 'px');
+    bar.style.setProperty('--ix', x + 'px');
+    requestAnimationFrame(() => bar.style.setProperty('--io', 1));
+  }, 170);
 }
 
 function renderGate() {
@@ -3297,7 +3314,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.51';
+const APP_VERSION = '2026.08.19.52';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
