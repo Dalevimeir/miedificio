@@ -297,12 +297,12 @@ html[dir=ltr] .sw.on .tg::after{transform:translateX(19px)}
 .tab[hidden]{display:none}
 .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .tab.on{color:var(--gold-tx)}
-/* מחוון אחד שנע בין החוצצים, במקום קו שנדלק בכל אחד בנפרד */
-.tabbar::before{content:"";position:absolute;top:0;height:2px;border-radius:0 0 3px 3px;
-  background:var(--gold);box-shadow:0 0 12px 1px var(--gold);
-  width:calc(100% / var(--tabs,5));transform:translateX(calc(var(--sel,0) * -100%));
-  inset-inline-start:0;transition:transform .34s cubic-bezier(.2,.8,.3,1)}
-html[dir=ltr] .tabbar::before{transform:translateX(calc(var(--sel,0) * 100%))}
+/* מחוון אחד שנע בין החוצצים — המיקום נמדד מהכפתור עצמו, בפיקסלים */
+.tabbar::before{content:"";position:absolute;top:0;left:0;height:2px;border-radius:0 0 3px 3px;
+  background:var(--gold);box-shadow:0 0 10px 0 var(--gold);
+  width:var(--iw,0px);transform:translateX(var(--ix,0px));
+  opacity:var(--io,0);
+  transition:transform .4s cubic-bezier(.2,.8,.3,1),width .4s cubic-bezier(.2,.8,.3,1),opacity .2s}
 .tab .dot{position:absolute;top:9px;inset-inline-end:calc(50% - 20px);width:7px;height:7px;border-radius:50%;
   background:var(--rest);display:none}
 .tab .dot.show{display:block}
@@ -2655,10 +2655,12 @@ function renderApprovals() {
 }
 
 function syncIndicator() {
-  const tabs = visibleTabs(), bar = $('#tabbar');
-  const cur = tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on'));
-  bar.style.setProperty('--tabs', tabs.length);
-  bar.style.setProperty('--sel', Math.max(0, cur));
+  const bar = $('#tabbar');
+  const el = bar.querySelector('.tab.on');
+  if (!el || el.hidden || !el.offsetWidth) { bar.style.setProperty('--io', 0); return; }
+  bar.style.setProperty('--iw', el.offsetWidth + 'px');
+  bar.style.setProperty('--ix', el.offsetLeft + 'px');
+  bar.style.setProperty('--io', 1);
 }
 
 function renderGate() {
@@ -2754,9 +2756,7 @@ let swapping = false;
 function swapPanels(name) {
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + name));
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x.dataset.tab === name));
-  const tabs = visibleTabs(), bar = $('#tabbar');
-  bar.style.setProperty('--tabs', tabs.length);
-  bar.style.setProperty('--sel', Math.max(0, tabs.indexOf(name)));
+  syncIndicator();
 }
 
 function go(name, dir) {
@@ -3295,7 +3295,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.48';
+const APP_VERSION = '2026.08.19.49';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3409,6 +3409,8 @@ async function boot(first) {
 const io2 = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('in'); io2.unobserve(e.target); } }), { threshold: .08 });
 addEventListener('scroll', () => document.body.style.setProperty('--par', (scrollY * .04) + 'px'), { passive: true });
+addEventListener('resize', () => syncIndicator());
+addEventListener('orientationchange', () => setTimeout(syncIndicator, 120));
 
 /* ==================================================================
    מודולים: לוח מודעות · קודים · דיווחים · תשלומים · מסך בית
@@ -4045,7 +4047,7 @@ function renderParking() {
   // הטאב מוסתר לדיירים כשהמודול כבוי; הוועד רואה מסך נעול כדי שיוכל לבקש
   $('#tabPark').hidden = !(on || isVaad);
   $('#tabbar').dataset.n = $('#tabPark').hidden ? 4 : 5;
-  if (typeof syncIndicator === 'function') syncIndicator();
+  if (typeof syncIndicator === 'function') requestAnimationFrame(syncIndicator);
   if ($('#tabPark').hidden && $('#p-park').classList.contains('on')) go('home');
 
   $('#parkLocked').hidden = on;
