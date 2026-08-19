@@ -341,32 +341,39 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
   max-width:min(92vw,420px)}
 .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
 
-/* ---------- מחליף מסכים (לחיצה ארוכה) ---------- */
+/* ---------- מחליף מסכים — קרוסלה תלת ממדית ---------- */
 .zoomed .topbar, .zoomed main, .zoomed .tabbar{
-  transform:scale(.94);transform-origin:50% 40%;filter:blur(2px);
-  transition:transform .3s cubic-bezier(.2,.8,.3,1),filter .3s}
-.switch{position:fixed;inset:0;z-index:70;display:none;align-items:center;
-  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(6px);
-  opacity:0;transition:opacity .25s}
-.switch.on{display:flex;opacity:1}
-.switch .track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:0 max(18px,calc(50vw - 130px));width:100%;scrollbar-width:none}
-.switch .track::-webkit-scrollbar{display:none}
-.swcard{flex:0 0 auto;width:236px;min-height:280px;scroll-snap-align:center;
-  border-radius:22px;border:1px solid var(--line);background:var(--glass);
-  box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;
-  transform:scale(.94);opacity:.8;transition:transform .3s cubic-bezier(.2,.8,.3,1),opacity .3s}
-.swcard.cur{transform:scale(1);opacity:1;border-color:var(--gold)}
-.swcard .ic2{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
-  background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx);margin-bottom:14px}
-.swcard .ic2 svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;
+  transform:scale(.9);transform-origin:50% 40%;filter:blur(3px);
+  transition:transform .35s cubic-bezier(.2,.8,.3,1),filter .35s}
+.switch{position:fixed;inset:0;z-index:70;display:none;
+  background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(7px);
+  opacity:0;transition:opacity .28s}
+.switch.on{display:block;opacity:1}
+.stage{position:absolute;inset:0;perspective:1200px;perspective-origin:50% 45%;
+  touch-action:none;overflow:hidden}
+.ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d;
+  transition:transform .5s cubic-bezier(.2,.85,.3,1)}
+.ring.drag{transition:none}
+.swcard{position:absolute;width:246px;height:404px;margin-left:-123px;margin-top:-202px;
+  border-radius:26px;border:1px solid var(--line);background:var(--glass);
+  box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transition:opacity .3s,border-color .3s,box-shadow .3s}
+.swcard.cur{border-color:var(--gold);box-shadow:0 0 40px -12px var(--gold),var(--shadow)}
+.swcard .ic2{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
+  background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx);margin-bottom:16px}
+.swcard .ic2 svg{width:27px;height:27px;stroke:currentColor;fill:none;stroke-width:1.6;
   stroke-linecap:round;stroke-linejoin:round}
-.swcard h3{font-size:1.15rem;margin-bottom:8px}
-.swcard ul{list-style:none;margin:0;padding:0;font-size:.85rem;color:var(--dim);line-height:2}
+.swcard h3{font-size:1.28rem;margin-bottom:10px}
+.swcard ul{list-style:none;margin:0;padding:0;font-size:.9rem;color:var(--dim);line-height:2.1}
 .swcard ul b{color:var(--text);font-family:'Space Grotesk',monospace}
-.swcard .go{margin-top:auto;font-size:.8rem;color:var(--gold-tx);font-weight:600}
-.switch .hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 22px);
-  left:0;right:0;text-align:center;font-size:.78rem;color:var(--dim)}
+.swcard .go{margin-top:auto;font-size:.85rem;color:var(--gold-tx);font-weight:700}
+.switch .hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 26px);
+  left:0;right:0;text-align:center;font-size:.78rem;color:var(--dim);pointer-events:none}
+.dots{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 56px);left:0;right:0;
+  display:flex;justify-content:center;gap:7px;pointer-events:none}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
+.dots i.on{background:var(--gold);transform:scale(1.5)}
 
 /* ---------- מסך התקנה ---------- */
 .gate{position:fixed;inset:0;z-index:99;display:none;place-items:center;padding:24px;
@@ -1357,7 +1364,8 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 </div>
 
 <div class="switch" id="switcher">
-  <div class="track" id="swTrack"></div>
+  <div class="stage" id="swStage"><div class="ring" id="swRing"></div></div>
+  <div class="dots" id="swDots"></div>
   <div class="hint" data-i18n="sw2.hint"></div>
 </div>
 
@@ -1390,7 +1398,7 @@ he:{
 'ts.conn':'אין חיבור לשרת','ts.retry':'נסה שוב','ts.wipe':'איפוס מלא והתחלה מחדש','up.msg':'עדכון חדש מחכה לך','up.btn':'הפעלה מחדש','up.none':'האפליקציה מעודכנת','up.check':'בדיקת עדכון','ver.l':'גרסה {v}','ts.joined':'נרשמת לבניין','ts.structsaved':'מבנה הבניין נשמר',
 'lk.h':'ברוכים הבאים','lk.p':'האפליקציה מנוהלת לפי בניין. הירשמו פעם אחת כדי לראות את לוח המודעות, הקודים, הדיווחים והתשלומים.',
 
-'sw2.hint':'החליקו לצדדים ובחרו · הקישו מחוץ לכרטיס לסגירה','sw2.go':'מעבר','nav.home':'בית','nav.rep':'דיווחים','nav.pay':'תשלומים','nav.elev':'מעלית','nav.park':'חניה',
+'sw2.hint':'סובבו את הגלגל ובחרו · הקישו מחוץ לכרטיס לסגירה','sw2.go':'מעבר','nav.home':'בית','nav.rep':'דיווחים','nav.pay':'תשלומים','nav.elev':'מעלית','nav.park':'חניה',
 'hm.eyebrow':'הבניין שלי','hm.h1':'לוח המודעות','hm.p':'מה חדש בבניין, ומה שצריך לדעת.',
 'hm.open':'דיווחים פתוחים','hm.paid':'החודש','hm.sab':'שעות בשבת',
 'hm.paid.yes':'שולם','hm.paid.no':'טרם','hm.paid.na':'—',
@@ -1566,7 +1574,7 @@ en:{
 'ts.conn':'No connection to the server','ts.retry':'Try again','ts.wipe':'Full reset and start over','up.msg':'A new version is ready','up.btn':'Restart','up.none':'You are on the latest version','up.check':'Check for updates','ver.l':'Version {v}','ts.joined':'You joined the building','ts.structsaved':'Building structure saved',
 'lk.h':'Welcome','lk.p':'The app is organised per building. Register once to see the notice board, codes, reports and payments.',
 
-'sw2.hint':'Swipe and pick · tap outside to close','sw2.go':'Open','nav.home':'Home','nav.rep':'Reports','nav.pay':'Payments','nav.elev':'Elevator','nav.park':'Parking',
+'sw2.hint':'Spin the wheel and pick · tap outside to close','sw2.go':'Open','nav.home':'Home','nav.rep':'Reports','nav.pay':'Payments','nav.elev':'Elevator','nav.park':'Parking',
 'hm.eyebrow':'My building','hm.h1':'Notice board','hm.p':'What is new in the building, and what you need to know.',
 'hm.open':'Open reports','hm.paid':'This month','hm.sab':'Hours on Shabbat',
 'hm.paid.yes':'Paid','hm.paid.no':'Not yet','hm.paid.na':'—',
@@ -3283,7 +3291,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.42';
+const APP_VERSION = '2026.08.19.43';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3436,44 +3444,82 @@ const SW_SUM = {
   }
 };
 
+let swN = 0, swA = 0, swR = 0, swSel = 0, swRot = 0;
+
+function swLayout() {
+  const cards = [...$('#swRing').children];
+  swN = cards.length; if (!swN) return;
+  swA = 360 / swN;
+  // רדיוס שמרחיק את הכרטיסים כך שלא ייגעו זה בזה
+  swR = Math.round((123 + 26) / Math.tan(Math.PI / swN));
+  cards.forEach((c, i) => { c.style.transform = `rotateY(${i * swA}deg) translateZ(${swR}px)`; });
+  swApply();
+}
+function swApply() {
+  $('#swRing').style.transform = `translateZ(${-swR}px) rotateY(${-swRot}deg)`;
+  const cards = [...$('#swRing').children];
+  const sel = ((Math.round(swRot / swA) % swN) + swN) % swN;
+  swSel = sel;
+  cards.forEach((c, i) => {
+    let d = ((i - sel) % swN + swN) % swN;
+    if (d > swN / 2) d -= swN;
+    c.classList.toggle('cur', d === 0);
+    c.style.opacity = d === 0 ? 1 : Math.max(0.28, 0.72 - Math.abs(d) * 0.2);
+  });
+  const dots = [...$('#swDots').children];
+  dots.forEach((x, i) => x.classList.toggle('on', i === sel));
+}
+
 function buildSwitcher() {
-  const track = $('#swTrack'); track.innerHTML = '';
+  const ring = $('#swRing'); ring.innerHTML = '';
+  const dots = $('#swDots'); dots.innerHTML = '';
   const tabs = visibleTabs();
-  const cur = tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on'));
+  const cur = Math.max(0, tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on')));
   tabs.forEach((name, i) => {
     const btn = document.querySelector('.tab[data-tab="' + name + '"]');
     const c = document.createElement('div');
-    c.className = 'swcard' + (i === cur ? ' cur' : '');
+    c.className = 'swcard';
     const icon = btn ? btn.querySelector('svg').outerHTML : '';
     const lines = (SW_SUM[name] ? SW_SUM[name]() : []).map(x => '<li>' + x + '</li>').join('');
     c.innerHTML = `<div class="ic2">${icon}</div>
       <h3>${t('nav.' + name)}</h3><ul>${lines}</ul>
       <div class="go">${t('sw2.go')} ›</div>`;
-    c.onclick = () => { closeSwitcher(); go(name); };
-    track.appendChild(c);
+    c.onclick = () => {
+      if (i === swSel) { closeSwitcher(); go(name); }
+      else { swRot = i * swA; swApply(); }
+    };
+    ring.appendChild(c);
+    dots.appendChild(document.createElement('i'));
   });
-  requestAnimationFrame(() => {
-    const el = track.children[Math.max(0, cur)];
-    if (el) track.scrollLeft = el.offsetLeft - track.clientWidth / 2 + el.clientWidth / 2;
+  swRot = cur * swA;
+  swLayout();
+}
+
+/* סיבוב בגרירה */
+(function () {
+  let down = false, x0 = 0, rot0 = 0, moved = false;
+  const stage = () => $('#swStage');
+  addEventListener('pointerdown', e => {
+    if (!$('#switcher').classList.contains('on')) return;
+    if (!e.target.closest('#swStage')) return;
+    down = true; moved = false; x0 = e.clientX; rot0 = swRot;
+    $('#swRing').classList.add('drag');
   });
-}
-function openSwitcher() {
-  if ($('#switcher').classList.contains('on')) return;
-  buildSwitcher();
-  $('#switcher').classList.add('on');
-  document.body.classList.add('zoomed');
-  if (navigator.vibrate) navigator.vibrate(12);
-}
-function closeSwitcher() {
-  $('#switcher').classList.remove('on');
-  document.body.classList.remove('zoomed');
-}
-$('#switcher').addEventListener('click', e => { if (e.target.id !== 'swTrack' && !e.target.closest('.swcard')) closeSwitcher(); });
-$('#swTrack').addEventListener('scroll', () => {
-  const track = $('#swTrack'), mid = track.scrollLeft + track.clientWidth / 2;
-  [...track.children].forEach(c =>
-    c.classList.toggle('cur', Math.abs(c.offsetLeft + c.clientWidth / 2 - mid) < c.clientWidth / 2));
-}, { passive: true });
+  addEventListener('pointermove', e => {
+    if (!down) return;
+    const dx = e.clientX - x0;
+    if (Math.abs(dx) > 6) moved = true;
+    swRot = rot0 - dx * 0.32;   // בעברית: גרירה שמאלה מסובבת קדימה
+    swApply();
+  }, { passive: true });
+  addEventListener('pointerup', () => {
+    if (!down) return;
+    down = false;
+    $('#swRing').classList.remove('drag');
+    swRot = Math.round(swRot / swA) * swA;
+    swApply();
+  });
+})();
 
 (function () {
   let timer = null, sx = 0, sy = 0;
