@@ -398,6 +398,30 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 .qrbox canvas{max-width:200px;width:100%;height:auto;display:block;margin:0 auto}
 .qrbox .u{font-family:'Space Grotesk',monospace;font-size:.72rem;color:#333;margin-top:10px;direction:ltr;word-break:break-all}
 
+/* ---------- סקרים והצעות ---------- */
+.topic{border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin-top:10px;background:var(--glass-2)}
+.topic.poll{border-inline-start:3px solid var(--gold)}
+.topic.idea{border-inline-start:3px solid var(--rest)}
+.topic h4{margin:0 0 3px;font-size:.98rem;font-weight:700}
+.topic p{margin:0;font-size:.88rem;color:var(--dim);white-space:pre-wrap}
+.topic .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;
+  font-size:.7rem;color:var(--dim);font-family:'Space Grotesk',monospace}
+.opts{margin-top:11px;display:flex;flex-direction:column;gap:6px}
+.opt{position:relative;border:1px solid var(--line);border-radius:11px;padding:10px 12px;
+  background:var(--glass-2);text-align:start;font-size:.9rem;color:var(--text);overflow:hidden}
+.opt .fillb{position:absolute;inset-inline-start:0;top:0;bottom:0;background:var(--gold-soft);
+  width:0;transition:width .6s cubic-bezier(.2,.8,.3,1)}
+.opt .lab{position:relative;display:flex;justify-content:space-between;gap:10px}
+.opt .lab b{font-family:'Space Grotesk',monospace;color:var(--gold-tx)}
+.opt.picked{border-color:var(--gold)}
+.opt.picked .lab::before{content:"✓ ";color:var(--gold-tx)}
+.support{display:flex;align-items:center;gap:10px;margin-top:11px}
+.support button{padding:9px 16px;border-radius:11px;border:1px solid var(--rest);
+  background:var(--rest-soft);color:var(--rest-tx);font-weight:600;font-size:.86rem}
+.support button.on{background:linear-gradient(180deg,var(--gold-2),var(--gold));
+  border-color:var(--gold);color:var(--gold-ink)}
+.support .cnt{font-family:'Space Grotesk',monospace;font-size:1.05rem;font-weight:600}
+
 /* ---------- קודים ---------- */
 .code{display:flex;align-items:baseline;gap:10px;padding:12px 0;border-bottom:1px dotted var(--line)}
 .code:last-child{border-bottom:0}
@@ -601,6 +625,34 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         </div>
       </div>
       <div id="nbList"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h3 data-i18n="tp2.h"></h3>
+        <div class="row" style="gap:6px">
+          <button class="btn ghost sm" id="tpIdea" data-i18n="tp2.idea"></button>
+          <button class="btn ghost sm" id="tpPoll" data-i18n="tp2.poll" hidden></button>
+        </div>
+      </div>
+
+      <div id="tpForm" hidden style="margin-top:12px">
+        <label class="fld" for="tpTitle" data-i18n="tp2.title"></label>
+        <input id="tpTitle">
+        <label class="fld" for="tpBody" style="margin-top:10px" data-i18n="tp2.body"></label>
+        <input id="tpBody">
+        <div id="tpOpts" hidden>
+          <label class="fld" style="margin-top:10px" data-i18n="tp2.opts"></label>
+          <input id="tpO1" placeholder="1"><input id="tpO2" placeholder="2" style="margin-top:6px">
+          <input id="tpO3" placeholder="3" style="margin-top:6px">
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn sm" id="tpSend" data-i18n="tp2.send"></button>
+          <button class="btn ghost sm" id="tpCancel" data-i18n="rp.cancel"></button>
+        </div>
+      </div>
+
+      <div id="tpList"></div>
     </div>
 
     <div class="card">
@@ -1308,6 +1360,13 @@ he:{
 'sh.poster.p':'לוח מודעות · קודי הבניין · דיווחי תקלות · תשלומי ועד · מעלית שבת',
 'sh.msg':'הצטרפו לאפליקציה של {b} — לוח מודעות, קודי הבניין, דיווחי תקלות ומעלית שבת:',
 'ts.copied2':'הקישור הועתק','ts.qrfail':'לא ניתן ליצור קוד סריקה',
+'tp2.h':'סקרים והצעות','tp2.idea':'הצעה חדשה','tp2.poll':'סקר חדש',
+'tp2.title':'נושא','tp2.body':'פירוט (לא חובה)','tp2.opts':'אפשרויות הצבעה',
+'tp2.send':'פרסום','tp2.none':'אין סקרים או הצעות פתוחות.',
+'tp2.sup':'תומך','tp2.sup2':'{n} תומכים','tp2.sup1':'תומך אחד','tp2.sup0':'אין תומכים עדיין',
+'tp2.votes':'{n} הצביעו','tp2.secret':'ההצבעה חשאית — נספרות רק התוצאות.',
+'tp2.st.open':'פתוח','tp2.st.planned':'מתוכנן','tp2.st.done':'בוצע','tp2.st.declined':'נדחה','tp2.st.closed':'הסתיים',
+'ts.tpsent':'פורסם','ts.tpvote':'ההצבעה נרשמה','ts.tpneed':'צריך נושא','ts.tpopts':'צריך לפחות שתי אפשרויות',
 'nb.h':'לוח מודעות','nb.empty':'אין הודעות או דיווחים פתוחים.','nb.open':'לדיווח','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
 'nb.pin':'נעיצה למעלה','nb.post':'פרסום','nb.pinned':'נעוץ','nb.del':'מחיקה','ts.nbposted':'ההודעה פורסמה',
 'cd.h':'קודי הבניין','cd.p':'קוד שער, דלת כניסה, ואטסאפ של הוועד — מה שצריך ביום־יום.',
@@ -1477,6 +1536,13 @@ en:{
 'sh.poster.p':'Notice board · Building codes · Fault reports · Committee dues · Shabbat elevator',
 'sh.msg':'Join the {b} building app — notice board, building codes, fault reports and the Shabbat elevator:',
 'ts.copied2':'Link copied','ts.qrfail':'Could not create a scan code',
+'tp2.h':'Polls and ideas','tp2.idea':'New idea','tp2.poll':'New poll',
+'tp2.title':'Subject','tp2.body':'Details (optional)','tp2.opts':'Voting options',
+'tp2.send':'Post','tp2.none':'No open polls or ideas.',
+'tp2.sup':'Support','tp2.sup2':'{n} supporters','tp2.sup1':'one supporter','tp2.sup0':'no supporters yet',
+'tp2.votes':'{n} voted','tp2.secret':'Voting is secret — only totals are counted.',
+'tp2.st.open':'Open','tp2.st.planned':'Planned','tp2.st.done':'Done','tp2.st.declined':'Declined','tp2.st.closed':'Closed',
+'ts.tpsent':'Posted','ts.tpvote':'Vote recorded','ts.tpneed':'A subject is required','ts.tpopts':'At least two options are required',
 'nb.h':'Notice board','nb.empty':'No notices or open reports.','nb.open':'Open','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
 'nb.pin':'Pin to top','nb.post':'Post','nb.pinned':'Pinned','nb.del':'Delete','ts.nbposted':'Notice posted',
 'cd.h':'Building codes','cd.p':'Gate code, entrance door, committee WhatsApp — the day-to-day essentials.',
@@ -1887,6 +1953,48 @@ const DB = {
              ts: new Date(data.created_at).getTime() };
   },
   async delNotice(id) { await sb.from('notices').delete().eq('id', id); },
+
+  /* סקרים והצעות */
+  async topics(bid) {
+    const [{ data: tp }, { data: cn }, { data: mine }] = await Promise.all([
+      sb.from('topics').select('*').eq('building_id', bid).order('created_at', { ascending: false }),
+      sb.rpc('topic_counts', { b: bid }),
+      sb.from('topic_votes').select('topic_id,choice')
+    ]);
+    const counts = {};
+    (cn || []).forEach(r => { (counts[r.topic_id] = counts[r.topic_id] || {})[r.choice] = r.n; });
+    const my = {};
+    (mine || []).forEach(v => my[v.topic_id] = v.choice);
+    return (tp || []).map(x => ({
+      id: x.id, kind: x.kind, title: x.title, body: x.body || '',
+      options: x.options || [], status: x.status, by: x.created_by,
+      ts: new Date(x.created_at).getTime(),
+      counts: counts[x.id] || {}, mine: my[x.id]
+    }));
+  },
+  async addTopic(bid, rid, tpc) {
+    const { data, error } = await sb.from('topics').insert({
+      building_id: bid, created_by: rid, kind: tpc.kind,
+      title: tpc.title, body: tpc.body || null, options: tpc.options || []
+    }).select().single();
+    if (error) { dbError = error.message; return null; }
+    return data;
+  },
+  async vote(bid, tid, rid, choice) {
+    const { error } = await sb.from('topic_votes')
+      .upsert({ topic_id: tid, building_id: bid, resident_id: rid, choice },
+              { onConflict: 'topic_id,resident_id' });
+    if (error) dbError = error.message;
+    return !error;
+  },
+  async unvote(tid, rid) {
+    await sb.from('topic_votes').delete().eq('topic_id', tid).eq('resident_id', rid);
+  },
+  async topicStatus(id, status) {
+    const { error } = await sb.from('topics').update({ status }).eq('id', id);
+    return !error;
+  },
+  async delTopic(id) { await sb.from('topics').delete().eq('id', id); },
 
   /* קודים */
   async codes(bid) {
@@ -3083,7 +3191,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.39';
+const APP_VERSION = '2026.08.19.40';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3189,6 +3297,7 @@ async function boot(first) {
   renderGate(); renderVaad(); renderFixed(); renderFloors(); renderApprovals();
   loadMine(); renderAll();
   await loadBuilding();
+  await loadTopics();
   await loadParking();
   if (first) parkingDeepLink();
   if (first && !me) showSheet();
@@ -3637,6 +3746,118 @@ async function loadBuilding() {
     notes = n; codes = c; reports = r; pays = p; rates = rt;
   }
   renderCodes(); fillTopics(); renderReports(); renderNotes(); renderPay(); renderHome();
+}
+
+/* ==================================================================
+   סקרים והצעות
+   ================================================================== */
+let topics = [], tpKind = 'idea';
+
+function openTopicForm(kind) {
+  tpKind = kind;
+  $('#tpForm').hidden = false;
+  $('#tpOpts').hidden = kind !== 'poll';
+  $('#tpTitle').value = ''; $('#tpBody').value = '';
+  ['tpO1', 'tpO2', 'tpO3'].forEach(i => $('#' + i).value = '');
+  $('#tpTitle').focus();
+}
+$('#tpIdea').addEventListener('click', () => openTopicForm('idea'));
+$('#tpPoll').addEventListener('click', () => openTopicForm('poll'));
+$('#tpCancel').addEventListener('click', () => { $('#tpForm').hidden = true; });
+
+$('#tpSend').addEventListener('click', async () => {
+  if (!canEdit()) return toast(t('ts.needreg'));
+  const title = $('#tpTitle').value.trim();
+  if (!title) return toast(t('ts.tpneed'));
+  const opts = ['tpO1', 'tpO2', 'tpO3'].map(i => $('#' + i).value.trim()).filter(Boolean);
+  if (tpKind === 'poll' && opts.length < 2) return toast(t('ts.tpopts'));
+  const r = await DB.addTopic(cfg.id, me.id, {
+    kind: tpKind, title, body: $('#tpBody').value.trim(), options: opts });
+  if (!r) return toast(dbError || t('ts.conn'), 6000);
+  $('#tpForm').hidden = true;
+  await loadTopics(); toast(t('ts.tpsent'));
+});
+
+function sumVotes(c) { return Object.values(c || {}).reduce((a, b) => a + b, 0); }
+
+function renderTopics() {
+  $('#tpPoll').hidden = !isVaad;
+  $('#tpIdea').hidden = !canEdit();
+  const box = $('#tpList'); if (!box) return;
+  box.innerHTML = '';
+  const list = topics.filter(x => x.status !== 'declined' || isVaad);
+  if (!list.length) {
+    box.innerHTML = `<p class="muted" style="margin-top:10px">${t('tp2.none')}</p>`;
+    return;
+  }
+  list.forEach(x => {
+    const el = document.createElement('div');
+    el.className = 'topic ' + x.kind;
+    const total = sumVotes(x.counts);
+    el.innerHTML = `<h4>${esc(x.title)}</h4>${x.body ? `<p>${esc(x.body)}</p>` : ''}`;
+
+    if (x.kind === 'poll') {
+      const wrap = document.createElement('div'); wrap.className = 'opts';
+      x.options.forEach((o, i) => {
+        const n = (x.counts && x.counts[i]) || 0;
+        const pct = total ? Math.round(n / total * 100) : 0;
+        const b = document.createElement('button');
+        b.className = 'opt' + (x.mine === i ? ' picked' : '');
+        b.innerHTML = `<span class="fillb" style="width:${x.mine === undefined ? 0 : pct}%"></span>
+          <span class="lab"><span>${esc(o)}</span>${x.mine === undefined ? '' : `<b>${pct}%</b>`}</span>`;
+        b.onclick = async () => {
+          if (!canEdit()) return toast(t('ts.needreg'));
+          if (!await DB.vote(cfg.id, x.id, me.id, i)) return toast(dbError || t('ts.conn'));
+          await loadTopics(); toast(t('ts.tpvote'));
+        };
+        wrap.appendChild(b);
+      });
+      el.appendChild(wrap);
+    } else {
+      const sup = document.createElement('div'); sup.className = 'support';
+      const b = document.createElement('button');
+      b.className = x.mine !== undefined ? 'on' : '';
+      b.textContent = t('tp2.sup');
+      b.onclick = async () => {
+        if (!canEdit()) return toast(t('ts.needreg'));
+        if (x.mine !== undefined) await DB.unvote(x.id, me.id);
+        else await DB.vote(cfg.id, x.id, me.id, 1);
+        await loadTopics();
+      };
+      const c = document.createElement('span'); c.className = 'cnt';
+      c.textContent = total === 0 ? t('tp2.sup0') : total === 1 ? t('tp2.sup1') : t('tp2.sup2', { n: total });
+      sup.append(b, c); el.appendChild(sup);
+    }
+
+    const meta = document.createElement('div'); meta.className = 'meta';
+    const left = x.kind === 'poll'
+      ? t('tp2.votes', { n: total }) + ' · ' + t('tp2.secret')
+      : t('tp2.st.' + x.status);
+    meta.innerHTML = `<span>${dstamp(x.ts)} · ${left}</span>`;
+    if (isVaad) {
+      const wrap = document.createElement('span'); wrap.className = 'row'; wrap.style.gap = '6px';
+      if (x.kind === 'idea') {
+        ['planned', 'done', 'declined'].forEach(st => {
+          if (st === x.status) return;
+          const b = document.createElement('button'); b.className = 'xbtn';
+          b.textContent = t('tp2.st.' + st);
+          b.onclick = async () => { await DB.topicStatus(x.id, st); await loadTopics(); };
+          wrap.appendChild(b);
+        });
+      }
+      const d = document.createElement('button'); d.className = 'xbtn'; d.textContent = t('nb.del');
+      d.onclick = async () => { await DB.delTopic(x.id); await loadTopics(); };
+      wrap.appendChild(d);
+      meta.appendChild(wrap);
+    }
+    el.appendChild(meta);
+    box.appendChild(el);
+  });
+}
+
+async function loadTopics() {
+  topics = cfg.id ? await DB.topics(cfg.id) : [];
+  renderTopics();
 }
 
 /* ==================================================================
