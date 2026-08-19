@@ -145,7 +145,7 @@ button{font-family:'Heebo',sans-serif;cursor:pointer;border:0;
 .per h4{margin:0 0 8px;font-size:.67rem;letter-spacing:.17em;color:var(--dim);font-weight:500;
   display:flex;align-items:center;gap:9px}
 .per h4::after{content:"";flex:1;height:1px;background:var(--line-s)}
-.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:5px}
 .slot{font-family:'Space Grotesk',monospace;font-size:.79rem;padding:10px 2px;border-radius:10px;
   background:var(--slot);border:1px solid var(--slot-b);color:var(--dim);
   user-select:none;-webkit-user-select:none;touch-action:pan-y}
@@ -165,7 +165,7 @@ button{font-family:'Heebo',sans-serif;cursor:pointer;border:0;
 .shaftbox::before{content:"";position:absolute;inset:0;opacity:.12;
   background-image:var(--img-shaft);background-size:cover;background-position:center}
 .shaft{position:relative;display:flex;flex-direction:column;gap:3px}
-.hr{display:grid;grid-template-columns:48px 1fr 1fr;gap:5px;align-items:center;opacity:0;transform:translateY(7px)}
+.hr{display:grid;grid-template-columns:48px repeat(var(--n,2),minmax(0,1fr));gap:4px;align-items:center;opacity:0;transform:translateY(7px)}
 .hr.in{animation:lift .4s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i) * 18ms)}
 @keyframes lift{to{opacity:1;transform:none}}
 .hr .t{font-family:'Space Grotesk',monospace;font-size:.71rem;color:var(--dim);text-align:end}
@@ -1134,6 +1134,8 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <div><label class="fld" for="cName" data-i18n="st.name"></label><input id="cName"></div>
       <div><label class="fld" for="cGap" data-i18n="st.gap"></label><input id="cGap" type="number" step="30" min="0" max="240"></div>
       <div><label class="fld" for="cLock" data-i18n="st.lock"></label><input id="cLock" type="number" step="0.5" min="0" max="48"></div>
+      <div><label class="fld" for="cSlot" data-i18n="st.slot"></label>
+        <select id="cSlot"><option value="15">15</option><option value="30">30</option><option value="60">60</option></select></div>
       <div><label class="fld" for="cCandle" data-i18n="st.candle"></label><input id="cCandle" type="number" min="0" max="60"></div>
       <div><label class="fld" for="cTzeit" data-i18n="st.tzeit"></label><input id="cTzeit" type="number" min="0" max="90"></div>
       <div><label class="fld" for="cKw" data-i18n="st.kw"></label><input id="cKw" type="number" step="0.1" min="0"></div>
@@ -1306,7 +1308,7 @@ he:{
 'ts.relok':'החניה שוחררה','ts.reltaken':'תפסת את החניה','ts.relgone':'מישהו הקדים אותך','ts.relback':'נשלחה בקשה לפינוי',
 'ts.relcancel':'השחרור בוטל','ts.spotadd':'החניה נוספה','ts.carsaved':'פרטי הרכב נשמרו','ts.needspot':'צריך מספר חניה',
 'pk.eyebrow':'בקרוב','pk.h1':'חניה','pk.p':'המודול הזה בפיתוח. בקרוב יהיה אפשר לנהל כאן את החניות בבניין.','pk.soon':'בפיתוח',
-'st.lock':'נעילת הלוח (שעות לפני שבת)',
+'st.lock':'נעילת הלוח (שעות לפני שבת)','st.slot':'מקטע זמן (דקות)',
 'lk2.h':'הלוח ננעל','lk2.p':'הלוח ננעל ב-{t} כדי שאפשר יהיה לתכנת את השעון מראש. השעות שלך נשמרו.',
 'lk2.vaad':'הלוח נעול לדיירים. כוועד עדיין אפשר לערוך.','lk2.mine':'סימנת {n} שעות',
 'week.lock':'ננעל בעוד {t}','week.locked':'הלוח ננעל',
@@ -1464,7 +1466,7 @@ en:{
 'ts.relok':'Spot released','ts.reltaken':'You took the spot','ts.relgone':'Someone was faster','ts.relback':'Return request sent',
 'ts.relcancel':'Release cancelled','ts.spotadd':'Spot added','ts.carsaved':'Vehicle saved','ts.needspot':'A spot number is required',
 'pk.eyebrow':'Coming soon','pk.h1':'Parking','pk.p':'This module is in development. Parking management is coming.','pk.soon':'In development',
-'st.lock':'Lock the board (hours before Shabbat)',
+'st.lock':'Lock the board (hours before Shabbat)','st.slot':'Time slot (minutes)',
 'lk2.h':'The board is locked','lk2.p':'The board locked at {t} so the timer can be programmed in advance. Your hours are saved.',
 'lk2.vaad':'Locked for residents. As committee you can still edit.','lk2.mine':'You marked {n} hours',
 'week.lock':'locks in {t}','week.locked':'The board is locked',
@@ -1632,11 +1634,13 @@ function rowToCfg(r) {
     floors: r.floors, firstFloor: r.first_floor, perFloor: r.per_floor,
     penthouse: r.penthouse, penthouseUnits: r.penthouse_units,
     parkingOn: r.parking_enabled === true, tuyaDev: r.tuya_device_id || '',
+    slotMin: +r.slot_minutes || 30,
     lockHours: r.lock_hours_before === null || r.lock_hours_before === undefined ? 3 : +r.lock_hours_before };
 }
 const cfgPatch = c => ({
   name: c.name, candle_min: c.candle, tzeit_min: c.tzeit, kw: c.kw, rate: c.rate,
-  gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng, lock_hours_before: c.lockHours
+  gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng, lock_hours_before: c.lockHours,
+  slot_minutes: c.slotMin
 });
 const structPatch = c => ({
   floors: c.floors, first_floor: c.firstFloor, per_floor: c.perFloor,
@@ -2041,7 +2045,7 @@ function fridayUTC(off) {
 
 /* ============ מצב ============ */
 const DEF = { id: null, name: '', address: '', units: 15, lat: 31.7497, lng: 34.9887,
-  candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150, lockHours: 3,
+  candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150, lockHours: 3, slotMin: 30,
   plan: 'pending', floors: 8, firstFloor: 1, perFloor: 2, penthouse: true, penthouseUnits: 1 };
 let cfg = { ...DEF }, weekOff = 0, sabb = null, slots = [], reqs = {}, people = {};
 let me = null, isVaad = false, isAdmin = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
@@ -2053,8 +2057,11 @@ let lastOnH = 0, pendingPhoto = null;
 const MON = n => new Intl.DateTimeFormat(locale(), { month: 'short' }).format(new Date(2020, n, 1));
 const ymKey = (y, m) => y + '-' + String(m + 1).padStart(2, '0');
 
+const slotMin = () => cfg.slotMin || 30;
+const slotH = () => slotMin() / 60;
+
 function buildSabbath() {
-  const fri = fridayUTC(weekOff), step = 18e5;
+  const fri = fridayUTC(weekOff), step = slotMin() * 6e4;
   const inMs = sunsetMs(fri, cfg.lat, cfg.lng) - cfg.candle * 6e4;
   const outMs = sunsetMs(fri + 864e5, cfg.lat, cfg.lng) + cfg.tzeit * 6e4;
   const start = Math.floor(inMs / step) * step, end = Math.ceil(outMs / step) * step;
@@ -2100,7 +2107,7 @@ function calcUnits() {
 const dayIdx = ms => (isoDay(ms) === sabb.id ? 0 : 1);
 const fixKey = ms => dayIdx(ms) + '-' + fmtT(ms);
 const isFixed = ms => (cfg.fixed || []).indexOf(fixKey(ms)) >= 0;
-const hrs = n => (n / 2).toFixed(1).replace('.0', '');
+const hrs = n => (n * slotH()).toFixed(1).replace('.0', '');
 
 /* ============ בורר שעות ============ */
 const groups = [
@@ -2151,7 +2158,7 @@ function demand() {
 }
 const elevPeople = () => Object.values(people).filter(p => p.elevator !== false);
 function windows(dm) {
-  const on = slots.map(x => isFixed(x) || (dm.get(x) || 0) > 0), gs = Math.round(cfg.gap / 30);
+  const on = slots.map(x => isFixed(x) || (dm.get(x) || 0) > 0), gs = Math.round(cfg.gap / slotMin());
   for (let i = 0; i < on.length; i++) {
     if (on[i]) continue;
     let j = i; while (j < on.length && !on[j]) j++;
@@ -2169,11 +2176,13 @@ function renderAll() {
   const dm = demand(), { on, out } = windows(dm), max = Math.max(1, ...dm.values());
 
   const sh = $('#shaft'); sh.innerHTML = '';
-  for (let i = 0; i < slots.length; i += 2) {
+  const per = Math.max(1, Math.round(60 / slotMin()));
+  sh.style.setProperty('--n', per);
+  for (let i = 0; i < slots.length; i += per) {
     const row = document.createElement('div');
-    row.className = 'hr'; row.style.setProperty('--i', i / 2);
+    row.className = 'hr'; row.style.setProperty('--i', i / per);
     const lb = document.createElement('div'); lb.className = 't'; lb.textContent = fmtT(slots[i]); row.appendChild(lb);
-    [i, i + 1].forEach(k => {
+    Array.from({ length: per }, (_, j) => i + j).forEach(k => {
       const c = document.createElement('div');
       c.className = 'cell' + (on[k] ? ' lit' : '') + (slots[k] !== undefined && isFixed(slots[k]) ? ' fix' : '');
       if (slots[k] !== undefined) {
@@ -2194,7 +2203,7 @@ function renderAll() {
     wb.appendChild(el);
   });
 
-  const onH = on.filter(Boolean).length / 2, totH = slots.length / 2, offH = totH - onH;
+  const onH = on.filter(Boolean).length * slotH(), totH = slots.length * slotH(), offH = totH - onH;
   const cost = onH * cfg.kw * cfg.rate, full = totH * cfg.kw * cfg.rate, save = full - cost;
   count($('#cNow'), cost, 1, '₪ ');
   $('#cPer').textContent = (cost / cfg.units).toFixed(2);
@@ -2807,7 +2816,8 @@ $('#saveCfg').addEventListener('click', async () => {
   cfg = { ...cfg, name: $('#cName').value.trim(),
     candle: +$('#cCandle').value, tzeit: +$('#cTzeit').value,
     kw: +$('#cKw').value, rate: +$('#cRate').value, gap: +$('#cGap').value,
-    lat: +$('#cLat').value, lng: +$('#cLng').value, lockHours: +$('#cLock').value };
+    lat: +$('#cLat').value, lng: +$('#cLng').value, lockHours: +$('#cLock').value,
+    slotMin: +$('#cSlot').value || 30 };
   const ok = await DB.saveBuilding(cfg.id, { ...cfgPatch(cfg), ...structPatch(cfg) });
   if (!ok) return toast(t('ts.conn'));
   openSheet(false); toast(t('ts.structsaved')); boot(false);
@@ -2853,7 +2863,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.29';
+const APP_VERSION = '2026.08.19.30';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2899,6 +2909,7 @@ function fillCfgForm() {
   $('#cCandle').value = cfg.candle; $('#cTzeit').value = cfg.tzeit; $('#cKw').value = cfg.kw;
   $('#cRate').value = cfg.rate; $('#cGap').value = cfg.gap; $('#cLat').value = cfg.lat; $('#cLng').value = cfg.lng;
   $('#cLock').value = cfg.lockHours;
+  $('#cSlot').value = String(cfg.slotMin);
   $('#cFloors').value = cfg.floors; $('#cFirst').value = cfg.firstFloor;
   $('#cPer').value = cfg.perFloor; $('#cPentU').value = cfg.penthouseUnits;
   sw($('#swPent'), cfg.penthouse);
