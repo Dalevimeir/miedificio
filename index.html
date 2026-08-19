@@ -1239,7 +1239,7 @@ const DB = {
     const { data, error } = await sb.rpc('find_or_create_building', { p_address: address });
     if (error) { dbError = 'RPC: ' + (error.code || '') + ' ' + (error.message || ''); return null; }
     if (!data || !data[0]) { dbError = 'RPC החזיר ריק'; return null; }
-    return data[0];
+    return rowToCfg(data[0]);   // הפונקציה מחזירה את כל ההגדרות — אין צורך בקריאה נוספת
   },
   async building(id) {
     const { data, error } = await sb.from('buildings').select('*').eq('id', id).maybeSingle();
@@ -1924,11 +1924,9 @@ $('#w0next').addEventListener('click', async () => {
   if (!v) return toast(t('ts.addr'));
   const b = await DB.findBuilding(v);
   if (!b) return toast('שלב 1 · ' + dbError, 6000);
-  const full = await DB.building(b.id);
-  if (!full) return toast('שלב 1ב · ' + dbError, 6000);
-  cfg = { ...DEF, ...full };
-  people = await DB.residents(cfg.id);
-  renderHeader(); fillApts(); showAptWho(); wStep(1);
+  cfg = { ...DEF, ...b };
+  people = await DB.residents(cfg.id);   // ריק עד ההצטרפות — זה תקין
+  renderHeader(); fillApts(); showAptWho(); renderFloors(); wStep(1);
 });
 $('#w1next').addEventListener('click', () => {
   if (!$('#wFam').value.trim()) return toast(t('ts.fam'));
@@ -2102,7 +2100,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.6';
+const APP_VERSION = '2026.08.19.7';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
