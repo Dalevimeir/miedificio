@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>רקע · הבניין שלי</title>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F14; --glass:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));
+  --glass-2:rgba(255,255,255,.04); --line:rgba(226,214,190,.12); --line-s:rgba(226,214,190,.07);
+  --text:#ECE8E1; --dim:#8D9AA5; --gold:#E0A93F; --gold-2:#F7DFA6; --gold-tx:#F7DFA6;
+  --gold-soft:rgba(224,169,63,.11); --gold-ink:#20160a; --rest-tx:#8CC6D8;
+  --shadow:0 20px 44px -16px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.05);
+  --op:.14;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Heebo',sans-serif;line-height:1.6}
+.shot{position:relative;min-height:100vh;padding:26px 18px 40px;overflow:hidden}
+.shot::before{content:"";position:absolute;inset:0;z-index:0;
+  background:url('bg-building.jpg') center/cover;opacity:var(--op);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 42%,transparent 88%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 42%,transparent 88%)}
+.shot > *{position:relative;z-index:1}
+h1,h2{font-family:'Secular One',sans-serif;font-weight:400;margin:0}
+.mark{width:34px;height:34px;border-radius:10px;position:relative;background:var(--gold-soft);
+  border:1px solid var(--line);margin-bottom:26px}
+.mark::before,.mark::after{content:"";position:absolute;top:8px;bottom:8px;width:2px;border-radius:2px;
+  background:linear-gradient(var(--gold),transparent)}
+.mark::before{right:10px}.mark::after{left:10px}
+h1{font-size:2rem;line-height:1.1}
+.sub{color:var(--dim);font-size:.95rem;margin-top:8px;max-width:30ch}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:var(--shadow);backdrop-filter:blur(16px) saturate(1.3);margin-top:26px}
+label{display:block;font-size:.75rem;color:var(--dim);margin-bottom:6px}
+input{width:100%;background:var(--glass-2);color:var(--text);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;font-family:'Heebo',sans-serif;font-size:1rem}
+.ok{display:flex;gap:8px;align-items:center;margin-top:12px;padding:11px 13px;border-radius:12px;
+  background:rgba(63,115,135,.14);border:1px solid #3F7387;color:var(--rest-tx);font-size:.87rem}
+.btn{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);
+  font-weight:700;border:0;padding:13px 22px;border-radius:13px;margin-top:16px;font-size:1rem}
+.ctl{position:fixed;bottom:0;left:0;right:0;z-index:9;display:flex;gap:8px;justify-content:center;
+  padding:12px;background:rgba(10,15,20,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line-s)}
+.ctl button{background:var(--glass-2);border:1px solid var(--line);color:var(--text);
+  border-radius:999px;padding:9px 15px;font-size:.85rem;font-family:'Heebo',sans-serif}
+.ctl button.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-tx);font-weight:700}
+.note{font-size:.8rem;color:var(--dim);margin-top:24px;border-inline-start:2px solid var(--gold);
+  padding-inline-start:11px}
+</style>
+</head>
+<body>
+<div class="shot" id="shot">
+  <div class="mark"></div>
+  <h1>הבניין שלי</h1>
+  <div class="sub">לוח מודעות, קודי הבניין, דיווחי תקלות ומעלית שבת — הכול במקום אחד.</div>
+
+  <div class="card">
+    <h2 style="font-size:1.2rem">כתובת הבניין</h2>
+    <div style="color:var(--dim);font-size:.88rem;margin:6px 0 14px">כל הדיירים בכתובת אחת רואים את אותו לוח.</div>
+    <label>רחוב ומספר</label>
+    <input value="שרה אהרונסון 12">
+    <div class="ok">✓ הכתובת הזו פטורה מתשלום</div>
+    <button class="btn">המשך</button>
+  </div>
+
+  <div class="note">
+    הרקע מוצג רק במסך הזה. במסכי העבודה — לוח השעות, התשלומים, הדיווחים — אין רקע,
+    כדי לא לפגוע בקריאות.
+  </div>
+</div>
+
+<div class="ctl">
+  <button data-o="0">בלי רקע</button>
+  <button data-o=".08">8%</button>
+  <button data-o=".14" class="on">14%</button>
+  <button data-o=".22">22%</button>
+  <button data-o=".35">35%</button>
+</div>
+
+<script>
+document.querySelectorAll('.ctl button').forEach(b => b.onclick = () => {
+  document.documentElement.style.setProperty('--op', b.dataset.o);
+  document.querySelectorAll('.ctl button').forEach(x => x.classList.toggle('on', x === b));
+});
+</script>
+</body>
+</html>
