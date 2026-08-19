@@ -604,24 +604,28 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
       </div>
       <div class="segs" id="pySegs" style="margin-top:0;flex:0 0 auto" hidden>
         <button class="seg on" data-pv="mine" data-i18n="py.mine"></button>
-        <button class="seg" data-pv="all" data-i18n="py.all"></button>
+        <button class="seg" data-pv="all" data-i18n="py.vaadview"></button>
       </div>
     </div>
 
     <div class="card" id="pyMine">
+      <p class="muted" id="pyLock" hidden></p>
+      <div id="pyBody">
       <div class="stats">
         <div class="stat gold"><b class="num" id="pyPaid">—</b><span data-i18n="py.paidn"></span></div>
         <div class="stat"><b class="num" id="pyTotal">—</b><span data-i18n="py.total"></span></div>
       </div>
       <div class="mygrid" id="myMonths"></div>
       <p class="note" id="pyNote"></p>
+      </div>
     </div>
 
     <div class="card" id="pyAll" hidden>
       <div class="row" style="justify-content:space-between">
         <h3 data-i18n="py.all"></h3>
-        <span class="muted" style="font-size:.78rem" data-i18n="py.tap"></span>
+        <span class="badge prog" data-i18n="py.only"></span>
       </div>
+      <p class="muted" style="font-size:.78rem;margin-top:6px" data-i18n="py.tap"></p>
       <div style="margin-top:10px" id="allRows"></div>
       <label class="fld" for="cDues" style="margin-top:14px" data-i18n="py.dues"></label>
       <div class="row" style="flex-wrap:nowrap">
@@ -1002,7 +1006,7 @@ he:{
 'ts.repsent':'הדיווח נשלח','ts.repup':'הסטטוס עודכן','ts.photobig':'התמונה כבדה מדי — נסה תמונה קטנה יותר',
 'py.eyebrow':'ועד בית','py.h1':'החשבון שלי','py.p':'מה שולם, ובאילו חודשים.',
 'py.dues':'דמי ועד לחודש (₪)','py.paidn':'חודשים ששולמו','py.total':'סה״כ השנה (₪)',
-'py.all':'כל הדירות','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
+'py.all':'כל הדירות','py.vaadview':'ועד','py.only':'גלוי לוועד בלבד','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
 'py.tap':'לחיצה מסמנת חודש','py.note':'הסימון נעשה על ידי ועד הבית. אם משהו לא מסתדר — פנו אליו.',
 'ts.paysaved':'עודכן','ts.dues':'הסכום עודכן',
 'pk.eyebrow':'בקרוב','pk.h1':'חניה','pk.p':'המודול הזה בפיתוח. בקרוב יהיה אפשר לנהל כאן את החניות בבניין.','pk.soon':'בפיתוח',
@@ -1109,7 +1113,7 @@ en:{
 'ts.repsent':'Report sent','ts.repup':'Status updated','ts.photobig':'Photo too large — try a smaller one',
 'py.eyebrow':'Committee','py.h1':'My account','py.p':'What has been paid, and for which months.',
 'py.dues':'Monthly dues (₪)','py.paidn':'Months paid','py.total':'Total this year (₪)',
-'py.all':'All apartments','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
+'py.all':'All apartments','py.vaadview':'Committee','py.only':'Committee only','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
 'py.tap':'Tap to mark a month','py.note':'Marking is done by the building committee. If something looks wrong, contact them.',
 'ts.paysaved':'Updated','ts.dues':'Amount updated',
 'pk.eyebrow':'Coming soon','pk.h1':'Parking','pk.p':'This module is in development. Parking management is coming.','pk.soon':'In development',
@@ -2156,7 +2160,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.10';
+const APP_VERSION = '2026.08.19.11';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2484,10 +2488,10 @@ function renderPay() {
   $('#cDues').value = cfg.dues;
   const vaadAll = isVaad && payView === 'all';
   $('#pyMine').hidden = vaadAll; $('#pyAll').hidden = !vaadAll;
-  if (!canEdit()) {
-    $('#pyMine').innerHTML = `<p class="muted">${t('py.lock')}</p>`;
-    return;
-  }
+  $('#pyLock').textContent = t('py.lock');
+  $('#pyLock').hidden = canEdit();
+  $('#pyBody').hidden = !canEdit();
+  if (!canEdit()) return;
   const now = new Date(), curY = now.getFullYear(), curM = now.getMonth();
   if (!vaadAll) {
     const rec = (me && pays[me.apt]) || { m: {} };
