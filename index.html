@@ -488,7 +488,7 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 
 <div class="gate" id="gate">
   <div class="box">
@@ -2327,7 +2327,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.20';
+const APP_VERSION = '2026.08.19.21';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2533,11 +2533,13 @@ $('#shQr').addEventListener('click', () => {
   drawQr();
 });
 function drawQr() {
-  if (typeof QRCode === 'undefined') { toast(t('ts.qrfail')); return false; }
-  const o = { width: 440, margin: 1, color: { dark: '#101820', light: '#ffffff' } };
+  if (typeof QRious === 'undefined') { toast(t('ts.qrfail')); return false; }
   try {
-    QRCode.toCanvas($('#qrCanvas'), appUrl(), o);
-    QRCode.toCanvas($('#qrPrint'), appUrl(), { ...o, width: 900 });
+    const v = appUrl();
+    new QRious({ element: $('#qrCanvas'), value: v, size: 440, padding: 12,
+                 foreground: '#101820', background: '#ffffff', level: 'M' });
+    new QRious({ element: $('#qrPrint'), value: v, size: 900, padding: 24,
+                 foreground: '#000000', background: '#ffffff', level: 'M' });
     return true;
   } catch (e) { toast(t('ts.qrfail')); return false; }
 }
