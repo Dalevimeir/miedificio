@@ -341,6 +341,33 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
   max-width:min(92vw,420px)}
 .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
 
+/* ---------- מחליף מסכים (לחיצה ארוכה) ---------- */
+.zoomed .topbar, .zoomed main, .zoomed .tabbar{
+  transform:scale(.94);transform-origin:50% 40%;filter:blur(2px);
+  transition:transform .3s cubic-bezier(.2,.8,.3,1),filter .3s}
+.switch{position:fixed;inset:0;z-index:70;display:none;align-items:center;
+  background:color-mix(in srgb,var(--bg) 72%,transparent);backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .25s}
+.switch.on{display:flex;opacity:1}
+.switch .track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:0 max(18px,calc(50vw - 130px));width:100%;scrollbar-width:none}
+.switch .track::-webkit-scrollbar{display:none}
+.swcard{flex:0 0 auto;width:236px;min-height:280px;scroll-snap-align:center;
+  border-radius:22px;border:1px solid var(--line);background:var(--glass);
+  box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;
+  transform:scale(.94);opacity:.8;transition:transform .3s cubic-bezier(.2,.8,.3,1),opacity .3s}
+.swcard.cur{transform:scale(1);opacity:1;border-color:var(--gold)}
+.swcard .ic2{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx);margin-bottom:14px}
+.swcard .ic2 svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;
+  stroke-linecap:round;stroke-linejoin:round}
+.swcard h3{font-size:1.15rem;margin-bottom:8px}
+.swcard ul{list-style:none;margin:0;padding:0;font-size:.85rem;color:var(--dim);line-height:2}
+.swcard ul b{color:var(--text);font-family:'Space Grotesk',monospace}
+.swcard .go{margin-top:auto;font-size:.8rem;color:var(--gold-tx);font-weight:600}
+.switch .hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 22px);
+  left:0;right:0;text-align:center;font-size:.78rem;color:var(--dim)}
+
 /* ---------- מסך התקנה ---------- */
 .gate{position:fixed;inset:0;z-index:99;display:none;place-items:center;padding:24px;
   background:var(--bg);overflow-y:auto}
@@ -1329,6 +1356,11 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <button id="updBtn" data-i18n="up.btn"></button>
 </div>
 
+<div class="switch" id="switcher">
+  <div class="track" id="swTrack"></div>
+  <div class="hint" data-i18n="sw2.hint"></div>
+</div>
+
 <div class="toast" id="toast"></div>
 <script>
 const I18N = {
@@ -1358,7 +1390,7 @@ he:{
 'ts.conn':'אין חיבור לשרת','ts.retry':'נסה שוב','ts.wipe':'איפוס מלא והתחלה מחדש','up.msg':'עדכון חדש מחכה לך','up.btn':'הפעלה מחדש','up.none':'האפליקציה מעודכנת','up.check':'בדיקת עדכון','ver.l':'גרסה {v}','ts.joined':'נרשמת לבניין','ts.structsaved':'מבנה הבניין נשמר',
 'lk.h':'ברוכים הבאים','lk.p':'האפליקציה מנוהלת לפי בניין. הירשמו פעם אחת כדי לראות את לוח המודעות, הקודים, הדיווחים והתשלומים.',
 
-'nav.home':'בית','nav.rep':'דיווחים','nav.pay':'תשלומים','nav.elev':'מעלית','nav.park':'חניה',
+'sw2.hint':'החליקו לצדדים ובחרו · הקישו מחוץ לכרטיס לסגירה','sw2.go':'מעבר','nav.home':'בית','nav.rep':'דיווחים','nav.pay':'תשלומים','nav.elev':'מעלית','nav.park':'חניה',
 'hm.eyebrow':'הבניין שלי','hm.h1':'לוח המודעות','hm.p':'מה חדש בבניין, ומה שצריך לדעת.',
 'hm.open':'דיווחים פתוחים','hm.paid':'החודש','hm.sab':'שעות בשבת',
 'hm.paid.yes':'שולם','hm.paid.no':'טרם','hm.paid.na':'—',
@@ -1534,7 +1566,7 @@ en:{
 'ts.conn':'No connection to the server','ts.retry':'Try again','ts.wipe':'Full reset and start over','up.msg':'A new version is ready','up.btn':'Restart','up.none':'You are on the latest version','up.check':'Check for updates','ver.l':'Version {v}','ts.joined':'You joined the building','ts.structsaved':'Building structure saved',
 'lk.h':'Welcome','lk.p':'The app is organised per building. Register once to see the notice board, codes, reports and payments.',
 
-'nav.home':'Home','nav.rep':'Reports','nav.pay':'Payments','nav.elev':'Elevator','nav.park':'Parking',
+'sw2.hint':'Swipe and pick · tap outside to close','sw2.go':'Open','nav.home':'Home','nav.rep':'Reports','nav.pay':'Payments','nav.elev':'Elevator','nav.park':'Parking',
 'hm.eyebrow':'My building','hm.h1':'Notice board','hm.p':'What is new in the building, and what you need to know.',
 'hm.open':'Open reports','hm.paid':'This month','hm.sab':'Hours on Shabbat',
 'hm.paid.yes':'Paid','hm.paid.no':'Not yet','hm.paid.na':'—',
@@ -3251,7 +3283,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.41';
+const APP_VERSION = '2026.08.19.42';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3365,6 +3397,100 @@ async function boot(first) {
 const io2 = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('in'); io2.unobserve(e.target); } }), { threshold: .08 });
 addEventListener('scroll', () => document.body.style.setProperty('--par', (scrollY * .04) + 'px'), { passive: true });
+
+/* ==================================================================
+   מחליף מסכים — לחיצה ארוכה מרחיקה את התצוגה
+   ================================================================== */
+const SW_SUM = {
+  home: () => {
+    const open = Object.values(reports).filter(r => r.status !== 'done').length;
+    const n = Object.keys(notes).length;
+    return [t('nb.h') + ': <b>' + n + '</b>', t('hm.open') + ': <b>' + open + '</b>',
+            t('tp2.h') + ': <b>' + topics.length + '</b>'];
+  },
+  rep: () => {
+    const o = Object.values(reports).filter(r => r.status === 'open').length;
+    const p = Object.values(reports).filter(r => r.status === 'prog').length;
+    return [t('stt.open') + ': <b>' + o + '</b>', t('stt.prog') + ': <b>' + p + '</b>'];
+  },
+  pay: () => {
+    const now = new Date(), ym = ymKey(now.getFullYear(), now.getMonth());
+    const rec = me && pays[me.apt];
+    const paid = !!(rec && rec.m && rec.m[ym]);
+    return [t('hm.paid') + ': <b>' + t(paid ? 'hm.paid.yes' : 'hm.paid.no') + '</b>',
+            t('py.dues') + ': <b>' + cfg.dues + '</b>'];
+  },
+  elev: () => {
+    const dl = lockMs() - Date.now();
+    const mine = me && reqs[me.id];
+    return [t('sb.in') + ': <b>' + (sabb ? fmtT(sabb.inMs) : '—') + '</b>',
+            dl > 0 ? t('week.lock', { t: Math.floor(dl / 36e5) + ':' +
+              String(Math.floor(dl % 36e5 / 6e4)).padStart(2, '0') }) : t('week.locked'),
+            mine ? t('me.hours', { n: hrs(mine.slots.length) }) : t('u.wait')];
+  },
+  park: () => {
+    if (!parkingOn()) return [t('pk.locked.h')];
+    const open = offers.filter(o => o.status === 'open').length;
+    const mine = mySpots().length;
+    return [t('pk.open') + ': <b>' + open + '</b>', t('pk.mine') + ': <b>' + (mine || '—') + '</b>'];
+  }
+};
+
+function buildSwitcher() {
+  const track = $('#swTrack'); track.innerHTML = '';
+  const tabs = visibleTabs();
+  const cur = tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on'));
+  tabs.forEach((name, i) => {
+    const btn = document.querySelector('.tab[data-tab="' + name + '"]');
+    const c = document.createElement('div');
+    c.className = 'swcard' + (i === cur ? ' cur' : '');
+    const icon = btn ? btn.querySelector('svg').outerHTML : '';
+    const lines = (SW_SUM[name] ? SW_SUM[name]() : []).map(x => '<li>' + x + '</li>').join('');
+    c.innerHTML = `<div class="ic2">${icon}</div>
+      <h3>${t('nav.' + name)}</h3><ul>${lines}</ul>
+      <div class="go">${t('sw2.go')} ›</div>`;
+    c.onclick = () => { closeSwitcher(); go(name); };
+    track.appendChild(c);
+  });
+  requestAnimationFrame(() => {
+    const el = track.children[Math.max(0, cur)];
+    if (el) track.scrollLeft = el.offsetLeft - track.clientWidth / 2 + el.clientWidth / 2;
+  });
+}
+function openSwitcher() {
+  if ($('#switcher').classList.contains('on')) return;
+  buildSwitcher();
+  $('#switcher').classList.add('on');
+  document.body.classList.add('zoomed');
+  if (navigator.vibrate) navigator.vibrate(12);
+}
+function closeSwitcher() {
+  $('#switcher').classList.remove('on');
+  document.body.classList.remove('zoomed');
+}
+$('#switcher').addEventListener('click', e => { if (e.target.id !== 'swTrack' && !e.target.closest('.swcard')) closeSwitcher(); });
+$('#swTrack').addEventListener('scroll', () => {
+  const track = $('#swTrack'), mid = track.scrollLeft + track.clientWidth / 2;
+  [...track.children].forEach(c =>
+    c.classList.toggle('cur', Math.abs(c.offsetLeft + c.clientWidth / 2 - mid) < c.clientWidth / 2));
+}, { passive: true });
+
+(function () {
+  let timer = null, sx = 0, sy = 0;
+  const skip = el => !!(el && el.closest &&
+    el.closest('button, a, input, select, textarea, .slot, .sheet, .switch, .tabbar'));
+  addEventListener('pointerdown', e => {
+    if (skip(e.target) || $('#sheet').classList.contains('open')) return;
+    sx = e.clientX; sy = e.clientY;
+    timer = setTimeout(openSwitcher, 520);
+  });
+  addEventListener('pointermove', e => {
+    if (timer && (Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10))
+      { clearTimeout(timer); timer = null; }
+  }, { passive: true });
+  ['pointerup', 'pointercancel'].forEach(ev =>
+    addEventListener(ev, () => { clearTimeout(timer); timer = null; }));
+})();
 
 /* ==================================================================
    מודולים: לוח מודעות · קודים · דיווחים · תשלומים · מסך בית
