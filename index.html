@@ -576,7 +576,7 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <div class="mastsub"><span id="mastAddr">—</span><span id="mastSab">—</span></div>
     </div>
 
-    <div class="facts">
+    <div class="facts" id="factsRow" hidden>
       <div class="warn"><b id="tOpen">—</b><span data-i18n="hm.open"></span></div>
       <div class="cool"><b id="tPaid">—</b><span data-i18n="hm.paid"></span></div>
       <div><b id="tSab">—</b><span data-i18n="hm.sab"></span></div>
@@ -3083,7 +3083,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.38';
+const APP_VERSION = '2026.08.19.39';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3211,7 +3211,11 @@ function renderHome() {
   $('#tPaid').textContent = !me ? t('hm.paid.na') : (p && p.m && p.m[ym] ? t('hm.paid.yes') : t('hm.paid.no'));
   $('#tSab').textContent = lastOnH ? lastOnH.toFixed(1).replace('.0', '') : '—';
   $('#mastAddr').textContent = (cfg.address || cfg.name || '') + (cfg.units ? ' · ' + cfg.units + ' ' + t('st.units') : '');
-  $('#mastSab').innerHTML = sabb ? t('sb.in') + ' <b>' + fmtT(sabb.inMs) + '</b>' : '';
+  // בשורה השנייה: זמן כניסת שבת, ורק אם יש דיווח פתוח — גם הוא
+  const bits = [];
+  if (sabb) bits.push(t('sb.in') + ' <b>' + fmtT(sabb.inMs) + '</b>');
+  if (open) bits.push('<b>' + open + '</b> ' + t('hm.open'));
+  $('#mastSab').innerHTML = bits.join(' · ');
 }
 
 /* ---------- לוח מודעות ---------- */
