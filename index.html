@@ -52,6 +52,7 @@ html[data-theme=dark]{
 /* כללי מחלקה עם display דורסים את [hidden] של הדפדפן — זה מחזיר את הסדר */
 [hidden]{display:none!important}
 html,body{margin:0;height:100%}
+html{scrollbar-gutter:stable}
 body{background:var(--bg);color:var(--text);font-family:'Heebo',system-ui,sans-serif;
   line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
   transition:background .4s ease,color .4s ease}
@@ -106,7 +107,7 @@ html[dir=ltr] .bldg{font-family:'Space Grotesk',sans-serif;font-weight:600}
 
 main{max-width:680px;margin:0 auto;padding:18px 16px calc(var(--bar-h) + env(safe-area-inset-bottom) + 26px)}
 .panel{display:none}
-.panel.on{display:block}
+.panel.on{display:block;min-height:calc(100svh - 190px)}
 /* אנימציית הכניסה רצה רק בטעינה הראשונה — במעברים המכולה כולה זזה */
 body.first .panel.on{animation:pin .38s cubic-bezier(.2,.8,.3,1) both}
 @keyframes pin{from{opacity:0;transform:translateY(12px)}}
@@ -287,11 +288,12 @@ html[dir=ltr] .sw.on .tg::after{transform:translateX(19px)}
 .price .per{font-size:.8rem;color:var(--dim);margin-top:4px}
 .price ul{text-align:start;margin:14px 0 0;padding-inline-start:18px;padding-inline-end:0;font-size:.87rem;color:var(--dim);line-height:1.9}
 
-.tabbar{position:fixed;bottom:0;right:0;left:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);
+.tabbar{position:fixed;bottom:0;right:0;width:100vw;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);
   height:calc(var(--bar-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
   background:var(--bar);border-top:1px solid var(--line-s);
   isolation:isolate;transform:translateZ(0)}
 .tabbar[data-n="3"]{grid-template-columns:repeat(3,1fr)}
+.tabbar[data-n="4"]{grid-template-columns:repeat(4,1fr)}
 .tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:3px;color:var(--dim);font-size:.68rem;font-weight:500;position:relative;padding:0}
 .tab[hidden]{display:none}
@@ -3295,7 +3297,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.50';
+const APP_VERSION = '2026.08.19.51';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -4045,9 +4047,12 @@ function parkingOn() { return cfg.parkingOn === true || isAdmin; }
 function renderParking() {
   const on = parkingOn();
   // הטאב מוסתר לדיירים כשהמודול כבוי; הוועד רואה מסך נעול כדי שיוכל לבקש
-  $('#tabPark').hidden = !(on || isVaad);
-  $('#tabbar').dataset.n = $('#tabPark').hidden ? 4 : 5;
-  if (typeof syncIndicator === 'function') requestAnimationFrame(syncIndicator);
+  const showPark = on || isVaad;
+  if ($('#tabPark').hidden !== !showPark) {
+    $('#tabPark').hidden = !showPark;
+    $('#tabbar').dataset.n = showPark ? 5 : 4;
+    if (typeof syncIndicator === 'function') requestAnimationFrame(syncIndicator);
+  }
   if ($('#tabPark').hidden && $('#p-park').classList.contains('on')) go('home');
 
   $('#parkLocked').hidden = on;
