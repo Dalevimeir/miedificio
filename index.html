@@ -2808,34 +2808,48 @@ document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', () =>
 
 /* החלקה אופקית בין חוצצים — לצד הבר, לא במקומו.
    מתעלמת מאזורים שבהם גרירה היא כבר פעולה (לוח השעות, שורות צ׳יפים). */
+let swipeLive = false;
 (function () {
-  let x0 = 0, y0 = 0, live = false;
+  let x0 = 0, y0 = 0, id = null, decided = 0;
   const noSwipe = el => !!(el && el.closest &&
-    el.closest('.slot, .seats, .chips, .segs, .mons, input, select, textarea, .sheet'));
+    el.closest('.slot, .seats, .chips, .segs, .mons, .switch, input, select, textarea, .sheet'));
+  const sheetOpen = () => ['#sheet', '#paySheet', '#freeSheet'].some(x => $(x).classList.contains('open'))
+    || $('#switcher').classList.contains('on');
 
-  addEventListener('touchstart', e => {
-    if (e.touches.length !== 1 || noSwipe(e.target)) { live = false; return; }
-    if ($('#sheet').classList.contains('open') || $('#paySheet').classList.contains('open')
-        || $('#freeSheet').classList.contains('open')) { live = false; return; }
-    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; live = true;
+  addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (noSwipe(e.target) || sheetOpen()) { id = null; return; }
+    id = e.pointerId; x0 = e.clientX; y0 = e.clientY; decided = 0; swipeLive = false;
   }, { passive: true });
 
-  addEventListener('touchend', e => {
-    if (!live) return;
-    live = false;
-    const t2 = e.changedTouches[0];
-    const dx = t2.clientX - x0, dy = t2.clientY - y0;
-    if (Math.abs(dx) < 70 || Math.abs(dy) > 55) return;
+  addEventListener('pointermove', e => {
+    if (id === null || e.pointerId !== id) return;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    if (!decided && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+      // מחליטים פעם אחת: אופקי או אנכי
+      decided = Math.abs(dx) > Math.abs(dy) * 1.2 ? 1 : -1;
+      if (decided === 1) swipeLive = true;   // מבטל את הלחיצה הארוכה
+    }
+  }, { passive: true });
+
+  addEventListener('pointerup', e => {
+    if (id === null || e.pointerId !== id) return;
+    id = null;
+    const dx = e.clientX - x0, dy = e.clientY - y0;
+    swipeLive = false;
+    if (decided !== 1) return;
+    if (Math.abs(dx) < 55 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
     const tabs = visibleTabs();
     const cur = tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on'));
     if (cur < 0) return;
-    // בעברית הכיוון הפוך: החלקה שמאלה מתקדמת ברשימה
     const rtl = document.documentElement.dir === 'rtl';
     const step = (dx < 0 ? 1 : -1) * (rtl ? 1 : -1);
     const next = cur + step;
     if (next < 0 || next >= tabs.length) return;
     go(tabs[next], step);
   }, { passive: true });
+
+  addEventListener('pointercancel', () => { id = null; swipeLive = false; });
 })();
 $('#optIn').addEventListener('click', () => { me.elevator = true; saveMe(); renderGate(); renderPicker(); });
 function goE(name) {
@@ -3291,7 +3305,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.43';
+const APP_VERSION = '2026.08.19.44';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3531,7 +3545,7 @@ function buildSwitcher() {
     timer = setTimeout(openSwitcher, 520);
   });
   addEventListener('pointermove', e => {
-    if (timer && (Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10))
+    if (timer && (swipeLive || Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10))
       { clearTimeout(timer); timer = null; }
   }, { passive: true });
   ['pointerup', 'pointercancel'].forEach(ev =>
