@@ -365,7 +365,7 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 .shr button.main{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);border:0}
 .qrbox{margin-top:14px;text-align:center;padding:16px;border-radius:16px;background:#fff;border:1px solid var(--line)}
-.qrbox canvas{max-width:220px;width:100%;height:auto;display:block;margin:0 auto}
+.qrbox canvas{max-width:200px;width:100%;height:auto;display:block;margin:0 auto}
 .qrbox .u{font-family:'Space Grotesk',monospace;font-size:.72rem;color:#333;margin-top:10px;direction:ltr;word-break:break-all}
 
 /* ---------- קודים ---------- */
@@ -507,6 +507,9 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 <div class="topbar">
   <div class="mark"></div>
   <div class="bldg" id="bName">—</div>
+  <button class="acct" id="gearBtn" aria-label="settings">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
   <button class="acct" id="acctBtn">
     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     <span id="acctLbl">—</span>
@@ -548,22 +551,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         </div>
       </div>
       <div id="nbList"></div>
-    </div>
-
-    <div class="card" id="shareCard">
-      <h3 data-i18n="sh.h"></h3>
-      <p class="muted" style="font-size:.85rem" data-i18n="sh.p"></p>
-      <div class="shr">
-        <button class="main" id="shShare" data-i18n="sh.share"></button>
-        <button class="wa" id="shWa" data-i18n="sh.wa"></button>
-        <button id="shCopy" data-i18n="sh.copy"></button>
-        <button id="shQr" data-i18n="sh.qr"></button>
-      </div>
-      <div class="qrbox" id="qrBox" hidden>
-        <canvas id="qrCanvas"></canvas>
-        <div class="u" id="qrUrl"></div>
-        <button class="btn ghost sm" id="shPrint" style="margin-top:12px" data-i18n="sh.print"></button>
-      </div>
     </div>
 
     <div class="card">
@@ -952,6 +939,20 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <label class="fld" for="aPhone" data-i18n="wz.phone"></label>
       <input id="aPhone" type="tel" inputmode="tel" placeholder="050-0000000">
     </div>
+    <h2 style="margin-top:26px" data-i18n="sh.h"></h2>
+    <p class="muted" data-i18n="sh.p"></p>
+    <div class="shr">
+      <button class="main" id="shShare" data-i18n="sh.share"></button>
+      <button class="wa" id="shWa" data-i18n="sh.wa"></button>
+      <button id="shCopy" data-i18n="sh.copy"></button>
+      <button id="shQr" data-i18n="sh.qr"></button>
+    </div>
+    <div class="qrbox" id="qrBox" hidden>
+      <canvas id="qrCanvas"></canvas>
+      <div class="u" id="qrUrl"></div>
+      <button class="btn ghost sm" id="shPrint" style="margin-top:12px" data-i18n="sh.print"></button>
+    </div>
+
     <h3 style="margin-top:18px" data-i18n="ac.lang"></h3>
     <div class="segs"><button class="seg" data-lang2="he">עברית</button><button class="seg" data-lang2="en">English</button></div>
     <h3 style="margin-top:16px" data-i18n="ac.theme"></h3>
@@ -2116,6 +2117,7 @@ function showSheet() {
   openSheet(true);
 }
 $('#acctBtn').addEventListener('click', showSheet);
+$('#gearBtn').addEventListener('click', showSheet);
 $('#lockBtn').addEventListener('click', () => {
   if (me && me.plan === 'pending') { $('#wizard').hidden = false; $('#account').hidden = true; wStep(3); openSheet(true); }
   else showSheet();
@@ -2439,7 +2441,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.22';
+const APP_VERSION = '2026.08.19.23';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
