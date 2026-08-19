@@ -342,15 +342,38 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 .gate .link{background:none;border:0;color:var(--dim);font-size:.82rem;text-decoration:underline;margin-top:18px}
 
 
+/* ---------- כותרת ראשית של עמוד הבית ---------- */
+.mast{padding-bottom:12px;border-bottom:2px solid var(--line);margin-bottom:0}
+.mast h1{font-size:clamp(1.9rem,8vw,2.5rem);line-height:1.02;overflow-wrap:anywhere;min-width:0}
+.mastsub{display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+  margin-top:8px;font-size:.82rem;color:var(--dim)}
+.mastsub b{font-family:'Space Grotesk',monospace;font-weight:600;color:var(--gold-tx)}
+
+/* עובדות מופרדות בקווים, לא שלוש קוביות */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  border-bottom:1px solid var(--line);margin-bottom:22px}
+.facts div{padding:15px 4px;text-align:center;border-inline-start:1px solid var(--line-s)}
+.facts div:first-child{border-inline-start:0}
+.facts b{display:block;font-family:'Space Grotesk',monospace;font-size:1.5rem;font-weight:600;line-height:1}
+.facts span{display:block;font-size:.67rem;color:var(--dim);margin-top:5px}
+.facts .warn b{color:var(--gold-tx)}
+.facts .cool b{color:var(--rest-tx)}
+
 /* ---------- לוח מודעות ---------- */
-.notice{border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin-top:9px;background:var(--glass-2)}
-.notice.pin{border-color:var(--gold);background:var(--gold-soft)}
-.notice.rep{border-inline-start:3px solid var(--rest);cursor:pointer}
-.notice.rep:hover{background:var(--glass)}
+.notice{display:grid;grid-template-columns:52px minmax(0,1fr);gap:13px;
+  padding:14px 0;border-bottom:1px solid var(--line-s)}
+.notice:last-child{border-bottom:0}
+.notice .when{font-family:'Space Grotesk',monospace;font-size:.7rem;color:var(--dim);
+  line-height:1.35;padding-top:2px}
+.notice.pin{background:var(--gold-soft);margin-inline:-18px;padding-inline:18px;
+  border-bottom-color:transparent}
+.notice.rep{cursor:pointer}
+.notice.rep .when{color:var(--rest-tx)}
+.notice.rep:hover .body h4{color:var(--gold-tx)}
 .notice .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .notice h4{margin:0 0 3px;font-size:.97rem;font-weight:700}
 .notice p{font-size:.89rem;color:var(--dim);margin:0;white-space:pre-wrap}
-.notice .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;
+.notice .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:7px;
   font-size:.7rem;color:var(--dim);font-family:'Space Grotesk',monospace}
 .pinflag{font-size:.63rem;letter-spacing:.1em;color:var(--gold-tx);font-weight:700}
 .xbtn{background:none;border:0;color:var(--dim);font-size:.75rem;text-decoration:underline;padding:0}
@@ -369,9 +392,10 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 .qrbox .u{font-family:'Space Grotesk',monospace;font-size:.72rem;color:#333;margin-top:10px;direction:ltr;word-break:break-all}
 
 /* ---------- קודים ---------- */
-.code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-s)}
+.code{display:flex;align-items:baseline;gap:10px;padding:12px 0;border-bottom:1px dotted var(--line)}
 .code:last-child{border-bottom:0}
-.code .k{font-size:.9rem}
+.code .k{font-size:.9rem;white-space:nowrap}
+.code .lead{flex:1;border-bottom:1px dotted var(--line);transform:translateY(-4px)}
 .code .v{font-family:'Space Grotesk',monospace;font-size:1.05rem;font-weight:600;color:var(--gold-tx);
   letter-spacing:.06em;direction:ltr;cursor:pointer;user-select:all}
 .code .v.mask{color:var(--dim);letter-spacing:.2em;user-select:none}
@@ -540,16 +564,15 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 
   <!-- ============ בית ============ -->
   <div class="panel on" id="p-home">
-    <div class="head">
-      <span class="eyebrow" data-i18n="hm.eyebrow"></span>
+    <div class="mast">
       <h1 data-i18n="hm.h1"></h1>
-      <p data-i18n="hm.p"></p>
+      <div class="mastsub"><span id="mastAddr">—</span><span id="mastSab">—</span></div>
     </div>
 
-    <div class="strip">
-      <div class="tile warn"><b id="tOpen">—</b><span data-i18n="hm.open"></span></div>
-      <div class="tile ok"><b id="tPaid">—</b><span data-i18n="hm.paid"></span></div>
-      <div class="tile"><b class="num" id="tSab">—</b><span data-i18n="hm.sab"></span></div>
+    <div class="facts">
+      <div class="warn"><b id="tOpen">—</b><span data-i18n="hm.open"></span></div>
+      <div class="cool"><b id="tPaid">—</b><span data-i18n="hm.paid"></span></div>
+      <div><b id="tSab">—</b><span data-i18n="hm.sab"></span></div>
     </div>
 
     <div class="card" style="margin-top:14px">
@@ -586,7 +609,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <!-- ============ דיווחים ============ -->
   <div class="panel" id="p-rep">
     <div class="head">
-      <span class="eyebrow" data-i18n="rp.eyebrow"></span>
       <h1 data-i18n="rp.h1"></h1>
       <p data-i18n="rp.p"></p>
     </div>
@@ -633,7 +655,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <!-- ============ תשלומים ============ -->
   <div class="panel" id="p-pay">
     <div class="head">
-      <span class="eyebrow" data-i18n="py.eyebrow"></span>
       <h1 data-i18n="py.h1"></h1>
       <p data-i18n="py.p"></p>
     </div>
@@ -680,7 +701,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <!-- ============ מעלית שבת ============ -->
   <div class="panel" id="p-elev">
     <div class="head">
-      <span class="eyebrow" data-i18n="el.eyebrow"></span>
       <h1 data-i18n="el.h1"></h1>
     </div>
 
@@ -833,7 +853,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <!-- ============ חניה ============ -->
   <div class="panel" id="p-park">
     <div class="head">
-      <span class="eyebrow" data-i18n="pk.eyebrow2"></span>
       <h1 data-i18n="pk.h1"></h1>
       <p data-i18n="pk.p2"></p>
     </div>
@@ -2696,7 +2715,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.26';
+const APP_VERSION = '2026.08.19.27';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2816,6 +2835,8 @@ function renderHome() {
   const p = me && pays[me.apt];
   $('#tPaid').textContent = !me ? t('hm.paid.na') : (p && p.m && p.m[ym] ? t('hm.paid.yes') : t('hm.paid.no'));
   $('#tSab').textContent = lastOnH ? lastOnH.toFixed(1).replace('.0', '') : '—';
+  $('#mastAddr').textContent = (cfg.address || cfg.name || '') + (cfg.units ? ' · ' + cfg.units + ' ' + t('st.units') : '');
+  $('#mastSab').innerHTML = sabb ? t('sb.in') + ' <b>' + fmtT(sabb.inMs) + '</b>' : '';
 }
 
 /* ---------- לוח מודעות ---------- */
@@ -2849,9 +2870,10 @@ function renderNotes() {
     if (it.kind === 'note') {
       const n = it.n;
       el.className = 'notice' + (n.pin ? ' pin' : '');
-      el.innerHTML = `${n.pin ? `<div class="pinflag">${t('nb.pinned')}</div>` : ''}
+      el.innerHTML = whenCol(n.ts) + `<div class="body">
+        ${n.pin ? `<div class="pinflag">${t('nb.pinned')}</div>` : ''}
         <h4>${esc(n.title)}</h4>${n.body ? `<p>${esc(n.body)}</p>` : ''}
-        <div class="meta"><span>${dstamp(n.ts)}</span></div>`;
+        <div class="meta"></div></div>`;
       if (isVaad) {
         const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('nb.del');
         b.onclick = () => { delete notes[n.id]; renderNotes(); DB.delNotice(n.id); };
@@ -2861,13 +2883,14 @@ function renderNotes() {
       const r = it.r, p = people[r.rid];
       const who = (!p || p.anon) ? t('u.anon') : (p.family || aptLabel(r.apt));
       el.className = 'notice rep';
-      el.innerHTML = `<div class="tags">
+      el.innerHTML = whenCol(r.ts) + `<div class="body">
+        <div class="tags">
           <span class="badge ${r.status === 'prog' ? 'prog' : 'open'}">${t('stt.' + r.status)}</span>
           <span class="badge kind">${t(r.kind === 'clean' ? 'rp.clean' : 'rp.fault')} · ${t(r.topic)}</span>
           ${r.loc ? `<span class="badge kind">${esc(r.loc)}</span>` : ''}
         </div>
         <p>${esc(r.text)}</p>
-        <div class="meta"><span>${who} · ${dstamp(r.ts)}</span><span>${t('nb.open')} ›</span></div>`;
+        <div class="meta"><span>${who}</span><span>${t('nb.open')} ›</span></div></div>`;
       el.onclick = () => go('rep');
     }
     box.appendChild(el);
@@ -2875,6 +2898,9 @@ function renderNotes() {
 }
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dstamp = ms => new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ms));
+const dpart = ms => new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', timeZone: TZ }).format(new Date(ms));
+const tpart = ms => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: TZ }).format(new Date(ms));
+const whenCol = ms => `<div class="when">${dpart(ms)}<br>${tpart(ms)}</div>`;
 
 /* ---------- שיתוף האפליקציה ---------- */
 const appUrl = () => location.origin + location.pathname.replace(/[^/]*$/, '');
@@ -2934,7 +2960,7 @@ function renderCodes() {
   if (!codes.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('cd.empty')}</p>`; return; }
   codes.forEach(c => {
     const d = document.createElement('div'); d.className = 'code';
-    d.innerHTML = `<span class="k">${esc(c.k)}</span>
+    d.innerHTML = `<span class="k">${esc(c.k)}</span><span class="lead"></span>
       <span class="v${codesOpen ? '' : ' mask'}">${codesOpen ? esc(c.v) : '••••••'}</span>`;
     d.querySelector('.v').onclick = () => { codesOpen = true; renderCodes(); };
     box.appendChild(d);
