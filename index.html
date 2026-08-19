@@ -145,15 +145,22 @@ button{font-family:'Heebo',sans-serif;cursor:pointer;border:0;
 .per h4{margin:0 0 8px;font-size:.67rem;letter-spacing:.17em;color:var(--dim);font-weight:500;
   display:flex;align-items:center;gap:9px}
 .per h4::after{content:"";flex:1;height:1px;background:var(--line-s)}
-.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:5px}
-.slot{font-family:'Space Grotesk',monospace;font-size:.79rem;padding:10px 2px;border-radius:10px;
-  background:var(--slot);border:1px solid var(--slot-b);color:var(--dim);
-  user-select:none;-webkit-user-select:none;touch-action:pan-y}
+/* מפת שעות בסגנון בחירת מקומות */
+.seats{display:flex;flex-direction:column;gap:4px}
+.srow{display:grid;grid-template-columns:42px minmax(0,1fr);gap:8px;align-items:center}
+.srow .sh{font-family:'Space Grotesk',monospace;font-size:.7rem;color:var(--dim);text-align:end}
+.srow .ss{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:4px}
+.slot{height:32px;border-radius:8px;font-family:'Space Grotesk',monospace;font-size:.62rem;
+  background:var(--slot);border:1px solid var(--slot-b);color:var(--dim);padding:0;
+  display:flex;align-items:center;justify-content:center;
+  user-select:none;-webkit-user-select:none;touch-action:pan-y;
+  transition:transform .12s var(--ease,cubic-bezier(.2,.8,.3,1))}
+.slot.gap{background:none;border:0;pointer-events:none}
 .slot.cov{background:var(--cov);border-color:var(--cov-b);color:var(--cov-tx)}
 .slot.fix{background:var(--rest-soft);border-color:var(--rest);color:var(--rest-tx);cursor:not-allowed}
 .slot.on{background:linear-gradient(180deg,var(--gold-2),var(--gold));border-color:var(--gold);
-  color:var(--gold-ink);font-weight:600;box-shadow:0 6px 16px -8px var(--gold)}
-.slot:active{transform:scale(.93)}
+  color:var(--gold-ink);font-weight:700;box-shadow:0 5px 14px -8px var(--gold)}
+.slot:active{transform:scale(.9)}
 .keys{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px;font-size:.74rem;color:var(--dim)}
 .keys i{display:inline-block;width:13px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:-1px}
 .keys .k1{background:linear-gradient(180deg,var(--gold-2),var(--gold))}
@@ -2122,20 +2129,47 @@ function coveredByOthers() {
   Object.values(reqs).forEach(r => { if (r.rid !== mine) (r.slots || []).forEach(x => s.add(+x)); });
   return s;
 }
-function buildGrid(box, mark, opts) {
+const minOf = ms => +new Intl.DateTimeFormat('en-GB',
+  { minute: '2-digit', timeZone: TZ }).format(new Date(ms));
+
+function buildGrid(box, mark) {
   box.innerHTML = '';
+  const per = Math.max(1, Math.round(60 / slotMin()));
   groups.forEach(g => {
     const list = slots.filter(x => g.f(locHour(x), dayIdx(x)));
     if (!list.length) return;
     const w = document.createElement('div'); w.className = 'per';
     w.innerHTML = `<h4>${t(g.k)}</h4>`;
-    const grid = document.createElement('div'); grid.className = 'slots';
+    const seats = document.createElement('div'); seats.className = 'seats';
+
+    // שורה לכל שעה, מושב לכל מקטע
+    const rows = [];
     list.forEach(x => {
-      const b = document.createElement('button'); b.type = 'button';
-      b.className = 'slot ' + mark(x); b.dataset.t = x; b.textContent = fmtT(x);
-      grid.appendChild(b);
+      const h = locHour(x), d = dayIdx(x), key = d + '-' + h;
+      let row = rows.find(r => r.key === key);
+      if (!row) { row = { key, label: fmtT(x).slice(0, 2) + ':00', items: {} }; rows.push(row); }
+      row.items[minOf(x)] = x;
     });
-    w.appendChild(grid); box.appendChild(w);
+
+    rows.forEach(r => {
+      const el = document.createElement('div'); el.className = 'srow';
+      const lb = document.createElement('span'); lb.className = 'sh'; lb.textContent = r.label;
+      const ss = document.createElement('div'); ss.className = 'ss';
+      ss.style.setProperty('--n', per);
+      for (let j = 0; j < per; j++) {
+        const mm = j * slotMin(), x = r.items[mm];
+        const b = document.createElement('button'); b.type = 'button';
+        if (x === undefined) { b.className = 'slot gap'; b.disabled = true; }
+        else {
+          b.className = 'slot ' + mark(x);
+          b.dataset.t = x;
+          b.textContent = String(mm).padStart(2, '0');
+        }
+        ss.appendChild(b);
+      }
+      el.append(lb, ss); seats.appendChild(el);
+    });
+    w.appendChild(seats); box.appendChild(w);
   });
 }
 function renderPicker() {
@@ -2363,14 +2397,15 @@ function renderGate() {
 /* ============ אינטראקציה ============ */
 let painting = null;
 $('#picker').addEventListener('pointerdown', e => {
-  const b = e.target.closest('.slot'); if (!b || b.classList.contains('fix')) return;
+  const b = e.target.closest('.slot');
+  if (!b || b.classList.contains('fix') || b.classList.contains('gap')) return;
   const x = +b.dataset.t; painting = !sel.has(x); toggle(x, painting, b);
 });
 $('#picker').addEventListener('pointermove', e => {
   if (painting === null) return;
   const el = document.elementFromPoint(e.clientX, e.clientY);
   const b = el && el.closest && el.closest('.slot');
-  if (!b || b.classList.contains('fix')) return;
+  if (!b || b.classList.contains('fix') || b.classList.contains('gap')) return;
   toggle(+b.dataset.t, painting, b);
 });
 addEventListener('pointerup', () => painting = null);
@@ -2420,7 +2455,7 @@ document.querySelectorAll('.seg[data-e]').forEach(x => x.addEventListener('click
 
 /* שעות קבועות */
 $('#fixPicker').addEventListener('click', e => {
-  const b = e.target.closest('.slot'); if (!b) return;
+  const b = e.target.closest('.slot'); if (!b || b.classList.contains('gap')) return;
   const k = fixKey(+b.dataset.t);
   if (fixDraft.has(k)) fixDraft.delete(k); else fixDraft.add(k);
   b.className = 'slot ' + (fixDraft.has(k) ? 'on' : '');
@@ -2863,7 +2898,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.31';
+const APP_VERSION = '2026.08.19.32';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
