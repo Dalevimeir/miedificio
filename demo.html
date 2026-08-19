@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הבניין שלי · כיוון עיצוב חלופי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Suez+One&family=Heebo:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Hallmark · macrostructure: Long Document · tone: utilitarian-editorial · anchor hue: warm-ink
+ * pre-emit critique: P4 H5 E4 S5 R5 V4
+ * differs from the live app on: paper band (light vs dark) · structure (ledger vs card-stack)
+ */
+:root{
+  --paper: oklch(96.5% 0.012 85);
+  --paper-2: oklch(93.5% 0.016 85);
+  --ink: oklch(22% 0.02 55);
+  --ink-2: oklch(46% 0.015 55);
+  --rule: oklch(22% 0.02 55 / .16);
+  --rule-hair: oklch(22% 0.02 55 / .09);
+  --accent: oklch(48% 0.14 32);
+  --accent-soft: oklch(48% 0.14 32 / .10);
+  --cool: oklch(45% 0.07 230);
+
+  --font-display: 'Suez One', Georgia, serif;
+  --font-body: 'Heebo', system-ui, sans-serif;
+  --font-num: 'Space Grotesk', monospace;
+
+  --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+  --space-lg: 28px; --space-xl: 48px;
+
+  --ease-out: cubic-bezier(.2,.8,.3,1);
+  --dur: 220ms;
+}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:clip}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:var(--font-body); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.sheet{max-width:640px;margin:0 auto;padding:0 var(--space-md) 64px}
+
+/* ---------- masthead: לוח מודעות מודפס, לא כרטיס ---------- */
+.mast{padding:var(--space-xl) 0 var(--space-md);border-bottom:2px solid var(--ink)}
+.mast h1{
+  font-family:var(--font-display); font-size:clamp(2.4rem,11vw,3.6rem);
+  line-height:.95; margin:0; letter-spacing:-.01em;
+  overflow-wrap:anywhere; min-width:0;
+}
+.mast .sub{
+  display:flex; justify-content:space-between; align-items:baseline; gap:var(--space-md);
+  margin-top:var(--space-sm); font-size:.86rem; color:var(--ink-2);
+}
+.mast .sub b{font-family:var(--font-num);font-weight:500;color:var(--ink)}
+
+/* ---------- שורת עובדות: קווים, לא קוביות ---------- */
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  border-bottom:1px solid var(--rule)}
+.facts div{padding:var(--space-md) 0;text-align:center;border-inline-start:1px solid var(--rule-hair)}
+.facts div:first-child{border-inline-start:0}
+.facts b{display:block;font-family:var(--font-num);font-size:1.6rem;font-weight:600;line-height:1}
+.facts span{display:block;font-size:.7rem;color:var(--ink-2);margin-top:6px;letter-spacing:.02em}
+.facts .warn b{color:var(--accent)}
+.facts .cool b{color:var(--cool)}
+
+/* ---------- מודעות: מסמך עם תאריך תלוי, לא ערימת כרטיסים ---------- */
+.stack{margin-top:var(--space-xl)}
+.stack > h2{
+  font-family:var(--font-display); font-size:1.15rem; margin:0 0 var(--space-sm);
+  display:flex; align-items:baseline; gap:var(--space-sm);
+}
+.stack > h2::after{content:"";flex:1;height:1px;background:var(--ink);opacity:.25}
+
+.entry{display:grid;grid-template-columns:64px minmax(0,1fr);gap:var(--space-md);
+  padding:var(--space-md) 0;border-bottom:1px solid var(--rule-hair)}
+.entry:last-child{border-bottom:0}
+.entry .when{font-family:var(--font-num);font-size:.74rem;color:var(--ink-2);
+  padding-top:3px;line-height:1.35}
+.entry h3{margin:0 0 2px;font-size:1rem;font-weight:700}
+.entry p{margin:0;font-size:.9rem;color:var(--ink-2)}
+.entry.pin{background:var(--accent-soft);margin-inline:calc(var(--space-md) * -1);
+  padding-inline:var(--space-md);border-bottom-color:transparent}
+.entry.pin h3::before{content:"▚ ";color:var(--accent)}
+
+.flag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.04em;
+  padding:2px 7px;border:1px solid currentColor;margin-inline-end:6px;vertical-align:2px}
+.flag.open{color:var(--accent)}
+.flag.prog{color:var(--cool)}
+
+/* ---------- קודים: רשימת הגדרות עם קו מוביל ---------- */
+.codes{margin-top:var(--space-xl)}
+.code{display:flex;align-items:baseline;gap:var(--space-sm);padding:11px 0;
+  border-bottom:1px dotted var(--rule)}
+.code .k{font-size:.94rem;white-space:nowrap}
+.code .lead{flex:1;border-bottom:1px dotted var(--rule);transform:translateY(-4px)}
+.code .v{font-family:var(--font-num);font-size:1.05rem;font-weight:600;letter-spacing:.08em;
+  direction:ltr;cursor:pointer;transition:color var(--dur) var(--ease-out)}
+.code .v[data-hidden="1"]{color:var(--ink-2);letter-spacing:.24em}
+.code .v:hover{color:var(--accent)}
+.code .v:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.foot{margin-top:var(--space-xl);padding-top:var(--space-md);border-top:2px solid var(--ink);
+  font-size:.78rem;color:var(--ink-2);display:flex;justify-content:space-between;gap:var(--space-md)}
+
+.note{margin-top:var(--space-xl);padding:var(--space-md);border:1px solid var(--rule);
+  font-size:.84rem;color:var(--ink-2);background:var(--paper-2)}
+.note b{color:var(--ink);display:block;margin-bottom:6px;font-family:var(--font-display);font-weight:400}
+.note ul{margin:0;padding-inline-start:18px;line-height:1.9}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header class="mast">
+    <h1>שרה אהרונסון 12</h1>
+    <div class="sub">
+      <span>לוח הבניין · 15 דירות</span>
+      <span>שבת נכנסת <b>18:38</b></span>
+    </div>
+  </header>
+
+  <section class="facts">
+    <div class="warn"><b>2</b><span>דיווחים פתוחים</span></div>
+    <div><b>שולם</b><span>ועד בית · אוגוסט</span></div>
+    <div class="cool"><b>14.5</b><span>שעות מעלית בשבת</span></div>
+  </section>
+
+  <section class="stack">
+    <h2>מה חדש</h2>
+
+    <article class="entry pin">
+      <div class="when">19.08<br>21:40</div>
+      <div>
+        <h3>ניקיון חדר מדרגות — יום ראשון</h3>
+        <p>החברה מגיעה ב-8:00. נא לפנות אופניים ועגלות מהמבואה.</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="when">19.08<br>18:02</div>
+      <div>
+        <h3><span class="flag open">פתוח</span>תאורה · קומה 3</h3>
+        <p>הנורה ליד המעלית מהבהבת כבר שלושה ימים. דירה 7.</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="when">18.08<br>09:15</div>
+      <div>
+        <h3><span class="flag prog">בטיפול</span>אינטרקום · כניסה</h3>
+        <p>לא שומעים בדירות הזוגיות. הוזמן טכנאי ליום שני.</p>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="when">15.08<br>11:00</div>
+      <div>
+        <h3>אסיפת דיירים — 28 באוגוסט</h3>
+        <p>סדר היום: תקציב שנתי, החלפת דוד שמש, סידור החניה.</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="codes">
+    <h2 style="font-family:var(--font-display);font-size:1.15rem;margin:0 0 var(--space-sm);display:flex;align-items:baseline;gap:var(--space-sm)">
+      קודים <span style="flex:1;height:1px;background:var(--ink);opacity:.25"></span>
+    </h2>
+    <div class="code"><span class="k">שער חניה</span><span class="lead"></span>
+      <button class="v" data-hidden="1" data-real="4712">••••</button></div>
+    <div class="code"><span class="k">דלת כניסה</span><span class="lead"></span>
+      <button class="v" data-hidden="1" data-real="2580#">•••••</button></div>
+    <div class="code"><span class="k">ואטסאפ הוועד</span><span class="lead"></span>
+      <button class="v" data-hidden="1" data-real="052-8841390">••••••</button></div>
+  </section>
+
+  <div class="foot">
+    <span>דירה 5 · דוד הלוי</span>
+    <span>ועד הבית</span>
+  </div>
+
+  <div class="note">
+    <b>מה שונה כאן</b>
+    <ul>
+      <li>אין תוויות קטנות מעל כותרות — הכותרת עומדת לבד</li>
+      <li>אין כרטיסים מעוגלים — קווים, מסמך, תאריך תלוי בצד</li>
+      <li>נייר בהיר עם דיו כהה במקום זכוכית כהה</li>
+      <li>צבעים ב-OKLCH, שני צבעי הדגשה בלבד: חלודה וכחול קר</li>
+      <li>מודעות ודיווחים באותו זרם, כמו לוח פיזי בלובי</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+document.querySelectorAll('.code .v').forEach(b => {
+  b.addEventListener('click', () => {
+    const on = b.dataset.hidden === '1';
+    b.dataset.hidden = on ? '0' : '1';
+    b.textContent = on ? b.dataset.real : '•'.repeat(b.dataset.real.length);
+  });
+});
+</script>
+</body>
+</html>
