@@ -343,6 +343,9 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 /* ---------- לוח מודעות ---------- */
 .notice{border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin-top:9px;background:var(--glass-2)}
 .notice.pin{border-color:var(--gold);background:var(--gold-soft)}
+.notice.rep{border-inline-start:3px solid var(--rest);cursor:pointer}
+.notice.rep:hover{background:var(--glass)}
+.notice .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
 .notice h4{margin:0 0 3px;font-size:.97rem;font-weight:700}
 .notice p{font-size:.89rem;color:var(--dim);margin:0;white-space:pre-wrap}
 .notice .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;
@@ -990,7 +993,7 @@ he:{
 'hm.eyebrow':'הבניין שלי','hm.h1':'לוח המודעות','hm.p':'מה חדש בבניין, ומה שצריך לדעת.',
 'hm.open':'דיווחים פתוחים','hm.paid':'החודש','hm.sab':'שעות בשבת',
 'hm.paid.yes':'שולם','hm.paid.no':'טרם','hm.paid.na':'—',
-'nb.h':'לוח מודעות','nb.empty':'אין הודעות כרגע.','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
+'nb.h':'לוח מודעות','nb.empty':'אין הודעות או דיווחים פתוחים.','nb.open':'לדיווח','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
 'nb.pin':'נעיצה למעלה','nb.post':'פרסום','nb.pinned':'נעוץ','nb.del':'מחיקה','ts.nbposted':'ההודעה פורסמה',
 'cd.h':'קודי הבניין','cd.p':'קוד שער, דלת כניסה, ואטסאפ של הוועד — מה שצריך ביום־יום.',
 'cd.show':'הצגה','cd.hide':'הסתרה','cd.edit':'עריכה','cd.add':'שורה חדשה','cd.label':'שם','cd.value':'קוד',
@@ -1097,7 +1100,7 @@ en:{
 'hm.eyebrow':'My building','hm.h1':'Notice board','hm.p':'What is new in the building, and what you need to know.',
 'hm.open':'Open reports','hm.paid':'This month','hm.sab':'Hours on Shabbat',
 'hm.paid.yes':'Paid','hm.paid.no':'Not yet','hm.paid.na':'—',
-'nb.h':'Notice board','nb.empty':'No notices right now.','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
+'nb.h':'Notice board','nb.empty':'No notices or open reports.','nb.open':'Open','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
 'nb.pin':'Pin to top','nb.post':'Post','nb.pinned':'Pinned','nb.del':'Delete','ts.nbposted':'Notice posted',
 'cd.h':'Building codes','cd.p':'Gate code, entrance door, committee WhatsApp — the day-to-day essentials.',
 'cd.show':'Show','cd.hide':'Hide','cd.edit':'Edit','cd.add':'Add row','cd.label':'Name','cd.value':'Code',
@@ -2160,7 +2163,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.11';
+const APP_VERSION = '2026.08.19.12';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2296,17 +2299,39 @@ $('#nbPost').addEventListener('click', async () => {
 });
 function renderNotes() {
   const box = $('#nbList'); box.innerHTML = '';
-  const list = Object.values(notes).sort((a, b) => (b.pin - a.pin) || (b.ts - a.ts));
-  if (!list.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('nb.empty')}</p>`; return; }
-  list.forEach(n => {
-    const el = document.createElement('div'); el.className = 'notice' + (n.pin ? ' pin' : '');
-    el.innerHTML = `${n.pin ? `<div class="pinflag">${t('nb.pinned')}</div>` : ''}
-      <h4>${esc(n.title)}</h4>${n.body ? `<p>${esc(n.body)}</p>` : ''}
-      <div class="meta"><span>${dstamp(n.ts)}</span></div>`;
-    if (isVaad) {
-      const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('nb.del');
-      b.onclick = () => { delete notes[n.id]; renderNotes(); DB.delNotice(n.id); };
-      el.querySelector('.meta').appendChild(b);
+  // הפיד מאחד הודעות של הוועד עם דיווחים פתוחים
+  const items = Object.values(notes).map(n => ({ kind: 'note', pin: n.pin ? 1 : 0, ts: n.ts, n }));
+  Object.values(reports).filter(r => r.status !== 'done')
+    .forEach(r => items.push({ kind: 'rep', pin: 0, ts: r.ts, r }));
+  items.sort((a, b) => (b.pin - a.pin) || (b.ts - a.ts));
+
+  if (!items.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('nb.empty')}</p>`; return; }
+
+  items.slice(0, 12).forEach(it => {
+    const el = document.createElement('div');
+    if (it.kind === 'note') {
+      const n = it.n;
+      el.className = 'notice' + (n.pin ? ' pin' : '');
+      el.innerHTML = `${n.pin ? `<div class="pinflag">${t('nb.pinned')}</div>` : ''}
+        <h4>${esc(n.title)}</h4>${n.body ? `<p>${esc(n.body)}</p>` : ''}
+        <div class="meta"><span>${dstamp(n.ts)}</span></div>`;
+      if (isVaad) {
+        const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('nb.del');
+        b.onclick = () => { delete notes[n.id]; renderNotes(); DB.delNotice(n.id); };
+        el.querySelector('.meta').appendChild(b);
+      }
+    } else {
+      const r = it.r, p = people[r.rid];
+      const who = (!p || p.anon) ? t('u.anon') : (p.family || aptLabel(r.apt));
+      el.className = 'notice rep';
+      el.innerHTML = `<div class="tags">
+          <span class="badge ${r.status === 'prog' ? 'prog' : 'open'}">${t('stt.' + r.status)}</span>
+          <span class="badge kind">${t(r.kind === 'clean' ? 'rp.clean' : 'rp.fault')} · ${t(r.topic)}</span>
+          ${r.loc ? `<span class="badge kind">${esc(r.loc)}</span>` : ''}
+        </div>
+        <p>${esc(r.text)}</p>
+        <div class="meta"><span>${who} · ${dstamp(r.ts)}</span><span>${t('nb.open')} ›</span></div>`;
+      el.onclick = () => go('rep');
     }
     box.appendChild(el);
   });
@@ -2414,7 +2439,7 @@ $('#rpSend').addEventListener('click', async () => {
   const r = await DB.addReport(cfg.id, me.id, draftR, ph);
   if (!r) return toast(t('ts.conn'));
   reports[r.id] = r;
-  renderReports(); renderHome(); toast(t('ts.repsent'));
+  renderReports(); renderNotes(); renderHome(); toast(t('ts.repsent'));
 });
 function renderReports() {
   const box = $('#rpList'); box.innerHTML = '';
@@ -2447,11 +2472,11 @@ function renderReports() {
       ['open', 'prog', 'done'].forEach(s => {
         if (s === r.status) return;
         const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('stt.' + s);
-        b.onclick = () => { r.status = s; renderReports(); renderHome(); toast(t('ts.repup')); DB.setReportStatus(r.id, s); };
+        b.onclick = () => { r.status = s; renderReports(); renderNotes(); renderHome(); toast(t('ts.repup')); DB.setReportStatus(r.id, s); };
         wrap.appendChild(b);
       });
       const d = document.createElement('button'); d.className = 'xbtn'; d.textContent = t('nb.del');
-      d.onclick = () => { const ph = r.photo; delete reports[r.id]; renderReports(); renderHome(); DB.delReport(r.id, ph); };
+      d.onclick = () => { const ph = r.photo; delete reports[r.id]; renderReports(); renderNotes(); renderHome(); DB.delReport(r.id, ph); };
       wrap.appendChild(d);
       meta.appendChild(wrap);
     }
@@ -2538,7 +2563,7 @@ async function loadBuilding() {
     ]);
     notes = n; codes = c; reports = r; pays = p;
   }
-  renderNotes(); renderCodes(); fillTopics(); renderReports(); renderPay(); renderHome();
+  renderCodes(); fillTopics(); renderReports(); renderNotes(); renderPay(); renderHome();
 }
 
 boot(true);
