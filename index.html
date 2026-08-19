@@ -532,17 +532,10 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
     <div class="card">
       <div class="row" style="justify-content:space-between">
         <h3 data-i18n="cd.h"></h3>
-        <div class="row" style="gap:6px">
-          <button class="btn ghost sm" id="cdEye" data-i18n="cd.show"></button>
-          <button class="btn ghost sm" id="cdEdit" data-i18n="cd.edit" hidden></button>
-        </div>
+        <button class="btn ghost sm" id="cdEye" data-i18n="cd.show"></button>
       </div>
       <p class="muted" style="font-size:.8rem" data-i18n="cd.p"></p>
       <div id="cdList"></div>
-      <div id="cdBtns" hidden class="row" style="margin-top:12px">
-        <button class="btn sm" id="cdSave" data-i18n="cd.save"></button>
-        <button class="btn ghost sm" id="cdAdd" data-i18n="cd.add"></button>
-      </div>
     </div>
   </div>
 
@@ -921,6 +914,16 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
     <p class="muted" data-i18n="vd.p"></p>
     <div id="vaadBox"></div>
 
+    <div id="cdEditBox" hidden>
+      <h2 style="margin-top:24px" data-i18n="cd.manage"></h2>
+      <p class="muted" data-i18n="cd.manage.p"></p>
+      <div id="cdRows" style="margin-top:10px"></div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn sm" id="cdSave" data-i18n="cd.save"></button>
+        <button class="btn ghost sm" id="cdAdd" data-i18n="cd.add"></button>
+      </div>
+    </div>
+
     <h2 style="margin-top:24px" data-i18n="st.struct"></h2>
     <p class="muted" data-i18n="st.struct.p"></p>
     <div class="grid2" style="margin-top:12px">
@@ -1031,7 +1034,7 @@ he:{
 'nb.h':'לוח מודעות','nb.empty':'אין הודעות או דיווחים פתוחים.','nb.open':'לדיווח','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
 'nb.pin':'נעיצה למעלה','nb.post':'פרסום','nb.pinned':'נעוץ','nb.del':'מחיקה','ts.nbposted':'ההודעה פורסמה',
 'cd.h':'קודי הבניין','cd.p':'קוד שער, דלת כניסה, ואטסאפ של הוועד — מה שצריך ביום־יום.',
-'cd.show':'הצגה','cd.hide':'הסתרה','cd.edit':'עריכה','cd.add':'שורה חדשה','cd.label':'שם','cd.value':'קוד',
+'cd.show':'הצגה','cd.hide':'הסתרה','cd.edit':'עריכה','cd.manage':'ניהול קודי הבניין','cd.manage.p':'רק הוועד קובע את הקודים. הדיירים רואים אותם בעמוד הבית.','cd.del':'מחיקה','cd.add':'שורה חדשה','cd.label':'שם','cd.value':'קוד',
 'cd.save':'שמירה','cd.empty':'עדיין לא הוזנו קודים.','cd.lock':'הקודים גלויים לדיירים רשומים בלבד.','ts.cdsaved':'הקודים נשמרו',
 'rp.eyebrow':'תחזוקה','rp.h1':'דיווחים','rp.p':'ניקיון, תקלות, וכל מה שצריך טיפול.',
 'rp.new':'דיווח חדש','rp.kind':'סוג','rp.clean':'ניקיון','rp.fault':'תקלה','rp.topic':'נושא',
@@ -1144,7 +1147,7 @@ en:{
 'nb.h':'Notice board','nb.empty':'No notices or open reports.','nb.open':'Open','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
 'nb.pin':'Pin to top','nb.post':'Post','nb.pinned':'Pinned','nb.del':'Delete','ts.nbposted':'Notice posted',
 'cd.h':'Building codes','cd.p':'Gate code, entrance door, committee WhatsApp — the day-to-day essentials.',
-'cd.show':'Show','cd.hide':'Hide','cd.edit':'Edit','cd.add':'Add row','cd.label':'Name','cd.value':'Code',
+'cd.show':'Show','cd.hide':'Hide','cd.edit':'Edit','cd.manage':'Manage building codes','cd.manage.p':'Only the committee sets the codes. Residents see them on the home page.','cd.del':'Remove','cd.add':'Add row','cd.label':'Name','cd.value':'Code',
 'cd.save':'Save','cd.empty':'No codes entered yet.','cd.lock':'Codes are visible to registered residents only.','ts.cdsaved':'Codes saved',
 'rp.eyebrow':'Maintenance','rp.h1':'Reports','rp.p':'Cleaning, faults, anything that needs attention.',
 'rp.new':'New report','rp.kind':'Type','rp.clean':'Cleaning','rp.fault':'Fault','rp.topic':'Subject',
@@ -1900,7 +1903,7 @@ function renderGate() {
   $('#cdEdit').hidden = !isVaad;
   $('#pySegs').hidden = !isVaad;
   $('#rpNew').hidden = !canEdit();
-  if (typeof renderCodes === 'function') { renderCodes(); renderPay(); }
+  if (typeof renderCodes === 'function') { renderCodes(); renderCodesEdit(); renderPay(); }
 }
 
 /* ============ אינטראקציה ============ */
@@ -2113,7 +2116,7 @@ function fillAccount() {
   b.className = 'xbtn'; b.textContent = t('up.check');
   b.onclick = () => checkUpdate(true);
   v.appendChild(b);
-  fillCfgForm(); renderFloors(); renderVaad();
+  fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit();
 }
 $('#logout').addEventListener('click', async () => {
   await DB.signOut();
@@ -2229,7 +2232,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.14';
+const APP_VERSION = '2026.08.19.15';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2405,34 +2408,14 @@ function renderNotes() {
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dstamp = ms => new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ms));
 
-/* ---------- קודי הבניין ---------- */
+/* ---------- קודי הבניין — תצוגה בעמוד הבית ---------- */
 $('#cdEye').addEventListener('click', () => { codesOpen = !codesOpen; renderCodes(); });
-$('#cdEdit').addEventListener('click', () => { codesEdit = !codesEdit; codesOpen = true; renderCodes(); });
-$('#cdAdd').addEventListener('click', () => { codes.push({ k: '', v: '' }); renderCodes(); });
-$('#cdSave').addEventListener('click', async () => {
-  if (!isVaad) return toast(t('ts.needreg'));
-  const rows = [...document.querySelectorAll('#cdList .cdrow')];
-  codes = rows.map(r => ({ k: r.querySelector('.ck').value.trim(), v: r.querySelector('.cv').value.trim() }))
-    .filter(x => x.k && x.v);
-  codesEdit = false; renderCodes();
-  toast(await DB.saveCodes(cfg.id, codes) ? t('ts.cdsaved') : t('ts.conn'));
-});
+
 function renderCodes() {
   const box = $('#cdList'); box.innerHTML = '';
-  $('#cdBtns').hidden = !codesEdit;
   $('#cdEye').textContent = t(codesOpen ? 'cd.hide' : 'cd.show');
-  $('#cdEye').hidden = codesEdit;
+  $('#cdEye').hidden = !canEdit() || !codes.length;
   if (!canEdit()) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('cd.lock')}</p>`; return; }
-  if (codesEdit) {
-    codes.forEach(c => {
-      const d = document.createElement('div'); d.className = 'cdrow grid2'; d.style.marginTop = '8px';
-      d.innerHTML = `<input class="ck" value="${esc(c.k)}" placeholder="${t('cd.label')}">
-        <input class="cv" value="${esc(c.v)}" placeholder="${t('cd.value')}">`;
-      box.appendChild(d);
-    });
-    if (!codes.length) { codes.push({ k: '', v: '' }); renderCodes(); }
-    return;
-  }
   if (!codes.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('cd.empty')}</p>`; return; }
   codes.forEach(c => {
     const d = document.createElement('div'); d.className = 'code';
@@ -2442,6 +2425,41 @@ function renderCodes() {
     box.appendChild(d);
   });
 }
+
+/* ---------- קודי הבניין — עריכה, בהגדרות הוועד בלבד ---------- */
+let codeDraft = null;
+function renderCodesEdit() {
+  const wrap = $('#cdEditBox'); if (!wrap) return;
+  wrap.hidden = !isVaad;
+  if (!isVaad) return;
+  if (!codeDraft) codeDraft = codes.length ? codes.map(c => ({ ...c })) : [{ k: '', v: '' }];
+  const box = $('#cdRows'); box.innerHTML = '';
+  codeDraft.forEach((c, i) => {
+    const d = document.createElement('div'); d.style.marginTop = '8px';
+    d.innerHTML = `<div class="grid2">
+        <input class="ck" value="${esc(c.k)}" placeholder="${t('cd.label')}">
+        <input class="cv" value="${esc(c.v)}" placeholder="${t('cd.value')}"></div>`;
+    const x = document.createElement('button');
+    x.className = 'xbtn'; x.style.marginTop = '4px'; x.textContent = t('cd.del');
+    x.onclick = () => { readCodeDraft(); codeDraft.splice(i, 1);
+      if (!codeDraft.length) codeDraft = [{ k: '', v: '' }]; renderCodesEdit(); };
+    d.appendChild(x); box.appendChild(d);
+  });
+}
+function readCodeDraft() {
+  const rows = [...document.querySelectorAll('#cdRows .grid2')];
+  codeDraft = rows.map(r => ({ k: r.querySelector('.ck').value.trim(),
+                               v: r.querySelector('.cv').value.trim() }));
+}
+$('#cdAdd').addEventListener('click', () => { readCodeDraft(); codeDraft.push({ k: '', v: '' }); renderCodesEdit(); });
+$('#cdSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  readCodeDraft();
+  codes = codeDraft.filter(x => x.k && x.v);
+  codeDraft = null;
+  renderCodes(); renderCodesEdit();
+  toast(await DB.saveCodes(cfg.id, codes) ? t('ts.cdsaved') : t('ts.conn'));
+});
 
 /* ---------- דיווחים ---------- */
 const TOPICS = ['tp.elev', 'tp.light', 'tp.water', 'tp.stairs', 'tp.trash', 'tp.garden', 'tp.inter', 'tp.park', 'tp.other'];
