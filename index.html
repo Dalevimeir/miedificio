@@ -452,6 +452,26 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 .sum{margin-top:10px;font-size:.85rem;color:var(--dim)}
 .sum b{color:var(--text);font-family:'Space Grotesk',monospace}
 
+/* ---------- חניה ---------- */
+.spot{border:1px solid var(--line);border-radius:16px;padding:15px;margin-top:10px;background:var(--glass-2)}
+.spot.mine{border-color:var(--gold);background:var(--gold-soft)}
+.spot.open{border-inline-start:3px solid var(--rest)}
+.spot .top{display:flex;align-items:center;gap:10px}
+.spot .num{font-family:'Space Grotesk',monospace;font-size:1.5rem;font-weight:700;color:var(--gold-tx);
+  min-width:46px;height:46px;border-radius:12px;display:grid;place-items:center;
+  background:var(--glass);border:1px solid var(--line)}
+.spot .who{flex:1;font-size:.9rem}
+.spot .who small{display:block;color:var(--dim);font-size:.76rem}
+.spot .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.spot .acts button{flex:1;min-width:110px}
+.until{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.until button{background:var(--glass-2);border:1px solid var(--line);color:var(--text);
+  border-radius:999px;padding:9px 15px;font-size:.86rem;font-weight:600}
+.until button.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-tx)}
+.hint{display:flex;gap:9px;align-items:flex-start;padding:12px 13px;border-radius:12px;margin-top:12px;
+  background:var(--rest-soft);border:1px solid var(--rest);font-size:.82rem;color:var(--rest-tx)}
+.hint b{display:block;margin-bottom:2px}
+
 /* ---------- בפיתוח ---------- */
 .soon{text-align:center;padding:40px 22px;border:1px dashed var(--line);border-radius:18px;background:var(--glass-2)}
 .soon .tag{display:inline-block;font-size:.66rem;letter-spacing:.2em;font-weight:700;color:var(--gold-tx);
@@ -804,13 +824,54 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <!-- ============ חניה ============ -->
   <div class="panel" id="p-park">
     <div class="head">
-      <span class="eyebrow" data-i18n="pk.eyebrow"></span>
+      <span class="eyebrow" data-i18n="pk.eyebrow2"></span>
       <h1 data-i18n="pk.h1"></h1>
+      <p data-i18n="pk.p2"></p>
     </div>
-    <div class="soon">
-      <span class="tag" data-i18n="pk.soon"></span>
-      <h3 data-i18n="pk.h1"></h3>
-      <p data-i18n="pk.p"></p>
+
+    <div class="card" id="mySpotCard" hidden>
+      <h3 data-i18n="pk.mine"></h3>
+      <div id="mySpot"></div>
+    </div>
+
+    <div class="card" id="myClaimCard" hidden>
+      <h3 data-i18n="pk.myclaim"></h3>
+      <div id="myClaim"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h3 data-i18n="pk.open"></h3>
+        <span class="muted num" id="openCount"></span>
+      </div>
+      <div id="openList"></div>
+    </div>
+
+    <div class="card">
+      <div class="sw" id="swPark">
+        <span class="lb"><span data-i18n="pk.alerts"></span><small data-i18n="pk.alerts.s"></small></span>
+        <span class="tg"></span>
+      </div>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="fld" for="carPlate" data-i18n="pk.plate"></label><input id="carPlate" inputmode="numeric"></div>
+        <div><label class="fld" for="carDesc" data-i18n="pk.car"></label><input id="carDesc" placeholder="יונדאי אפורה"></div>
+      </div>
+      <button class="btn sm" id="carSave" style="margin-top:12px" data-i18n="st.save"></button>
+      <div class="hint">
+        <span>⌁</span>
+        <span><b data-i18n="pk.auto.h"></b><span data-i18n="pk.auto.p"></span></span>
+      </div>
+    </div>
+
+    <div class="card" id="spotAdmin" hidden>
+      <h3 data-i18n="pk.manage"></h3>
+      <p class="muted" data-i18n="pk.manage.p"></p>
+      <div class="grid2" style="margin-top:10px">
+        <div><label class="fld" for="spCode" data-i18n="pk.code"></label><input id="spCode"></div>
+        <div><label class="fld" for="spApt" data-i18n="pk.apt"></label><select id="spApt"></select></div>
+      </div>
+      <button class="btn sm" id="spAdd" style="margin-top:12px" data-i18n="pk.add"></button>
+      <div id="spotList" style="margin-top:6px"></div>
     </div>
   </div>
 
@@ -1029,6 +1090,23 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <p id="shFoot" style="margin-top:12pt;font-size:12pt"></p>
 </div>
 
+<div class="sheetbg" id="freeSheetBg"></div>
+<div class="sheet" id="freeSheet">
+  <div class="handle"></div>
+  <h2 data-i18n="pk.rel.h"></h2>
+  <p class="muted" id="relSub">—</p>
+  <div class="until" id="untilBtns"></div>
+  <div style="margin-top:12px">
+    <label class="fld" for="relTime" data-i18n="pk.rel.time"></label>
+    <input id="relTime" type="time">
+  </div>
+  <div class="row" style="margin-top:16px">
+    <button class="btn" id="relGo" data-i18n="pk.rel.go"></button>
+    <button class="btn ghost sm" id="relClose" data-i18n="st.close"></button>
+  </div>
+  <p class="note" data-i18n="pk.rel.note"></p>
+</div>
+
 <div class="sheetbg" id="paySheetBg"></div>
 <div class="sheet" id="paySheet">
   <div class="handle"></div>
@@ -1128,6 +1206,20 @@ he:{
 'py.all':'כל הדירות','py.vaadview':'ועד','py.only':'גלוי לוועד בלבד','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
 'py.tap':'לחיצה מסמנת חודש','py.note':'הסימון נעשה על ידי ועד הבית. אם משהו לא מסתדר — פנו אליו.',
 'ts.paysaved':'עודכן','ts.dues':'הסכום עודכן',
+'pk.eyebrow2':'חניה','pk.p2':'שחרור חניה כשיוצאים, ותפיסה כשמתפנה. כל הקודם זוכה.',
+'pk.mine':'החניה שלי','pk.myclaim':'החניה שתפסתי','pk.open':'חניות פנויות עכשיו','pk.none':'אין חניות פנויות כרגע.',
+'pk.free':'אני יוצא · שחרור חניה','pk.cancel':'ביטול השחרור','pk.back':'אני חוזר','pk.take':'תפיסה',
+'pk.leave':'פיניתי','pk.until':'עד {t}','pk.by':'דירה {n}','pk.taken':'תפוסה · דירה {n}',
+'pk.nospot':'לא משויכת אליך חניה. הוועד מגדיר את החניות.',
+'pk.alerts':'התראה כשמתפנה חניה','pk.alerts.s':'הודעה עם צליל ברגע ששכן משחרר חניה.',
+'pk.plate':'מספר רכב','pk.car':'דגם וצבע','pk.manage':'ניהול חניות','pk.manage.p':'מספר חניה ושיוך לדירה.',
+'pk.code':'מספר חניה','pk.apt':'שייכת לדירה','pk.add':'הוספת חניה','pk.del':'מחיקה',
+'pk.rel.h':'עד מתי החניה פנויה?','pk.rel.time':'שעה מדויקת','pk.rel.go':'שחרור החניה',
+'pk.rel.note':'אפשר לבטל או לקרוא לחזרה מוקדמת בכל רגע. מי שתפס יקבל התראה.',
+'pk.u2':'שעתיים','pk.u4':'4 שעות','pk.u16':'עד 16:00','pk.u18':'עד 18:00','pk.utom':'עד מחר 08:00',
+'pk.auto.h':'פתיחה אוטומטית מהרכב','pk.auto.p':'באנדרואיד אפשר להגדיר ב-MacroDroid או Tasker: כשהטלפון מתחבר לבלוטות׳ של הרכב — פתח את הכתובת שמסתיימת ב-?free=1, ומסך השחרור ייפתח לבד. באייפון אין לכך תמיכה.',
+'ts.relok':'החניה שוחררה','ts.reltaken':'תפסת את החניה','ts.relgone':'מישהו הקדים אותך','ts.relback':'נשלחה בקשה לפינוי',
+'ts.relcancel':'השחרור בוטל','ts.spotadd':'החניה נוספה','ts.carsaved':'פרטי הרכב נשמרו','ts.needspot':'צריך מספר חניה',
 'pk.eyebrow':'בקרוב','pk.h1':'חניה','pk.p':'המודול הזה בפיתוח. בקרוב יהיה אפשר לנהל כאן את החניות בבניין.','pk.soon':'בפיתוח',
 'el.eyebrow':'שבת','sb.in':'כניסת שבת','sb.out':'צאת שבת','el.h1':'מעלית שבת','el.mine':'הבקשה שלי','el.board':'הלוח','el.cost':'עלויות','el.vaad':'ועד',
 
@@ -1253,6 +1345,20 @@ en:{
 'py.all':'All apartments','py.vaadview':'Committee','py.only':'Committee only','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
 'py.tap':'Tap to mark a month','py.note':'Marking is done by the building committee. If something looks wrong, contact them.',
 'ts.paysaved':'Updated','ts.dues':'Amount updated',
+'pk.eyebrow2':'Parking','pk.p2':'Release your spot when you leave, take one when it frees up. First come, first served.',
+'pk.mine':'My spot','pk.myclaim':'The spot I took','pk.open':'Free right now','pk.none':'No free spots right now.',
+'pk.free':'I am leaving · release','pk.cancel':'Cancel release','pk.back':'I am coming back','pk.take':'Take it',
+'pk.leave':'I have left','pk.until':'until {t}','pk.by':'Apt {n}','pk.taken':'Taken · Apt {n}',
+'pk.nospot':'No spot is assigned to you. The committee assigns spots.',
+'pk.alerts':'Alert me when a spot frees','pk.alerts.s':'A notification with sound the moment a neighbour releases a spot.',
+'pk.plate':'Plate number','pk.car':'Model and colour','pk.manage':'Manage spots','pk.manage.p':'Spot number and the apartment it belongs to.',
+'pk.code':'Spot number','pk.apt':'Belongs to apartment','pk.add':'Add spot','pk.del':'Remove',
+'pk.rel.h':'Free until when?','pk.rel.time':'Exact time','pk.rel.go':'Release the spot',
+'pk.rel.note':'You can cancel or call it back anytime. Whoever took it gets a notification.',
+'pk.u2':'2 hours','pk.u4':'4 hours','pk.u16':'until 16:00','pk.u18':'until 18:00','pk.utom':'until 08:00 tomorrow',
+'pk.auto.h':'Open automatically from the car','pk.auto.p':'On Android you can set MacroDroid or Tasker to open the address ending in ?free=1 when the phone connects to the car Bluetooth, and the release screen opens by itself. iPhone does not support this.',
+'ts.relok':'Spot released','ts.reltaken':'You took the spot','ts.relgone':'Someone was faster','ts.relback':'Return request sent',
+'ts.relcancel':'Release cancelled','ts.spotadd':'Spot added','ts.carsaved':'Vehicle saved','ts.needspot':'A spot number is required',
 'pk.eyebrow':'Coming soon','pk.h1':'Parking','pk.p':'This module is in development. Parking management is coming.','pk.soon':'In development',
 'el.eyebrow':'Shabbat','sb.in':'Candle lighting','sb.out':'Shabbat ends','el.h1':'Shabbat elevator','el.mine':'My request','el.board':'Schedule','el.cost':'Cost','el.vaad':'Committee',
 
@@ -1423,7 +1529,8 @@ const structPatch = c => ({
 });
 const rowToPerson = r => ({ id: r.id, apt: r.apartment, family: r.full_name, anon: r.anon,
   wa: r.wa, phone: r.phone, lang: r.lang, theme: r.theme, isVaad: r.is_vaad,
-  elevator: r.elevator_opt_in });
+  elevator: r.elevator_opt_in, parking: r.parking_alerts,
+  plate: r.car_plate, car: r.car_desc });
 
 // לפני כל כתיבה — לוודא שיש סשן חי ושהטוקן יצורף לבקשה
 async function ensureAuth() {
@@ -1655,6 +1762,45 @@ const DB = {
     return !error;
   },
 
+  /* חניה */
+  async spots(bid) {
+    const { data } = await sb.from('parking_spots').select('*').eq('building_id', bid).order('code');
+    return data || [];
+  },
+  async addSpot(bid, code, apt) {
+    const { error } = await sb.from('parking_spots')
+      .insert({ building_id: bid, code, apartment: apt || null });
+    if (error) dbError = error.message;
+    return !error;
+  },
+  async delSpot(id) { await sb.from('parking_spots').delete().eq('id', id); },
+  async offers(bid) {
+    const { data } = await sb.from('parking_offers').select('*')
+      .eq('building_id', bid).in('status', ['open', 'taken'])
+      .gt('until_ts', new Date().toISOString()).order('until_ts');
+    return data || [];
+  },
+  async release(bid, spotId, rid, untilISO) {
+    const { error } = await sb.from('parking_offers')
+      .insert({ building_id: bid, spot_id: spotId, owner_id: rid, until_ts: untilISO });
+    if (error) dbError = error.message;
+    return !error;
+  },
+  async claimSpot(offerId) {
+    const { data, error } = await sb.rpc('claim_spot', { p_offer: offerId });
+    if (error) { dbError = error.message; return false; }
+    return data === true;
+  },
+  async callBack(offerId) {
+    const { error } = await sb.from('parking_offers')
+      .update({ returning_at: new Date().toISOString() }).eq('id', offerId);
+    return !error;
+  },
+  async endOffer(offerId, status) {
+    const { error } = await sb.from('parking_offers').update({ status }).eq('id', offerId);
+    return !error;
+  },
+
   /* עדכון חי */
   watch(bid, onChange) {
     if (!sb) return;
@@ -1663,6 +1809,7 @@ const DB = {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'notices', filter: 'building_id=eq.' + bid }, onChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reports', filter: 'building_id=eq.' + bid }, onChange)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'payments', filter: 'building_id=eq.' + bid }, onChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'parking_offers', filter: 'building_id=eq.' + bid }, onChange)
       .subscribe();
   },
   async signOut() { if (sb) { await sb.auth.signOut(); await sb.auth.signInAnonymously(); } }
@@ -2441,7 +2588,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.23';
+const APP_VERSION = '2026.08.19.24';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2539,6 +2686,8 @@ async function boot(first) {
   renderGate(); renderVaad(); renderFixed(); renderFloors();
   loadMine(); renderAll();
   await loadBuilding();
+  await loadParking();
+  if (first) parkingDeepLink();
   if (first && !me) showSheet();
 }
 const io2 = new IntersectionObserver(es => es.forEach(e => {
@@ -2967,6 +3116,227 @@ async function loadBuilding() {
     notes = n; codes = c; reports = r; pays = p; rates = rt;
   }
   renderCodes(); fillTopics(); renderReports(); renderNotes(); renderPay(); renderHome();
+}
+
+/* ==================================================================
+   חניה
+   ================================================================== */
+let spots = [], offers = [], relSpot = null, relUntil = null;
+
+const mySpots = () => (me ? spots.filter(s => +s.apartment === +me.apt) : []);
+const spotOf = id => spots.find(s => s.id === id);
+const offerOfSpot = id => offers.find(o => o.spot_id === id && (o.status === 'open' || o.status === 'taken'));
+const myOffer = () => me ? offers.find(o => o.owner_id === me.id) : null;
+const myClaim = () => me ? offers.find(o => o.taken_by === me.id && o.status === 'taken') : null;
+const hhmm = ts => new Intl.DateTimeFormat('en-GB',
+  { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: TZ }).format(new Date(ts));
+
+/* ---------- גיליון שחרור ---------- */
+const openFree = v => { $('#freeSheet').classList.toggle('open', v); $('#freeSheetBg').classList.toggle('open', v); };
+$('#freeSheetBg').addEventListener('click', () => openFree(false));
+$('#relClose').addEventListener('click', () => openFree(false));
+
+const UNTILS = [
+  { k: 'pk.u2', f: () => Date.now() + 2 * 3600e3 },
+  { k: 'pk.u4', f: () => Date.now() + 4 * 3600e3 },
+  { k: 'pk.u16', f: () => atHour(16) },
+  { k: 'pk.u18', f: () => atHour(18) },
+  { k: 'pk.utom', f: () => atHour(8, 1) }
+];
+function atHour(h, addDays) {
+  const d = new Date();
+  d.setHours(h, 0, 0, 0);
+  if (addDays) d.setDate(d.getDate() + addDays);
+  if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1);
+  return d.getTime();
+}
+function openRelease(spot) {
+  if (!spot) return;
+  relSpot = spot; relUntil = null;
+  $('#relSub').textContent = t('pk.code') + ' ' + spot.code;
+  const box = $('#untilBtns'); box.innerHTML = '';
+  UNTILS.forEach(u => {
+    const b = document.createElement('button');
+    b.textContent = t(u.k);
+    b.onclick = () => {
+      relUntil = u.f();
+      [...box.children].forEach(c => c.classList.remove('on'));
+      b.classList.add('on');
+      const d = new Date(relUntil);
+      $('#relTime').value = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    };
+    box.appendChild(b);
+  });
+  $('#relTime').value = '';
+  openFree(true);
+}
+$('#relTime').addEventListener('change', () => {
+  const v = $('#relTime').value; if (!v) return;
+  const [h, m] = v.split(':').map(Number);
+  const d = new Date(); d.setHours(h, m, 0, 0);
+  if (d.getTime() <= Date.now()) d.setDate(d.getDate() + 1);
+  relUntil = d.getTime();
+  [...$('#untilBtns').children].forEach(c => c.classList.remove('on'));
+});
+$('#relGo').addEventListener('click', async () => {
+  if (!canEdit()) return toast(t('ts.needreg'));
+  if (!relSpot) return;
+  if (!relUntil) relUntil = Date.now() + 2 * 3600e3;
+  const ok = await DB.release(cfg.id, relSpot.id, me.id, new Date(relUntil).toISOString());
+  openFree(false);
+  if (!ok) return toast(dbError || t('ts.conn'), 5000);
+  toast(t('ts.relok'));
+  await loadParking();
+});
+
+/* ---------- רינדור ---------- */
+function renderParking() {
+  const canPark = canEdit();
+  $('#spotAdmin').hidden = !isVaad;
+  sw($('#swPark'), me ? me.parking !== false : false);
+  if (me) { $('#carPlate').value = me.plate || ''; $('#carDesc').value = me.car || ''; }
+
+  /* החניה שלי */
+  const mine = mySpots();
+  const box = $('#mySpot');
+  $('#mySpotCard').hidden = !canPark;
+  box.innerHTML = '';
+  if (!mine.length) {
+    box.innerHTML = `<p class="muted" style="margin-top:8px">${t('pk.nospot')}</p>`;
+  } else {
+    mine.forEach(sp => {
+      const off = offerOfSpot(sp.id);
+      const el = document.createElement('div'); el.className = 'spot mine';
+      const taker = off && off.taken_by ? people[off.taken_by] : null;
+      el.innerHTML = `<div class="top">
+          <span class="num">${esc(sp.code)}</span>
+          <span class="who">${off ? (off.status === 'taken'
+              ? t('pk.taken', { n: taker ? taker.apt : '?' })
+              : t('pk.until', { t: hhmm(off.until_ts) }))
+            : t('pk.mine')}
+            <small>${off ? t('pk.until', { t: hhmm(off.until_ts) }) : ''}</small></span>
+        </div>`;
+      const acts = document.createElement('div'); acts.className = 'acts';
+      if (!off) {
+        const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = t('pk.free');
+        b.onclick = () => openRelease(sp);
+        acts.appendChild(b);
+      } else {
+        if (off.status === 'taken' && !off.returning_at) {
+          const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = t('pk.back');
+          b.onclick = async () => { await DB.callBack(off.id); toast(t('ts.relback')); await loadParking(); };
+          acts.appendChild(b);
+        }
+        const c = document.createElement('button'); c.className = 'btn ghost sm'; c.textContent = t('pk.cancel');
+        c.onclick = async () => { await DB.endOffer(off.id, 'cancelled'); toast(t('ts.relcancel')); await loadParking(); };
+        acts.appendChild(c);
+      }
+      el.appendChild(acts);
+      box.appendChild(el);
+    });
+  }
+
+  /* חניה שתפסתי */
+  const mc = myClaim();
+  $('#myClaimCard').hidden = !mc;
+  if (mc) {
+    const sp = spotOf(mc.spot_id), owner = people[mc.owner_id];
+    const el = $('#myClaim'); el.innerHTML = '';
+    const d = document.createElement('div'); d.className = 'spot';
+    d.innerHTML = `<div class="top"><span class="num">${sp ? esc(sp.code) : '?'}</span>
+      <span class="who">${t('pk.until', { t: hhmm(mc.until_ts) })}
+        <small>${owner ? t('pk.by', { n: owner.apt }) : ''}${mc.returning_at ? ' · ' + t('pk.back') : ''}</small></span></div>`;
+    const acts = document.createElement('div'); acts.className = 'acts';
+    const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = t('pk.leave');
+    b.onclick = async () => { await DB.endOffer(mc.id, 'ended'); await loadParking(); };
+    acts.appendChild(b); d.appendChild(acts); el.appendChild(d);
+  }
+
+  /* פנויות */
+  const openOnes = offers.filter(o => o.status === 'open' && (!me || o.owner_id !== me.id));
+  $('#openCount').textContent = openOnes.length || '';
+  const ol = $('#openList'); ol.innerHTML = '';
+  if (!openOnes.length) {
+    ol.innerHTML = `<p class="muted" style="margin-top:8px">${t('pk.none')}</p>`;
+  } else {
+    openOnes.forEach(o => {
+      const sp = spotOf(o.spot_id), owner = people[o.owner_id];
+      const el = document.createElement('div'); el.className = 'spot open';
+      el.innerHTML = `<div class="top"><span class="num">${sp ? esc(sp.code) : '?'}</span>
+        <span class="who">${t('pk.until', { t: hhmm(o.until_ts) })}
+          <small>${owner ? t('pk.by', { n: owner.apt }) : ''}</small></span></div>`;
+      const acts = document.createElement('div'); acts.className = 'acts';
+      const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = t('pk.take');
+      b.onclick = async () => {
+        if (!canEdit()) return toast(t('ts.needreg'));
+        const ok = await DB.claimSpot(o.id);
+        toast(ok ? t('ts.reltaken') : t('ts.relgone'));
+        await loadParking();
+      };
+      acts.appendChild(b); el.appendChild(acts);
+      ol.appendChild(el);
+    });
+  }
+
+  /* ניהול חניות */
+  if (isVaad) {
+    const sel2 = $('#spApt');
+    if (sel2.options.length !== cfg.units + 1) {
+      sel2.innerHTML = `<option value="">—</option>` +
+        Array.from({ length: cfg.units }, (_, i) => `<option value="${i + 1}">${aptLabel(i + 1)}</option>`).join('');
+    }
+    const list = $('#spotList'); list.innerHTML = '';
+    spots.forEach(sp => {
+      const d = document.createElement('div'); d.className = 'code';
+      d.innerHTML = `<span class="k">${esc(sp.code)}</span>
+        <span class="v">${sp.apartment ? aptLabel(sp.apartment) : '—'}</span>`;
+      const x = document.createElement('button'); x.className = 'xbtn'; x.textContent = t('pk.del');
+      x.onclick = async () => { await DB.delSpot(sp.id); await loadParking(); };
+      d.appendChild(x); list.appendChild(d);
+    });
+  }
+}
+
+$('#spAdd').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const code = $('#spCode').value.trim();
+  if (!code) return toast(t('ts.needspot'));
+  const ok = await DB.addSpot(cfg.id, code, +$('#spApt').value || null);
+  if (!ok) return toast(dbError || t('ts.conn'), 5000);
+  $('#spCode').value = ''; toast(t('ts.spotadd'));
+  await loadParking();
+});
+$('#swPark').addEventListener('click', () => {
+  if (!me) return toast(t('ts.needreg'));
+  me.parking = me.parking === false;
+  sw($('#swPark'), me.parking !== false);
+  DB.updateMe(me.id, { parking_alerts: me.parking !== false });
+});
+$('#carSave').addEventListener('click', async () => {
+  if (!me) return toast(t('ts.needreg'));
+  me.plate = $('#carPlate').value.trim();
+  me.car = $('#carDesc').value.trim();
+  await DB.updateMe(me.id, { car_plate: me.plate, car_desc: me.car });
+  toast(t('ts.carsaved'));
+});
+
+async function loadParking() {
+  spots = []; offers = [];
+  if (cfg.id) {
+    const [sp, of] = await Promise.all([DB.spots(cfg.id), DB.offers(cfg.id)]);
+    spots = sp; offers = of;
+  }
+  renderParking();
+}
+
+/* פתיחה ישירה למסך השחרור: ?free=1 */
+function parkingDeepLink() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('tab') === 'park') go('park');
+  if (q.get('free') !== '1') return;
+  go('park');
+  const mine = mySpots();
+  if (mine.length && !offerOfSpot(mine[0].id)) openRelease(mine[0]);
 }
 
 boot(true);
