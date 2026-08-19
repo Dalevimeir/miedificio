@@ -1213,12 +1213,20 @@ async function dbInit() {
     });
     let s = (await sb.auth.getSession()).data.session;
     if (s) {
-      // הטוקן נשמר מקומית ולא נבדק מול השרת. אם המשתמש נמחק או פג —
-      // מנקים ומתחילים מחדש במקום להיתקע על "אין חיבור".
+      // בודקים את הסשן מול השרת — אבל מנתקים רק אם השרת אמר במפורש
+      // שהזהות אינה תקפה. תקלת רשת רגעית (נפוצה ברגע פתיחת אפליקציה)
+      // לא תגרום לאיבוד הזהות ולהרשמה מחדש.
       const chk = await sb.auth.getUser();
-      if (chk.error || !chk.data || !chk.data.user) {
-        try { await sb.auth.signOut(); } catch (e) {}
-        s = null;
+      if (chk.error) {
+        const st = chk.error.status || 0;
+        const msg = (chk.error.message || '').toLowerCase();
+        const invalid = st === 401 || st === 403 ||
+          /not exist|user_not_found|invalid|jwt|expired|missing sub/.test(msg);
+        if (invalid) {
+          try { await sb.auth.signOut(); } catch (e) {}
+          s = null;
+        }
+        // אחרת: משאירים את הסשן המקומי וממשיכים
       }
     }
     if (!s) {
@@ -1805,7 +1813,8 @@ function renderGate() {
   if (!$('#lockVer')) {
     const v = document.createElement('div');
     v.id = 'lockVer'; v.style.cssText = 'font-size:.7rem;color:var(--dim);margin-top:14px';
-    v.innerHTML = APP_VERSION + ' · <a href="check.html" style="color:var(--rest-tx)">אבחון</a>';
+    v.innerHTML = APP_VERSION + ' · <a href="check.html" style="color:var(--rest-tx)">אבחון</a>' +
+      '<br><span style="opacity:.7">זהות: ' + (uid ? uid.slice(0, 8) : '—') + '</span>';
     $('#lockBtn').after(v);
   }
   if (ok) {
@@ -2147,7 +2156,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.9';
+const APP_VERSION = '2026.08.19.10';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
