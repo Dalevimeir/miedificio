@@ -721,6 +721,15 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         </div>
       </div>
 
+      <div class="card" id="lockedCard" hidden>
+        <div class="lock">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3 data-i18n="lk2.h"></h3>
+          <p id="lockedP"></p>
+        </div>
+        <div id="lockedMine"></div>
+      </div>
+
       <div class="card" id="editCard" hidden>
         <span class="who"><span data-i18n="w.apt"></span> <b id="whoApt">—</b><span id="whoName"></span></span>
         <div class="chips" style="margin-top:15px">
@@ -1075,6 +1084,7 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <div><label class="fld" for="cAddr" data-i18n="st.addr"></label><input id="cAddr"></div>
       <div><label class="fld" for="cName" data-i18n="st.name"></label><input id="cName"></div>
       <div><label class="fld" for="cGap" data-i18n="st.gap"></label><input id="cGap" type="number" step="30" min="0" max="240"></div>
+      <div><label class="fld" for="cLock" data-i18n="st.lock"></label><input id="cLock" type="number" step="0.5" min="0" max="48"></div>
       <div><label class="fld" for="cCandle" data-i18n="st.candle"></label><input id="cCandle" type="number" min="0" max="60"></div>
       <div><label class="fld" for="cTzeit" data-i18n="st.tzeit"></label><input id="cTzeit" type="number" min="0" max="90"></div>
       <div><label class="fld" for="cKw" data-i18n="st.kw"></label><input id="cKw" type="number" step="0.1" min="0"></div>
@@ -1243,6 +1253,10 @@ he:{
 'ts.relok':'החניה שוחררה','ts.reltaken':'תפסת את החניה','ts.relgone':'מישהו הקדים אותך','ts.relback':'נשלחה בקשה לפינוי',
 'ts.relcancel':'השחרור בוטל','ts.spotadd':'החניה נוספה','ts.carsaved':'פרטי הרכב נשמרו','ts.needspot':'צריך מספר חניה',
 'pk.eyebrow':'בקרוב','pk.h1':'חניה','pk.p':'המודול הזה בפיתוח. בקרוב יהיה אפשר לנהל כאן את החניות בבניין.','pk.soon':'בפיתוח',
+'st.lock':'נעילת הלוח (שעות לפני שבת)',
+'lk2.h':'הלוח ננעל','lk2.p':'הלוח ננעל ב-{t} כדי שאפשר יהיה לתכנת את השעון מראש. השעות שלך נשמרו.',
+'lk2.vaad':'הלוח נעול לדיירים. כוועד עדיין אפשר לערוך.','lk2.mine':'סימנת {n} שעות',
+'week.lock':'ננעל בעוד {t}','week.locked':'הלוח ננעל',
 'el.eyebrow':'שבת','sb.in':'כניסת שבת','sb.out':'צאת שבת','el.h1':'מעלית שבת','el.mine':'הבקשה שלי','el.board':'הלוח','el.cost':'עלויות','el.vaad':'ועד',
 
 'acct.reg':'הרשמה','acct.apt':'דירה {n}','w.apt':'דירה',
@@ -1388,6 +1402,10 @@ en:{
 'ts.relok':'Spot released','ts.reltaken':'You took the spot','ts.relgone':'Someone was faster','ts.relback':'Return request sent',
 'ts.relcancel':'Release cancelled','ts.spotadd':'Spot added','ts.carsaved':'Vehicle saved','ts.needspot':'A spot number is required',
 'pk.eyebrow':'Coming soon','pk.h1':'Parking','pk.p':'This module is in development. Parking management is coming.','pk.soon':'In development',
+'st.lock':'Lock the board (hours before Shabbat)',
+'lk2.h':'The board is locked','lk2.p':'The board locked at {t} so the timer can be programmed in advance. Your hours are saved.',
+'lk2.vaad':'Locked for residents. As committee you can still edit.','lk2.mine':'You marked {n} hours',
+'week.lock':'locks in {t}','week.locked':'The board is locked',
 'el.eyebrow':'Shabbat','sb.in':'Candle lighting','sb.out':'Shabbat ends','el.h1':'Shabbat elevator','el.mine':'My request','el.board':'Schedule','el.cost':'Cost','el.vaad':'Committee',
 
 'acct.reg':'Sign up','acct.apt':'Apt {n}','w.apt':'Apt',
@@ -1546,11 +1564,12 @@ function rowToCfg(r) {
     joinCode: r.join_code, vaadApt: r.vaad_apartment, fixed: r.fixed_hours || [],
     floors: r.floors, firstFloor: r.first_floor, perFloor: r.per_floor,
     penthouse: r.penthouse, penthouseUnits: r.penthouse_units,
-    parkingOn: r.parking_enabled === true };
+    parkingOn: r.parking_enabled === true,
+    lockHours: r.lock_hours_before === null || r.lock_hours_before === undefined ? 3 : +r.lock_hours_before };
 }
 const cfgPatch = c => ({
   name: c.name, candle_min: c.candle, tzeit_min: c.tzeit, kw: c.kw, rate: c.rate,
-  gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng
+  gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng, lock_hours_before: c.lockHours
 });
 const structPatch = c => ({
   floors: c.floors, first_floor: c.firstFloor, per_floor: c.perFloor,
@@ -1934,7 +1953,7 @@ function fridayUTC(off) {
 
 /* ============ מצב ============ */
 const DEF = { id: null, name: '', address: '', units: 15, lat: 31.7497, lng: 34.9887,
-  candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150,
+  candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150, lockHours: 3,
   plan: 'pending', floors: 8, firstFloor: 1, perFloor: 2, penthouse: true, penthouseUnits: 1 };
 let cfg = { ...DEF }, weekOff = 0, sabb = null, slots = [], reqs = {}, people = {};
 let me = null, isVaad = false, isAdmin = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
@@ -2180,9 +2199,11 @@ function tick() {
   const d = sabb.inMs - Date.now(), el = $('#pLeft');
   if (d <= 0) { el.textContent = t('week.closed'); el.style.color = 'var(--rest-tx)'; return; }
   el.style.color = '';
-  const h = Math.floor(d / 36e5), m = Math.floor(d % 36e5 / 6e4);
+  const dl = lockMs() - Date.now();
+  if (dl <= 0) { el.textContent = t('week.locked'); el.style.color = 'var(--rest-tx)'; return; }
+  const h = Math.floor(dl / 36e5), m = Math.floor(dl % 36e5 / 6e4);
   el.textContent = h > 47 ? t('week.days', { n: Math.floor(h / 24) })
-    : t('week.in', { t: h + ':' + String(m).padStart(2, '0') });
+    : t('week.lock', { t: h + ':' + String(m).padStart(2, '0') });
 }
 setInterval(tick, 30000);
 
@@ -2203,11 +2224,20 @@ function showConnError() {
   });
   go('elev');
 }
+const lockMs = () => sabb ? sabb.inMs - (cfg.lockHours || 0) * 3600e3 : 0;
+const boardLocked = () => Date.now() > lockMs();
+
 function renderGate() {
   const ok = canEdit(), uses = usesElevator();
+  const shut = boardLocked() && !isVaad;
   $('#lockCard').hidden = ok;
   $('#optOutCard').hidden = !(ok && !uses);
-  $('#editCard').hidden = !(ok && uses);
+  $('#lockedCard').hidden = !(ok && uses && shut);
+  $('#editCard').hidden = !(ok && uses && !shut);
+  if (ok && uses && shut) {
+    $('#lockedP').textContent = t('lk2.p', { t: fmtT(lockMs()) });
+    $('#lockedMine').innerHTML = `<p class="muted" style="text-align:center">${t('lk2.mine', { n: hrs(sel.size) })}</p>`;
+  }
   $('#acctBtn').classList.toggle('reg', !!(me && me.apt));
   $('#acctLbl').textContent = me && me.apt ? t('acct.apt', { n: me.apt }) : t('acct.reg');
   const pend = me && me.plan === 'pending';
@@ -2268,6 +2298,7 @@ document.querySelectorAll('[data-pre]').forEach(b => b.addEventListener('click',
 }));
 $('#save').addEventListener('click', async () => {
   if (!canEdit()) return toast(t('ts.needreg'));
+  if (boardLocked() && !isVaad) { renderGate(); return toast(t('lk2.h')); }
   const rec = { rid: me.id, apt: me.apt, slots: [...sel] };
   reqs[me.id] = rec;
   renderAll(); renderPicker(); goE('board');
@@ -2619,7 +2650,7 @@ $('#saveCfg').addEventListener('click', async () => {
   cfg = { ...cfg, name: $('#cName').value.trim(),
     candle: +$('#cCandle').value, tzeit: +$('#cTzeit').value,
     kw: +$('#cKw').value, rate: +$('#cRate').value, gap: +$('#cGap').value,
-    lat: +$('#cLat').value, lng: +$('#cLng').value };
+    lat: +$('#cLat').value, lng: +$('#cLng').value, lockHours: +$('#cLock').value };
   const ok = await DB.saveBuilding(cfg.id, { ...cfgPatch(cfg), ...structPatch(cfg) });
   if (!ok) return toast(t('ts.conn'));
   openSheet(false); toast(t('ts.structsaved')); boot(false);
@@ -2665,7 +2696,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.25';
+const APP_VERSION = '2026.08.19.26';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2710,6 +2741,7 @@ function fillCfgForm() {
   $('#cName').value = cfg.name || ''; $('#cAddr').value = cfg.address || '';
   $('#cCandle').value = cfg.candle; $('#cTzeit').value = cfg.tzeit; $('#cKw').value = cfg.kw;
   $('#cRate').value = cfg.rate; $('#cGap').value = cfg.gap; $('#cLat').value = cfg.lat; $('#cLng').value = cfg.lng;
+  $('#cLock').value = cfg.lockHours;
   $('#cFloors').value = cfg.floors; $('#cFirst').value = cfg.firstFloor;
   $('#cPer').value = cfg.perFloor; $('#cPentU').value = cfg.penthouseUnits;
   sw($('#swPent'), cfg.penthouse);
