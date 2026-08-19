@@ -220,8 +220,8 @@ button{font-family:'Heebo',sans-serif;cursor:pointer;border:0;
 .unit small.who2.an{color:var(--rest-tx);font-style:italic}
 .unit.done{border-color:var(--gold);background:var(--gold-soft)}
 .unit.done b{color:var(--gold-tx)}
-.prog{height:6px;border-radius:4px;background:var(--glass-2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line-s)}
-.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .8s cubic-bezier(.2,.8,.3,1)}
+.pbar{height:6px;border-radius:4px;background:var(--glass-2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line-s)}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .8s cubic-bezier(.2,.8,.3,1)}
 .rem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:12px;
   background:var(--glass-2);border:1px solid var(--line-s);margin-top:7px}
 .rem .nm{font-size:.9rem}
@@ -753,7 +753,7 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
       <div class="card">
         <h3 data-i18n="pp.h1"></h3>
         <p class="muted" id="respCount">—</p>
-        <div class="prog"><i id="progBar"></i></div>
+        <div class="pbar"><i id="progBar"></i></div>
         <div class="units" id="units" style="margin-top:14px"></div>
       </div>
       <div class="card">
@@ -2235,7 +2235,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.17';
+const APP_VERSION = '2026.08.19.18';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
