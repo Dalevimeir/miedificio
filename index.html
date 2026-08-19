@@ -1206,9 +1206,10 @@ async function dbInit() {
   dbError = '';
   if (typeof supabase === 'undefined') { dbError = 'ספריית Supabase לא נטענה — בדוק חיבור לאינטרנט'; return false; }
   try {
+    // ללא מנגנון אחסון מותאם — supabase-js מנהל את הסשן בעצמו.
+    // מנגנון מותאם גרם לכך שהטוקן לא צורף לבקשות, וה-RLS דחה אותן.
     sb = supabase.createClient(SB_URL, SB_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false,
-              storage: { getItem: prefs.get, setItem: prefs.set, removeItem: prefs.del } }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
     });
     let s = (await sb.auth.getSession()).data.session;
     if (s) {
@@ -1261,9 +1262,26 @@ const rowToPerson = r => ({ id: r.id, apt: r.apartment, family: r.full_name, ano
   wa: r.wa, phone: r.phone, lang: r.lang, theme: r.theme, isVaad: r.is_vaad,
   elevator: r.elevator_opt_in });
 
+// לפני כל כתיבה — לוודא שיש סשן חי ושהטוקן יצורף לבקשה
+async function ensureAuth() {
+  if (!sb) return false;
+  try {
+    let s = (await sb.auth.getSession()).data.session;
+    if (!s) {
+      const r = await sb.auth.signInAnonymously();
+      if (r.error) { dbError = 'auth: ' + r.error.message; return false; }
+      s = r.data.session;
+    }
+    uid = s && s.user ? s.user.id : null;
+    if (!uid) { dbError = 'אין משתמש מחובר'; return false; }
+    return true;
+  } catch (e) { dbError = 'auth: ' + (e && e.message); return false; }
+}
+
 const DB = {
   /* בניין */
   async findBuilding(address) {
+    if (!await ensureAuth()) return null;
     const { data, error } = await sb.rpc('find_or_create_building', { p_address: address });
     if (error) { dbError = 'RPC: ' + (error.code || '') + ' ' + (error.message || ''); return null; }
     if (!data || !data[0]) { dbError = 'RPC החזיר ריק'; return null; }
@@ -1286,6 +1304,7 @@ const DB = {
     return data && data[0] ? { row: data[0], person: rowToPerson(data[0]) } : null;
   },
   async join(bid, rec) {
+    if (!await ensureAuth()) return null;
     const { data, error } = await sb.from('residents').insert({
       user_id: uid, building_id: bid, apartment: rec.apt, full_name: rec.family,
       anon: rec.anon, wa: rec.wa, phone: rec.phone, lang: rec.lang, theme: rec.theme,
@@ -2128,7 +2147,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.8';
+const APP_VERSION = '2026.08.19.9';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
