@@ -106,16 +106,17 @@ html[dir=ltr] .bldg{font-family:'Space Grotesk',sans-serif;font-weight:600}
 
 main{max-width:680px;margin:0 auto;padding:18px 16px calc(var(--bar-h) + env(safe-area-inset-bottom) + 26px)}
 .panel{display:none}
-.panel.on{display:block;animation:pin .38s cubic-bezier(.2,.8,.3,1) both}
+.panel.on{display:block}
+/* אנימציית הכניסה רצה רק בטעינה הראשונה — במעברים המכולה כולה זזה */
+body.first .panel.on{animation:pin .38s cubic-bezier(.2,.8,.3,1) both}
 @keyframes pin{from{opacity:0;transform:translateY(12px)}}
-/* במעבר בין חוצצים המכולה כולה זזה, אז מבטלים את האנימציה של העמוד והילדים */
-.panel.quick{animation:none!important}
-.panel.quick>*{animation:none!important;opacity:1!important;transform:none!important}
-main{touch-action:pan-y;transform-origin:50% 42%;will-change:transform,opacity}
-.panel>*{animation:stag .5s cubic-bezier(.2,.8,.3,1) both}
-.panel>*:nth-child(1){animation-delay:.02s}.panel>*:nth-child(2){animation-delay:.07s}
-.panel>*:nth-child(3){animation-delay:.12s}.panel>*:nth-child(4){animation-delay:.17s}
-.panel>*:nth-child(5){animation-delay:.22s}
+main{touch-action:pan-y;transform-origin:50% 42%;backface-visibility:hidden}
+body.first .panel>*{animation:stag .5s cubic-bezier(.2,.8,.3,1) both}
+body.first .panel>*:nth-child(1){animation-delay:.02s}
+body.first .panel>*:nth-child(2){animation-delay:.07s}
+body.first .panel>*:nth-child(3){animation-delay:.12s}
+body.first .panel>*:nth-child(4){animation-delay:.17s}
+body.first .panel>*:nth-child(5){animation-delay:.22s}
 @keyframes stag{from{opacity:0;transform:translateY(14px)}}
 .head{margin-bottom:15px}
 .head p{color:var(--dim);font-size:.9rem;margin-top:4px}
@@ -339,40 +340,6 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
   box-shadow:0 14px 30px -14px rgba(0,0,0,.45);font-size:.9rem;line-height:1.35;text-align:center;
   max-width:min(92vw,420px)}
 .toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
-
-/* ---------- מחליף מסכים — קרוסלה תלת ממדית ---------- */
-.zoomed .topbar, .zoomed main, .zoomed .tabbar{
-  transform:scale(.9);transform-origin:50% 40%;filter:blur(3px);
-  transition:transform .35s cubic-bezier(.2,.8,.3,1),filter .35s}
-.switch{position:fixed;inset:0;z-index:70;display:none;
-  background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(7px);
-  opacity:0;transition:opacity .28s}
-.switch.on{display:block;opacity:1}
-.stage{position:absolute;inset:0;perspective:1200px;perspective-origin:50% 45%;
-  touch-action:none;overflow:hidden}
-.ring{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d;
-  transition:transform .5s cubic-bezier(.2,.85,.3,1)}
-.ring.drag{transition:none}
-.swcard{position:absolute;width:246px;height:404px;margin-left:-123px;margin-top:-202px;
-  border-radius:26px;border:1px solid var(--line);background:var(--glass);
-  box-shadow:var(--shadow);padding:22px;display:flex;flex-direction:column;
-  backface-visibility:hidden;-webkit-backface-visibility:hidden;
-  transition:opacity .3s,border-color .3s,box-shadow .3s}
-.swcard.cur{border-color:var(--gold);box-shadow:0 0 40px -12px var(--gold),var(--shadow)}
-.swcard .ic2{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;
-  background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx);margin-bottom:16px}
-.swcard .ic2 svg{width:27px;height:27px;stroke:currentColor;fill:none;stroke-width:1.6;
-  stroke-linecap:round;stroke-linejoin:round}
-.swcard h3{font-size:1.28rem;margin-bottom:10px}
-.swcard ul{list-style:none;margin:0;padding:0;font-size:.9rem;color:var(--dim);line-height:2.1}
-.swcard ul b{color:var(--text);font-family:'Space Grotesk',monospace}
-.swcard .go{margin-top:auto;font-size:.85rem;color:var(--gold-tx);font-weight:700}
-.switch .hint{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 26px);
-  left:0;right:0;text-align:center;font-size:.78rem;color:var(--dim);pointer-events:none}
-.dots{position:absolute;bottom:calc(env(safe-area-inset-bottom) + 56px);left:0;right:0;
-  display:flex;justify-content:center;gap:7px;pointer-events:none}
-.dots i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
-.dots i.on{background:var(--gold);transform:scale(1.5)}
 
 /* ---------- מסך התקנה ---------- */
 .gate{position:fixed;inset:0;z-index:99;display:none;place-items:center;padding:24px;
@@ -602,7 +569,7 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
 }
 </style>
 </head>
-<body>
+<body class="first">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 
@@ -1360,12 +1327,6 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
   <span class="dotp"></span>
   <span data-i18n="up.msg"></span>
   <button id="updBtn" data-i18n="up.btn"></button>
-</div>
-
-<div class="switch" id="switcher">
-  <div class="stage" id="swStage"><div class="ring" id="swRing"></div></div>
-  <div class="dots" id="swDots"></div>
-  <div class="hint" data-i18n="sw2.hint"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -2790,12 +2751,8 @@ const visibleTabs = () =>
 
 let swapping = false;
 
-function swapPanels(name, quick) {
-  document.querySelectorAll('.panel').forEach(p => {
-    const on = p.id === 'p-' + name;
-    p.classList.toggle('on', on);
-    p.classList.toggle('quick', on && quick);
-  });
+function swapPanels(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + name));
   document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x.dataset.tab === name));
   const tabs = visibleTabs(), bar = $('#tabbar');
   bar.style.setProperty('--tabs', tabs.length);
@@ -2816,7 +2773,7 @@ function go(name, dir) {
   if (reduce || !m.animate) { swapPanels(name); scrollTo({ top: 0 }); return; }
 
   swapping = true;
-  const DUR = 640, MID = 0.44;   // אנימציה אחת רציפה — בלי הבהוב באמצע
+  const DUR = 820, MID = 0.46;   // אנימציה אחת רציפה — בלי הבהוב באמצע
 
   const anim = m.animate([
     { offset: 0,    transform: 'none', opacity: 1,
@@ -2830,14 +2787,11 @@ function go(name, dir) {
 
   // ההחלפה קורית כשהמסך שקוף לחלוטין, אז לא רואים אותה
   setTimeout(() => {
-    swapPanels(name, true);
+    swapPanels(name);
     scrollTo({ top: 0 });
   }, DUR * (MID + 0.02));
 
-  anim.finished.then(() => {
-    swapping = false;
-    document.querySelectorAll('.panel.quick').forEach(p => p.classList.remove('quick'));
-  });
+  anim.finished.then(() => { swapping = false; });
 }
 document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', () => go(x.dataset.tab)));
 
@@ -2847,9 +2801,8 @@ let swipeLive = false;
 (function () {
   let x0 = 0, y0 = 0, id = null, decided = 0;
   const noSwipe = el => !!(el && el.closest &&
-    el.closest('.slot, .seats, .chips, .segs, .mons, .switch, input, select, textarea, .sheet'));
-  const sheetOpen = () => ['#sheet', '#paySheet', '#freeSheet'].some(x => $(x).classList.contains('open'))
-    || $('#switcher').classList.contains('on');
+    el.closest('.slot, .seats, .chips, .segs, .mons, input, select, textarea, .sheet'));
+  const sheetOpen = () => ['#sheet', '#paySheet', '#freeSheet'].some(x => $(x).classList.contains('open'));
 
   addEventListener('pointerdown', e => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -3340,7 +3293,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.46';
+const APP_VERSION = '2026.08.19.47';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3454,138 +3407,6 @@ async function boot(first) {
 const io2 = new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add('in'); io2.unobserve(e.target); } }), { threshold: .08 });
 addEventListener('scroll', () => document.body.style.setProperty('--par', (scrollY * .04) + 'px'), { passive: true });
-
-/* ==================================================================
-   מחליף מסכים — לחיצה ארוכה מרחיקה את התצוגה
-   ================================================================== */
-const SW_SUM = {
-  home: () => {
-    const open = Object.values(reports).filter(r => r.status !== 'done').length;
-    const n = Object.keys(notes).length;
-    return [t('nb.h') + ': <b>' + n + '</b>', t('hm.open') + ': <b>' + open + '</b>',
-            t('tp2.h') + ': <b>' + topics.length + '</b>'];
-  },
-  rep: () => {
-    const o = Object.values(reports).filter(r => r.status === 'open').length;
-    const p = Object.values(reports).filter(r => r.status === 'prog').length;
-    return [t('stt.open') + ': <b>' + o + '</b>', t('stt.prog') + ': <b>' + p + '</b>'];
-  },
-  pay: () => {
-    const now = new Date(), ym = ymKey(now.getFullYear(), now.getMonth());
-    const rec = me && pays[me.apt];
-    const paid = !!(rec && rec.m && rec.m[ym]);
-    return [t('hm.paid') + ': <b>' + t(paid ? 'hm.paid.yes' : 'hm.paid.no') + '</b>',
-            t('py.dues') + ': <b>' + cfg.dues + '</b>'];
-  },
-  elev: () => {
-    const dl = lockMs() - Date.now();
-    const mine = me && reqs[me.id];
-    return [t('sb.in') + ': <b>' + (sabb ? fmtT(sabb.inMs) : '—') + '</b>',
-            dl > 0 ? t('week.lock', { t: Math.floor(dl / 36e5) + ':' +
-              String(Math.floor(dl % 36e5 / 6e4)).padStart(2, '0') }) : t('week.locked'),
-            mine ? t('me.hours', { n: hrs(mine.slots.length) }) : t('u.wait')];
-  },
-  park: () => {
-    if (!parkingOn()) return [t('pk.locked.h')];
-    const open = offers.filter(o => o.status === 'open').length;
-    const mine = mySpots().length;
-    return [t('pk.open') + ': <b>' + open + '</b>', t('pk.mine') + ': <b>' + (mine || '—') + '</b>'];
-  }
-};
-
-let swN = 0, swA = 0, swR = 0, swSel = 0, swRot = 0;
-
-function swLayout() {
-  const cards = [...$('#swRing').children];
-  swN = cards.length; if (!swN) return;
-  swA = 360 / swN;
-  // רדיוס שמרחיק את הכרטיסים כך שלא ייגעו זה בזה
-  swR = Math.round((123 + 26) / Math.tan(Math.PI / swN));
-  cards.forEach((c, i) => { c.style.transform = `rotateY(${i * swA}deg) translateZ(${swR}px)`; });
-  swApply();
-}
-function swApply() {
-  $('#swRing').style.transform = `translateZ(${-swR}px) rotateY(${-swRot}deg)`;
-  const cards = [...$('#swRing').children];
-  const sel = ((Math.round(swRot / swA) % swN) + swN) % swN;
-  swSel = sel;
-  cards.forEach((c, i) => {
-    let d = ((i - sel) % swN + swN) % swN;
-    if (d > swN / 2) d -= swN;
-    c.classList.toggle('cur', d === 0);
-    c.style.opacity = d === 0 ? 1 : Math.max(0.28, 0.72 - Math.abs(d) * 0.2);
-  });
-  const dots = [...$('#swDots').children];
-  dots.forEach((x, i) => x.classList.toggle('on', i === sel));
-}
-
-function buildSwitcher() {
-  const ring = $('#swRing'); ring.innerHTML = '';
-  const dots = $('#swDots'); dots.innerHTML = '';
-  const tabs = visibleTabs();
-  const cur = Math.max(0, tabs.findIndex(n => document.getElementById('p-' + n).classList.contains('on')));
-  tabs.forEach((name, i) => {
-    const btn = document.querySelector('.tab[data-tab="' + name + '"]');
-    const c = document.createElement('div');
-    c.className = 'swcard';
-    const icon = btn ? btn.querySelector('svg').outerHTML : '';
-    const lines = (SW_SUM[name] ? SW_SUM[name]() : []).map(x => '<li>' + x + '</li>').join('');
-    c.innerHTML = `<div class="ic2">${icon}</div>
-      <h3>${t('nav.' + name)}</h3><ul>${lines}</ul>
-      <div class="go">${t('sw2.go')} ›</div>`;
-    c.onclick = () => {
-      if (i === swSel) { closeSwitcher(); go(name); }
-      else { swRot = i * swA; swApply(); }
-    };
-    ring.appendChild(c);
-    dots.appendChild(document.createElement('i'));
-  });
-  swRot = cur * swA;
-  swLayout();
-}
-
-/* סיבוב בגרירה */
-(function () {
-  let down = false, x0 = 0, rot0 = 0, moved = false;
-  const stage = () => $('#swStage');
-  addEventListener('pointerdown', e => {
-    if (!$('#switcher').classList.contains('on')) return;
-    if (!e.target.closest('#swStage')) return;
-    down = true; moved = false; x0 = e.clientX; rot0 = swRot;
-    $('#swRing').classList.add('drag');
-  });
-  addEventListener('pointermove', e => {
-    if (!down) return;
-    const dx = e.clientX - x0;
-    if (Math.abs(dx) > 6) moved = true;
-    swRot = rot0 - dx * 0.32;   // בעברית: גרירה שמאלה מסובבת קדימה
-    swApply();
-  }, { passive: true });
-  addEventListener('pointerup', () => {
-    if (!down) return;
-    down = false;
-    $('#swRing').classList.remove('drag');
-    swRot = Math.round(swRot / swA) * swA;
-    swApply();
-  });
-})();
-
-(function () {
-  let timer = null, sx = 0, sy = 0;
-  const skip = el => !!(el && el.closest &&
-    el.closest('button, a, input, select, textarea, .slot, .sheet, .switch, .tabbar'));
-  addEventListener('pointerdown', e => {
-    if (skip(e.target) || $('#sheet').classList.contains('open')) return;
-    sx = e.clientX; sy = e.clientY;
-    timer = setTimeout(openSwitcher, 520);
-  });
-  addEventListener('pointermove', e => {
-    if (timer && (swipeLive || Math.abs(e.clientX - sx) > 10 || Math.abs(e.clientY - sy) > 10))
-      { clearTimeout(timer); timer = null; }
-  }, { passive: true });
-  ['pointerup', 'pointercancel'].forEach(ev =>
-    addEventListener(ev, () => { clearTimeout(timer); timer = null; }));
-})();
 
 /* ==================================================================
    מודולים: לוח מודעות · קודים · דיווחים · תשלומים · מסך בית
@@ -4394,6 +4215,7 @@ function parkingDeepLink() {
 }
 
 boot(true);
+setTimeout(() => document.body.classList.remove('first'), 1400);
 
 </script>
 </body>
