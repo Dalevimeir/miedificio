@@ -1613,7 +1613,7 @@ let me = null, isVaad = false, sel = new Set(), fixDraft = new Set(), keyMs = {}
 const canEdit = () => !!(me && me.apt && cfg.plan !== 'pending');
 const usesElevator = () => !!(me && me.elevator !== false);
 let notes = {}, codes = [], reports = {}, pays = {}, repFilter = 'open', repKind = 'clean';
-let payView = 'mine', payYear = new Date().getFullYear(), codesOpen = false, codesEdit = false;
+let payView = 'mine', payYear = new Date().getFullYear(), codesOpen = false;
 let lastOnH = 0, pendingPhoto = null;
 const MON = n => new Intl.DateTimeFormat(locale(), { month: 'short' }).format(new Date(2020, n, 1));
 const ymKey = (y, m) => y + '-' + String(m + 1).padStart(2, '0');
@@ -1900,7 +1900,6 @@ function renderGate() {
   $('#segVaad').hidden = !isVaad;
   if (!isVaad && $('#e-vaad').classList.contains('on')) goE('me');
   $('#nbAdd').hidden = !isVaad;
-  $('#cdEdit').hidden = !isVaad;
   $('#pySegs').hidden = !isVaad;
   $('#rpNew').hidden = !canEdit();
   if (typeof renderCodes === 'function') { renderCodes(); renderCodesEdit(); renderPay(); }
@@ -2232,7 +2231,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.15';
+const APP_VERSION = '2026.08.19.16';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
