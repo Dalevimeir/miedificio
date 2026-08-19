@@ -1279,9 +1279,9 @@ he:{
 'gt.a1':'פתחו את תפריט הדפדפן (שלוש נקודות)','gt.a2':'בחרו <b>התקנת אפליקציה</b>','gt.btn':'התקנה עכשיו',
 'gt.browser':'המשך בדפדפן במקום',
 'ap.h':'בקשות לאישור','ap.none':'אין בקשות ממתינות.','ap.ok':'אישור','ap.no':'דחייה',
-'ap.who':'{n} · {h} שעות','ap.trust':'הרשאות שינוי','ap.trust.p':'דייר מורשה משנה את הלוח ישירות. דייר שאינו מורשה — הבקשה שלו מגיעה לאישורך.',
+'ap.who':'{n} · {h} שעות','ap.trust':'דיירים והרשאות','rs.del':'הסרה','rs.dup':'רשומה כפולה','ap.trust.p':'מתג דלוק — הדייר משנה את לוח המעלית ישירות. כבוי — הבקשה שלו מגיעה לאישורך. אפשר גם להסיר רשומה כפולה או דייר שעזב.',
 'ap.pend':'בקשתך הועברה לאישור ועד הבית','ap.mine':'ממתין לאישור הוועד',
-'ts.apok':'הבקשה אושרה','ts.apno':'הבקשה נדחתה','ts.trust':'ההרשאה עודכנה',
+'ts.apok':'הבקשה אושרה','ts.apno':'הבקשה נדחתה','ts.trust':'ההרשאה עודכנה','ts.removed':'הדייר הוסר',
 'fx.h':'שעות קבועות','fx.p':'שעות שהמעלית תפעל בהן בכל שבת, בלי קשר לבקשות הדיירים. מסומנות בכחול אצל כולם.',
 'fx.save':'שמירת השעות הקבועות','fx.clear':'ניקוי','fx.n':'{n} שעות קבועות',
 'lg.fix':'שעה קבועה של הוועד','bd.fixed':'שעה קבועה',
@@ -1448,9 +1448,9 @@ en:{
 'gt.a1':'Open the browser menu (three dots)','gt.a2':'Choose <b>Install app</b>','gt.btn':'Install now',
 'gt.browser':'Continue in the browser instead',
 'ap.h':'Requests to approve','ap.none':'No pending requests.','ap.ok':'Approve','ap.no':'Reject',
-'ap.who':'{n} · {h} hours','ap.trust':'Change permissions','ap.trust.p':'A trusted resident changes the board directly. Anyone else sends you a request to approve.',
+'ap.who':'{n} · {h} hours','ap.trust':'Residents and permissions','rs.del':'Remove','rs.dup':'duplicate','ap.trust.p':'Switch on — the resident changes the elevator board directly. Off — their request comes to you. You can also remove a duplicate row or someone who moved out.',
 'ap.pend':'Your request was sent to the committee','ap.mine':'Waiting for committee approval',
-'ts.apok':'Request approved','ts.apno':'Request rejected','ts.trust':'Permission updated',
+'ts.apok':'Request approved','ts.apno':'Request rejected','ts.trust':'Permission updated','ts.removed':'Resident removed',
 'fx.h':'Fixed hours','fx.p':'Hours the elevator runs every Shabbat regardless of requests. Everyone sees them marked in blue.',
 'fx.save':'Save fixed hours','fx.clear':'Clear','fx.n':'{n} fixed hours',
 'lg.fix':'Committee fixed hour','bd.fixed':'Fixed hour',
@@ -1836,6 +1836,11 @@ const DB = {
   },
   async setTrusted(residentId, ok) {
     const { data, error } = await sb.rpc('set_trusted', { p_resident: residentId, p_ok: ok });
+    if (error) dbError = error.message;
+    return !error && data === true;
+  },
+  async removeResident(id) {
+    const { data, error } = await sb.rpc('remove_resident', { p_resident: id });
     if (error) dbError = error.message;
     return !error && data === true;
   },
@@ -2493,10 +2498,32 @@ function renderApprovals() {
   });
 
   const tl = $('#trustList'); tl.innerHTML = '';
-  Object.values(people).filter(p => p.elevator !== false).forEach(p => {
+  const list = Object.values(people).sort((a, b) => a.apt - b.apt);
+  list.forEach(p => {
+    const dup = list.filter(q => q.apt === p.apt && (q.family || '') === (p.family || '')).length > 1;
     const row = document.createElement('div'); row.className = 'sw';
+    const tags = [];
+    if (p.isVaad) tags.push(t('vd.h'));
+    if (p.elevator === false) tags.push(t('el.out.h'));
+    if (dup) tags.push(t('rs.dup'));
     row.innerHTML = `<span class="lb">${aptLabel(p.apt)}${p.anon ? '' : ' · ' + esc(p.family || '')}
-      <small>${p.isVaad ? t('vd.h') : ''}</small></span><span class="tg"></span>`;
+      <small>${tags.join(' · ')}</small></span>`;
+    const right = document.createElement('span');
+    right.className = 'row'; right.style.cssText = 'gap:8px;flex-wrap:nowrap';
+    const tg = document.createElement('span'); tg.className = 'tg';
+    right.appendChild(tg);
+    if (!p.isVaad) {
+      const del = document.createElement('button');
+      del.className = 'xbtn'; del.textContent = t('rs.del');
+      del.onclick = async e => {
+        e.stopPropagation();
+        if (!await DB.removeResident(p.id)) return toast(dbError || t('ts.conn'), 5000);
+        delete people[p.id]; await reloadRequests();
+        renderApprovals(); renderAll(); toast(t('ts.removed'));
+      };
+      right.appendChild(del);
+    }
+    row.appendChild(right);
     sw(row, p.trusted || p.isVaad);
     if (!p.isVaad) row.onclick = async () => {
       const next = !p.trusted;
@@ -3052,7 +3079,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.36';
+const APP_VERSION = '2026.08.19.37';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
