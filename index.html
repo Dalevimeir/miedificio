@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#F5F1E9">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="הבניין שלי">
+<link rel="manifest" href="manifest.json">
+<title>הבניין שלי</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Secular+One&family=Heebo:wght@300;400;500;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===================== ערכות נושא ===================== */
+html[data-theme=light]{
+  --bg:#F5F1E9;
+  --wash1:rgba(176,138,60,.20); --wash2:rgba(90,125,145,.16);
+  --glass:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.52));
+  --glass-2:rgba(255,255,255,.55);
+  --top:linear-gradient(180deg,rgba(250,247,241,.92),rgba(250,247,241,.72));
+  --sheet:#FBF8F2;
+  --line:rgba(30,42,53,.14); --line-s:rgba(30,42,53,.08);
+  --text:#1E2A35; --dim:#6E7B87;
+  --gold:#B08A3C; --gold-2:#D8B366; --gold-tx:#8A6A24; --gold-soft:rgba(176,138,60,.13); --gold-ink:#2A1E08;
+  --rest:#5A7D91; --rest-tx:#456A7D; --rest-soft:rgba(90,125,145,.13);
+  --slot:rgba(255,255,255,.6); --slot-b:rgba(30,42,53,.1);
+  --cov:rgba(30,42,53,.09); --cov-b:rgba(30,42,53,.16); --cov-tx:#5C6874;
+  --shadow:0 18px 38px -22px rgba(30,42,53,.42), inset 0 1px 0 rgba(255,255,255,.9);
+  --glow:0 0 0 rgba(0,0,0,0);
+}
+html[data-theme=dark]{
+  --bg:#0A0F14;
+  --wash1:rgba(224,169,63,.20); --wash2:rgba(63,115,135,.16);
+  --glass:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.015));
+  --glass-2:rgba(255,255,255,.04);
+  --top:linear-gradient(180deg,rgba(10,15,20,.94),rgba(10,15,20,.72));
+  --sheet:#111A22;
+  --line:rgba(226,214,190,.12); --line-s:rgba(226,214,190,.07);
+  --text:#ECE8E1; --dim:#8D9AA5;
+  --gold:#E0A93F; --gold-2:#F7DFA6; --gold-tx:#F7DFA6; --gold-soft:rgba(224,169,63,.11); --gold-ink:#20160a;
+  --rest:#3F7387; --rest-tx:#8CC6D8; --rest-soft:rgba(63,115,135,.13);
+  --slot:rgba(255,255,255,.035); --slot-b:rgba(226,214,190,.07);
+  --cov:rgba(255,255,255,.09); --cov-b:rgba(226,214,190,.18); --cov-tx:#B6BFC7;
+  --shadow:0 20px 44px -16px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.05);
+  --glow:0 0 18px -4px rgba(224,169,63,.5);
+}
+:root{ --bar-h:66px; --img-top:url(''); --img-shaft:url(''); }
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Heebo',system-ui,sans-serif;
+  line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  transition:background .4s ease,color .4s ease}
+body::before{content:"";position:fixed;inset:-15%;z-index:-2;pointer-events:none;
+  background:radial-gradient(32rem 26rem at 84% -2%,var(--wash1),transparent 62%),
+             radial-gradient(30rem 26rem at 2% 52%,var(--wash2),transparent 64%),
+             radial-gradient(26rem 22rem at 60% 104%,var(--wash1),transparent 60%);
+  transform:translateY(var(--par,0))}
+
+h1,h2,h3{font-family:'Secular One',system-ui,sans-serif;font-weight:400;line-height:1.28;margin:0}
+html[dir=ltr] h1,html[dir=ltr] h2,html[dir=ltr] h3{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;letter-spacing:-.022em}
+h1{font-size:1.6rem} h2{font-size:1.26rem} h3{font-size:1rem}
+.num{font-family:'Space Grotesk','Heebo',monospace;font-variant-numeric:tabular-nums}
+.eyebrow{display:block;font-size:.67rem;letter-spacing:.22em;color:var(--gold-tx);margin-bottom:.4rem;font-weight:500}
+.muted{color:var(--dim);font-size:.88rem}
+p{margin:.4rem 0}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:18px 0}
+
+/* ---------- סרגל עליון ---------- */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;background:var(--top);
+  backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  border-bottom:1px solid var(--line-s);overflow:hidden}
+.topbar::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.14;
+  background-image:var(--img-top);background-size:cover;background-position:center}
+.mark{width:30px;height:30px;border-radius:9px;flex:none;position:relative;
+  background:var(--gold-soft);border:1px solid var(--line)}
+.mark::before,.mark::after{content:"";position:absolute;top:7px;bottom:7px;width:2px;border-radius:2px;
+  background:linear-gradient(var(--gold),transparent)}
+.mark::before{right:9px}.mark::after{left:9px}
+.bldg{font-family:'Secular One',sans-serif;font-size:1rem;line-height:1.1;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html[dir=ltr] .bldg{font-family:'Space Grotesk',sans-serif;font-weight:600}
+.times{display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:11px;
+  background:var(--gold-soft);border:1px solid var(--line);flex:none}
+.times b{font-family:'Space Grotesk',monospace;font-size:.82rem;font-weight:500;color:var(--gold-tx)}
+.times i{width:1px;height:12px;background:var(--line);display:block}
+.times b:last-child{color:var(--rest-tx)}
+.acct{height:34px;min-width:34px;padding:0 9px;border-radius:11px;flex:none;display:flex;align-items:center;
+  gap:6px;background:var(--glass-2);border:1px solid var(--line);color:var(--dim);
+  font-family:'Heebo',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer}
+.acct:hover{color:var(--text)}
+.acct.reg{background:var(--gold-soft);color:var(--gold-tx)}
+.acct svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.week{display:flex;align-items:center;justify-content:center;gap:14px;padding:9px 16px;
+  border-bottom:1px solid var(--line-s)}
+.week button{background:none;border:0;color:var(--dim);font-size:1.05rem;cursor:pointer;padding:2px 8px;border-radius:8px}
+.week button:hover{color:var(--gold-tx);background:var(--glass-2)}
+.week span{font-size:.82rem;color:var(--dim)}
+.week span b{color:var(--text);font-weight:500}
+.week .cd{color:var(--gold-tx)}
+
+main{max-width:680px;margin:0 auto;padding:18px 16px calc(var(--bar-h) + env(safe-area-inset-bottom) + 26px)}
+.panel{display:none}
+.panel.on{display:block;animation:pin .38s cubic-bezier(.2,.8,.3,1) both}
+@keyframes pin{from{opacity:0;transform:translateY(12px)}}
+.panel>*{animation:stag .5s cubic-bezier(.2,.8,.3,1) both}
+.panel>*:nth-child(1){animation-delay:.02s}.panel>*:nth-child(2){animation-delay:.07s}
+.panel>*:nth-child(3){animation-delay:.12s}.panel>*:nth-child(4){animation-delay:.17s}
+.panel>*:nth-child(5){animation-delay:.22s}
+@keyframes stag{from{opacity:0;transform:translateY(14px)}}
+.head{margin-bottom:15px}
+.head p{color:var(--dim);font-size:.9rem;margin-top:4px}
+
+.card{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:18px;
+  box-shadow:var(--shadow);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
+.card+.card{margin-top:12px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:400px){.grid2{grid-template-columns:1fr}}
+label.fld{display:block;font-size:.75rem;color:var(--dim);margin-bottom:6px}
+input,select{width:100%;background:var(--glass-2);color:var(--text);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;font-family:'Heebo',sans-serif;font-size:1rem}
+input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+button{font-family:'Heebo',sans-serif;cursor:pointer;border:0;
+  transition:transform .15s,box-shadow .2s,background .2s,color .2s,border-color .2s}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.btn{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);font-weight:700;
+  font-size:.98rem;padding:13px 22px;border-radius:13px;box-shadow:0 10px 22px -12px var(--gold)}
+.btn:hover{transform:translateY(-2px)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none;font-weight:500}
+.btn.ghost:hover{background:var(--glass-2)}
+.btn.sm{padding:9px 15px;font-size:.85rem;border-radius:11px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--glass-2);border:1px solid var(--line);color:var(--dim);
+  border-radius:999px;padding:8px 14px;font-size:.84rem;font-weight:500}
+.chip:hover{color:var(--text)}
+.chip.on{background:var(--gold-soft);border-color:var(--gold);color:var(--gold-tx)}
+
+.per{margin-top:15px}
+.per h4{margin:0 0 8px;font-size:.67rem;letter-spacing:.17em;color:var(--dim);font-weight:500;
+  display:flex;align-items:center;gap:9px}
+.per h4::after{content:"";flex:1;height:1px;background:var(--line-s)}
+.slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px}
+.slot{font-family:'Space Grotesk',monospace;font-size:.79rem;padding:10px 2px;border-radius:10px;
+  background:var(--slot);border:1px solid var(--slot-b);color:var(--dim);
+  user-select:none;-webkit-user-select:none;touch-action:pan-y}
+.slot.cov{background:var(--cov);border-color:var(--cov-b);color:var(--cov-tx)}
+.slot.fix{background:var(--rest-soft);border-color:var(--rest);color:var(--rest-tx);cursor:not-allowed}
+.slot.on{background:linear-gradient(180deg,var(--gold-2),var(--gold));border-color:var(--gold);
+  color:var(--gold-ink);font-weight:600;box-shadow:0 6px 16px -8px var(--gold)}
+.slot:active{transform:scale(.93)}
+.keys{display:flex;flex-wrap:wrap;gap:13px;margin-top:13px;font-size:.74rem;color:var(--dim)}
+.keys i{display:inline-block;width:13px;height:10px;border-radius:3px;margin-inline-end:6px;vertical-align:-1px}
+.keys .k1{background:linear-gradient(180deg,var(--gold-2),var(--gold))}
+.keys .k2{background:var(--cov);border:1px solid var(--cov-b)}
+.keys .k3{background:var(--rest-soft);border:1px solid var(--rest)}
+
+.shaftbox{position:relative;padding:18px 14px;border-radius:18px;border:1px solid var(--line);
+  background:var(--glass);box-shadow:var(--shadow);overflow:hidden}
+.shaftbox::before{content:"";position:absolute;inset:0;opacity:.12;
+  background-image:var(--img-shaft);background-size:cover;background-position:center}
+.shaft{position:relative;display:flex;flex-direction:column;gap:3px}
+.hr{display:grid;grid-template-columns:48px 1fr 1fr;gap:5px;align-items:center;opacity:0;transform:translateY(7px)}
+.hr.in{animation:lift .4s cubic-bezier(.2,.8,.3,1) forwards;animation-delay:calc(var(--i) * 18ms)}
+@keyframes lift{to{opacity:1;transform:none}}
+.hr .t{font-family:'Space Grotesk',monospace;font-size:.71rem;color:var(--dim);text-align:end}
+.cell{height:19px;border-radius:5px;background:var(--rest-soft);border:1px solid var(--line-s)}
+.cell.lit{background:linear-gradient(90deg,color-mix(in srgb,var(--gold) calc(45% + var(--d,0)*45%),transparent),
+  color-mix(in srgb,var(--gold-2) calc(50% + var(--d,0)*50%),transparent));
+  border-color:var(--gold);box-shadow:var(--glow)}
+.cell.fix{outline:1px dashed var(--rest);outline-offset:-3px}
+.legend{display:flex;gap:15px;justify-content:center;margin-top:13px;font-size:.74rem;color:var(--dim);position:relative;flex-wrap:wrap}
+.legend i{display:inline-block;width:13px;height:8px;border-radius:3px;margin-inline-end:6px;vertical-align:middle}
+.legend .a{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.legend .b{background:var(--rest-soft);border:1px solid var(--line)}
+.legend .c{background:transparent;border:1px dashed var(--rest)}
+.win{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;
+  background:var(--gold-soft);border:1px solid var(--line);margin-top:8px}
+.win .num{font-size:1.02rem;color:var(--gold-tx);font-weight:600}
+.win small{color:var(--dim)}
+
+.cube{position:relative;border-radius:20px;padding:26px 20px;overflow:hidden;text-align:center;
+  border:1px solid var(--line);background:var(--glass);box-shadow:var(--shadow)}
+.cube::before{content:"";position:absolute;inset:0;z-index:0;
+  background:radial-gradient(120% 100% at 50% 0%,var(--gold-soft),transparent 66%)}
+.cube>*{position:relative}
+.cube .lbl{font-size:.78rem;color:var(--dim);letter-spacing:.06em}
+.cube .big{font-family:'Space Grotesk',monospace;font-size:3rem;font-weight:600;line-height:1.05;
+  color:var(--gold-tx);margin:6px 0 2px;display:block}
+.cube .sub{font-size:.9rem}
+.cube .sub b{color:var(--gold-tx);font-family:'Space Grotesk',monospace;font-weight:600}
+.bar{margin-top:11px}
+.bar .cap{display:flex;justify-content:space-between;font-size:.8rem;color:var(--dim);margin-bottom:5px}
+.bar .cap b{font-family:'Space Grotesk',monospace;color:var(--text);font-weight:600}
+.bar .track{height:11px;border-radius:6px;background:var(--glass-2);overflow:hidden;border:1px solid var(--line-s)}
+.bar .fill{height:100%;width:0;border-radius:6px;transition:width .9s cubic-bezier(.2,.8,.3,1)}
+.bar.full .fill{background:linear-gradient(90deg,var(--rest),var(--rest-tx))}
+.bar.plan .fill{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.calc{width:100%;border-collapse:collapse;margin-top:6px}
+.calc td{padding:9px 2px;border-bottom:1px solid var(--line-s);font-size:.88rem;text-align:start}
+.calc td:last-child{text-align:end;font-family:'Space Grotesk',monospace;color:var(--text)}
+.calc td:first-child{color:var(--dim)}
+.calc tr:last-child td{border-bottom:0;font-weight:700;color:var(--gold-tx)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.stat{padding:15px 14px;border-radius:15px;border:1px solid var(--line);background:var(--glass-2)}
+.stat b{display:block;font-family:'Space Grotesk',monospace;font-size:1.5rem;font-weight:600;color:var(--rest-tx);line-height:1.15}
+.stat.gold b{color:var(--gold-tx)}
+.stat span{font-size:.74rem;color:var(--dim);display:block;margin-top:4px}
+
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px}
+.unit{padding:11px 5px;border-radius:13px;text-align:center;border:1px solid var(--line);background:var(--glass-2)}
+.unit b{display:block;font-family:'Space Grotesk',monospace;font-size:1rem;font-weight:600}
+.unit small{font-size:.65rem;color:var(--dim);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.unit small.who2{color:var(--text);font-size:.67rem}
+.unit small.who2.an{color:var(--rest-tx);font-style:italic}
+.unit.done{border-color:var(--gold);background:var(--gold-soft)}
+.unit.done b{color:var(--gold-tx)}
+.prog{height:6px;border-radius:4px;background:var(--glass-2);overflow:hidden;margin:10px 0 4px;border:1px solid var(--line-s)}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-2));transition:width .8s cubic-bezier(.2,.8,.3,1)}
+.rem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:12px;
+  background:var(--glass-2);border:1px solid var(--line-s);margin-top:7px}
+.rem .nm{font-size:.9rem}
+.rem .nm small{display:block;color:var(--dim);font-size:.74rem;font-family:'Space Grotesk',monospace;direction:ltr}
+.wa{background:rgba(37,211,102,.14);border:1px solid rgba(37,211,102,.45);color:#1a8f4c;border-radius:10px;
+  padding:7px 12px;font-size:.8rem;font-weight:600;text-decoration:none;flex:none}
+html[data-theme=dark] .wa{color:#7ee2a8}
+.note{font-size:.81rem;color:var(--dim);border-inline-start:2px solid var(--gold);
+  padding-inline-start:11px;margin-top:14px}
+
+.lock{text-align:center;padding:30px 20px}
+.lock .ic{width:52px;height:52px;border-radius:16px;margin:0 auto 14px;display:grid;place-items:center;
+  background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx)}
+.lock .ic svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6}
+.lock h3{margin-bottom:6px}
+.lock p{color:var(--dim);font-size:.9rem;max-width:34ch;margin:0 auto 16px}
+.who{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:11px;
+  background:var(--gold-soft);border:1px solid var(--line);font-size:.85rem}
+.who b{color:var(--gold-tx);font-family:'Space Grotesk',monospace;font-weight:600}
+.who .an{color:var(--rest-tx);font-size:.75rem}
+
+.sw{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 0;
+  border-bottom:1px solid var(--line-s);cursor:pointer}
+.sw:last-of-type{border-bottom:0}
+.sw .lb{font-size:.94rem}
+.sw .lb small{display:block;color:var(--dim);font-size:.76rem;margin-top:2px;line-height:1.45}
+.sw .tg{width:46px;height:27px;border-radius:99px;background:var(--cov);border:1px solid var(--line);
+  flex:none;position:relative;transition:background .25s,border-color .25s}
+.sw .tg::after{content:"";position:absolute;top:2px;inset-inline-start:2px;width:21px;height:21px;border-radius:50%;
+  background:var(--dim);transition:transform .25s cubic-bezier(.2,.8,.3,1),background .25s}
+.sw.on .tg{background:var(--gold-soft);border-color:var(--gold)}
+.sw.on .tg::after{background:var(--gold)}
+html[dir=rtl] .sw.on .tg::after{transform:translateX(-19px)}
+html[dir=ltr] .sw.on .tg::after{transform:translateX(19px)}
+.segs{display:flex;gap:6px;background:var(--glass-2);border:1px solid var(--line-s);
+  border-radius:13px;padding:4px;margin-top:10px}
+.seg{flex:1;padding:10px;border-radius:10px;background:none;color:var(--dim);font-size:.92rem;font-weight:500}
+.seg.on{background:var(--gold-soft);color:var(--gold-tx);border:1px solid var(--gold)}
+
+.steps{display:flex;gap:6px;margin:0 0 16px}
+.steps i{height:3px;flex:1;border-radius:2px;background:var(--cov);transition:background .3s}
+.steps i.on{background:linear-gradient(90deg,var(--gold),var(--gold-2))}
+.step{display:none}
+.step.on{display:block;animation:pin .3s cubic-bezier(.2,.8,.3,1) both}
+.stat-line{display:flex;align-items:center;gap:8px;margin-top:12px;padding:11px 13px;border-radius:12px;font-size:.87rem}
+.stat-line.free{background:var(--rest-soft);border:1px solid var(--rest);color:var(--rest-tx)}
+.stat-line.pay{background:var(--gold-soft);border:1px solid var(--gold);color:var(--gold-tx)}
+.price{text-align:center;padding:20px;border-radius:16px;margin-top:14px;
+  border:1px solid var(--line);background:var(--gold-soft)}
+.price .big{font-family:'Space Grotesk',monospace;font-size:2.5rem;font-weight:600;color:var(--gold-tx);display:block;line-height:1.1}
+.price .per{font-size:.8rem;color:var(--dim);margin-top:4px}
+.price ul{text-align:start;margin:14px 0 0;padding-inline-start:18px;padding-inline-end:0;font-size:.87rem;color:var(--dim);line-height:1.9}
+
+.tabbar{position:fixed;bottom:0;right:0;left:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);
+  height:calc(var(--bar-h) + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+  background:var(--top);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-top:1px solid var(--line-s)}
+.tabbar[data-n="3"]{grid-template-columns:repeat(3,1fr)}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;color:var(--dim);font-size:.68rem;font-weight:500;position:relative;padding:0}
+.tab[hidden]{display:none}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tab::before{content:"";position:absolute;top:0;right:50%;transform:translateX(50%) scaleX(0);
+  width:34px;height:2px;border-radius:0 0 3px 3px;background:var(--gold);transition:transform .3s cubic-bezier(.2,.8,.3,1)}
+.tab.on{color:var(--gold-tx)}
+.tab.on::before{transform:translateX(50%) scaleX(1)}
+.tab .dot{position:absolute;top:9px;inset-inline-end:calc(50% - 20px);width:7px;height:7px;border-radius:50%;
+  background:var(--rest);display:none}
+.tab .dot.show{display:block}
+
+.sheetbg{position:fixed;inset:0;z-index:60;background:rgba(20,26,32,.42);backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .3s}
+.sheetbg.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;z-index:61;right:0;left:0;bottom:0;max-height:88vh;overflow-y:auto;
+  background:var(--sheet);border-radius:22px 22px 0 0;border-top:1px solid var(--line);
+  padding:8px 18px calc(28px + env(safe-area-inset-bottom));transform:translateY(102%);
+  transition:transform .38s cubic-bezier(.2,.8,.3,1);box-shadow:0 -20px 60px -30px rgba(0,0,0,.5)}
+.sheet.open{transform:none}
+.handle{width:42px;height:4px;border-radius:3px;background:var(--line);margin:8px auto 16px}
+/* ---------- באנר עדכון ---------- */
+.upd{position:fixed;top:calc(env(safe-area-inset-top) + 60px);left:50%;z-index:82;
+  transform:translate(-50%,-180%);opacity:0;pointer-events:none;
+  display:flex;align-items:center;gap:12px;max-width:min(94vw,460px);
+  background:var(--sheet);border:1px solid var(--rest);border-radius:14px;
+  padding:10px 12px 10px 14px;box-shadow:0 16px 34px -16px rgba(0,0,0,.5);
+  transition:transform .35s cubic-bezier(.2,.8,.3,1),opacity .35s}
+.upd.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.upd span{font-size:.87rem;flex:1}
+.upd .dotp{width:8px;height:8px;border-radius:50%;background:var(--rest);flex:none;
+  box-shadow:0 0 0 4px var(--rest-soft)}
+.upd button{background:var(--rest-soft);border:1px solid var(--rest);color:var(--rest-tx);
+  font-weight:700;font-size:.83rem;padding:8px 14px;border-radius:10px;flex:none}
+body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
+.ver{font-size:.7rem;color:var(--dim);font-family:'Space Grotesk',monospace;margin-top:2px}
+
+.toast{position:fixed;top:calc(env(safe-area-inset-top) + 66px);left:50%;z-index:80;
+  transform:translate(-50%,-180%);opacity:0;pointer-events:none;
+  background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);
+  font-weight:700;padding:11px 20px;border-radius:13px;cursor:pointer;
+  transition:transform .3s cubic-bezier(.2,.8,.3,1),opacity .3s ease;
+  box-shadow:0 14px 30px -14px rgba(0,0,0,.45);font-size:.9rem;line-height:1.35;text-align:center;
+  max-width:min(92vw,420px)}
+.toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+
+/* ---------- מסך התקנה ---------- */
+.gate{position:fixed;inset:0;z-index:99;display:none;place-items:center;padding:24px;
+  background:var(--bg);overflow-y:auto}
+.gate.on{display:grid}
+.gate .box{max-width:420px;text-align:center;background:var(--glass);border:1px solid var(--line);
+  border-radius:22px;padding:30px 24px;box-shadow:var(--shadow);backdrop-filter:blur(16px)}
+.gate .logo{width:64px;height:64px;border-radius:20px;margin:0 auto 18px;position:relative;
+  background:var(--gold-soft);border:1px solid var(--line)}
+.gate .logo::before,.gate .logo::after{content:"";position:absolute;top:14px;bottom:14px;width:3px;border-radius:3px;
+  background:linear-gradient(var(--gold),transparent)}
+.gate .logo::before{right:24px}.gate .logo::after{left:24px}
+.gate ol{text-align:start;color:var(--dim);font-size:.9rem;line-height:1.9;margin:16px 0 0;padding-inline-start:20px}
+.gate ol b{color:var(--text)}
+.gate .link{background:none;border:0;color:var(--dim);font-size:.82rem;text-decoration:underline;margin-top:18px}
+
+
+/* ---------- לוח מודעות ---------- */
+.notice{border:1px solid var(--line);border-radius:15px;padding:14px 15px;margin-top:9px;background:var(--glass-2)}
+.notice.pin{border-color:var(--gold);background:var(--gold-soft)}
+.notice h4{margin:0 0 3px;font-size:.97rem;font-weight:700}
+.notice p{font-size:.89rem;color:var(--dim);margin:0;white-space:pre-wrap}
+.notice .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;
+  font-size:.7rem;color:var(--dim);font-family:'Space Grotesk',monospace}
+.pinflag{font-size:.63rem;letter-spacing:.1em;color:var(--gold-tx);font-weight:700}
+.xbtn{background:none;border:0;color:var(--dim);font-size:.75rem;text-decoration:underline;padding:0}
+
+/* ---------- קודים ---------- */
+.code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-s)}
+.code:last-child{border-bottom:0}
+.code .k{font-size:.9rem}
+.code .v{font-family:'Space Grotesk',monospace;font-size:1.05rem;font-weight:600;color:var(--gold-tx);
+  letter-spacing:.06em;direction:ltr;cursor:pointer;user-select:all}
+.code .v.mask{color:var(--dim);letter-spacing:.2em;user-select:none}
+
+/* ---------- סטטוס מהיר ---------- */
+.strip{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}
+.tile{padding:13px 10px;border-radius:14px;border:1px solid var(--line);background:var(--glass-2);text-align:center}
+.tile b{display:block;font-family:'Space Grotesk',monospace;font-size:1.25rem;font-weight:600;line-height:1.2}
+.tile span{font-size:.68rem;color:var(--dim);display:block;margin-top:3px}
+.tile.ok b{color:var(--rest-tx)} .tile.warn b{color:var(--gold-tx)}
+
+/* ---------- דיווחים ---------- */
+.rep2{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:10px;background:var(--glass-2)}
+.rep2 .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:.68rem;font-weight:700;padding:4px 9px;border-radius:99px;border:1px solid var(--line)}
+.badge.open{background:var(--gold-soft);color:var(--gold-tx);border-color:var(--gold)}
+.badge.prog{background:var(--rest-soft);color:var(--rest-tx);border-color:var(--rest)}
+.badge.done{background:var(--cov);color:var(--dim)}
+.badge.kind{background:transparent;color:var(--dim)}
+.rep2 p{font-size:.9rem;margin:9px 0 0;white-space:pre-wrap}
+.rep2 .meta{font-size:.7rem;color:var(--dim);font-family:'Space Grotesk',monospace;margin-top:9px;
+  display:flex;justify-content:space-between;gap:8px;align-items:center}
+.shot{width:100%;max-height:230px;object-fit:cover;border-radius:12px;margin-top:10px;border:1px solid var(--line);display:block}
+.shot.ph{height:120px;display:grid;place-items:center;color:var(--dim);font-size:.8rem;background:var(--cov)}
+.filebtn{display:flex;align-items:center;gap:9px;padding:12px 14px;border-radius:12px;border:1px dashed var(--line);
+  background:var(--glass-2);color:var(--dim);font-size:.88rem;cursor:pointer;margin-top:6px}
+.filebtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7}
+.filebtn input{display:none}
+.prev{position:relative;margin-top:10px}
+.prev img{width:100%;max-height:200px;object-fit:cover;border-radius:12px;border:1px solid var(--line)}
+.prev button{position:absolute;top:8px;inset-inline-end:8px;background:rgba(0,0,0,.55);color:#fff;border-radius:9px;
+  padding:5px 9px;font-size:.75rem}
+
+/* ---------- תשלומים ---------- */
+.mrow{display:grid;grid-template-columns:38px 1fr;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line-s)}
+.mrow:last-child{border-bottom:0}
+.mrow>b{font-family:'Space Grotesk',monospace;font-size:.85rem;color:var(--dim)}
+.mons{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.mon{aspect-ratio:1;border-radius:5px;background:var(--cov);border:1px solid var(--line-s);font-size:.55rem;
+  color:var(--dim);display:grid;place-items:center;padding:0;font-family:'Space Grotesk',monospace}
+.mon.paid{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);border-color:var(--gold);font-weight:700}
+.mon.now{outline:1px solid var(--rest);outline-offset:1px}
+.mygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.mycell{padding:12px 6px;border-radius:12px;text-align:center;border:1px solid var(--line);background:var(--glass-2)}
+.mycell b{display:block;font-size:.8rem;font-weight:600}
+.mycell small{font-size:.62rem;color:var(--dim)}
+.mycell.paid{background:var(--gold-soft);border-color:var(--gold)}
+.mycell.paid b{color:var(--gold-tx)}
+.mycell.now{outline:1px solid var(--rest);outline-offset:2px}
+
+/* ---------- מבנה הבניין ---------- */
+.flr{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line-s)}
+.flr:last-child{border-bottom:0}
+.flr b{font-size:.72rem;color:var(--dim);min-width:70px}
+.flr .aps{display:flex;gap:5px;flex-wrap:wrap}
+.flr .ap{font-family:'Space Grotesk',monospace;font-size:.75rem;font-weight:600;padding:4px 10px;
+  border-radius:8px;background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-tx)}
+.flr.pent b{color:var(--rest-tx)}
+.flr.pent .ap{background:var(--rest-soft);color:var(--rest-tx)}
+.sum{margin-top:10px;font-size:.85rem;color:var(--dim)}
+.sum b{color:var(--text);font-family:'Space Grotesk',monospace}
+
+/* ---------- בפיתוח ---------- */
+.soon{text-align:center;padding:40px 22px;border:1px dashed var(--line);border-radius:18px;background:var(--glass-2)}
+.soon .tag{display:inline-block;font-size:.66rem;letter-spacing:.2em;font-weight:700;color:var(--gold-tx);
+  background:var(--gold-soft);border:1px solid var(--gold);border-radius:99px;padding:5px 13px;margin-bottom:14px}
+.soon p{color:var(--dim);font-size:.9rem;max-width:32ch;margin:8px auto 0}
+
+.tabbar[data-n="5"]{grid-template-columns:repeat(5,1fr)}
+.tab{font-size:.63rem}
+.esec{display:none}
+.esec.on{display:block;animation:pin .3s cubic-bezier(.2,.8,.3,1) both}
+.segs.four .seg{font-size:.84rem;padding:9px 4px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
+  .hr,.panel>*{opacity:1!important;transform:none!important}}
+
+#sheetPrint{display:none}
+@media print{
+  body{background:#fff;color:#000}body::before{display:none}
+  .topbar,.week,main,.tabbar,.sheet,.sheetbg,.toast,.gate{display:none!important}
+  #sheetPrint{display:block;padding:20px;font-family:'Heebo',sans-serif}
+  #sheetPrint h2{font-size:24pt;margin-bottom:3pt}
+  #sheetPrint table{width:100%;border-collapse:collapse;margin-top:12pt}
+  #sheetPrint td,#sheetPrint th{border:1px solid #999;padding:8pt 10pt;font-size:15pt;text-align:start}
+  #sheetPrint th{background:#eee}
+}
+</style>
+</head>
+<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<div class="gate" id="gate">
+  <div class="box">
+    <div class="logo"></div>
+    <h1 data-i18n="gt.h"></h1>
+    <p class="muted" data-i18n="gt.p"></p>
+    <div id="gateIos" hidden><ol><li data-i18n="gt.i1"></li><li data-i18n="gt.i2"></li><li data-i18n="gt.i3"></li></ol></div>
+    <div id="gateAnd" hidden>
+      <ol><li data-i18n="gt.a1"></li><li data-i18n="gt.a2"></li></ol>
+      <button class="btn" id="gateBtn" style="margin-top:18px" data-i18n="gt.btn" hidden></button>
+    </div>
+    <button class="link" id="gateSkip" data-i18n="gt.browser"></button>
+  </div>
+</div>
+
+<div class="topbar">
+  <div class="mark"></div>
+  <div class="bldg" id="bName">—</div>
+  <div class="times"><b class="num" id="pIn">—</b><i></i><b class="num" id="pOut">—</b></div>
+  <button class="acct" id="acctBtn">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span id="acctLbl">—</span>
+  </button>
+</div>
+
+<main>
+
+  <!-- ============ בית ============ -->
+  <div class="panel on" id="p-home">
+    <div class="head">
+      <span class="eyebrow" data-i18n="hm.eyebrow"></span>
+      <h1 data-i18n="hm.h1"></h1>
+      <p data-i18n="hm.p"></p>
+    </div>
+
+    <div class="strip">
+      <div class="tile warn"><b id="tOpen">—</b><span data-i18n="hm.open"></span></div>
+      <div class="tile ok"><b id="tPaid">—</b><span data-i18n="hm.paid"></span></div>
+      <div class="tile"><b class="num" id="tSab">—</b><span data-i18n="hm.sab"></span></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="row" style="justify-content:space-between">
+        <h3 data-i18n="nb.h"></h3>
+        <button class="btn ghost sm" id="nbAdd" data-i18n="nb.add" hidden></button>
+      </div>
+      <div id="nbForm" hidden style="margin-top:12px">
+        <label class="fld" for="nbT" data-i18n="nb.title"></label>
+        <input id="nbT">
+        <label class="fld" for="nbB" style="margin-top:10px" data-i18n="nb.body"></label>
+        <input id="nbB">
+        <div class="sw" id="nbPin" style="margin-top:4px">
+          <span class="lb"><span data-i18n="nb.pin"></span></span><span class="tg"></span>
+        </div>
+        <div class="row">
+          <button class="btn sm" id="nbPost" data-i18n="nb.post"></button>
+          <button class="btn ghost sm" id="nbCancel" data-i18n="rp.cancel"></button>
+        </div>
+      </div>
+      <div id="nbList"></div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h3 data-i18n="cd.h"></h3>
+        <div class="row" style="gap:6px">
+          <button class="btn ghost sm" id="cdEye" data-i18n="cd.show"></button>
+          <button class="btn ghost sm" id="cdEdit" data-i18n="cd.edit" hidden></button>
+        </div>
+      </div>
+      <p class="muted" style="font-size:.8rem" data-i18n="cd.p"></p>
+      <div id="cdList"></div>
+      <div id="cdBtns" hidden class="row" style="margin-top:12px">
+        <button class="btn sm" id="cdSave" data-i18n="cd.save"></button>
+        <button class="btn ghost sm" id="cdAdd" data-i18n="cd.add"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ דיווחים ============ -->
+  <div class="panel" id="p-rep">
+    <div class="head">
+      <span class="eyebrow" data-i18n="rp.eyebrow"></span>
+      <h1 data-i18n="rp.h1"></h1>
+      <p data-i18n="rp.p"></p>
+    </div>
+
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="chips">
+        <button class="chip on" data-flt="open" data-i18n="stt.open"></button>
+        <button class="chip" data-flt="all" data-i18n="rp.all"></button>
+        <button class="chip" data-flt="clean" data-i18n="rp.clean"></button>
+        <button class="chip" data-flt="fault" data-i18n="rp.fault"></button>
+      </div>
+      <button class="btn sm" id="rpNew" data-i18n="rp.new"></button>
+    </div>
+
+    <div class="card" id="rpForm" hidden>
+      <div class="grid2">
+        <div><label class="fld" data-i18n="rp.kind"></label>
+          <div class="segs" style="margin-top:0">
+            <button class="seg on" data-kind="clean" data-i18n="rp.clean"></button>
+            <button class="seg" data-kind="fault" data-i18n="rp.fault"></button>
+          </div>
+        </div>
+        <div><label class="fld" for="rpTopic" data-i18n="rp.topic"></label><select id="rpTopic"></select></div>
+      </div>
+      <label class="fld" for="rpLoc" style="margin-top:12px" data-i18n="rp.loc"></label>
+      <input id="rpLoc">
+      <label class="fld" for="rpText" style="margin-top:12px" data-i18n="rp.text"></label>
+      <input id="rpText">
+      <label class="filebtn" id="rpPick">
+        <svg viewBox="0 0 24 24"><path d="M3 9a2 2 0 0 1 2-2h2l1.5-2h7L17 7h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <span data-i18n="rp.photo"></span>
+        <input type="file" accept="image/*" id="rpFile">
+      </label>
+      <div class="prev" id="rpPrev" hidden><img id="rpImg" alt=""><button class="btn sm" id="rpDrop">✕</button></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="rpSend" data-i18n="rp.send"></button>
+        <button class="btn ghost sm" id="rpCancel" data-i18n="rp.cancel"></button>
+      </div>
+    </div>
+
+    <div id="rpList"></div>
+  </div>
+
+  <!-- ============ תשלומים ============ -->
+  <div class="panel" id="p-pay">
+    <div class="head">
+      <span class="eyebrow" data-i18n="py.eyebrow"></span>
+      <h1 data-i18n="py.h1"></h1>
+      <p data-i18n="py.p"></p>
+    </div>
+
+    <div class="row" style="justify-content:space-between;margin-bottom:12px">
+      <div class="row" style="gap:4px">
+        <button class="btn ghost sm" id="yPrev">›</button>
+        <span class="num" id="yLbl" style="min-width:56px;text-align:center">—</span>
+        <button class="btn ghost sm" id="yNext">‹</button>
+      </div>
+      <div class="segs" id="pySegs" style="margin-top:0;flex:0 0 auto" hidden>
+        <button class="seg on" data-pv="mine" data-i18n="py.mine"></button>
+        <button class="seg" data-pv="all" data-i18n="py.all"></button>
+      </div>
+    </div>
+
+    <div class="card" id="pyMine">
+      <div class="stats">
+        <div class="stat gold"><b class="num" id="pyPaid">—</b><span data-i18n="py.paidn"></span></div>
+        <div class="stat"><b class="num" id="pyTotal">—</b><span data-i18n="py.total"></span></div>
+      </div>
+      <div class="mygrid" id="myMonths"></div>
+      <p class="note" id="pyNote"></p>
+    </div>
+
+    <div class="card" id="pyAll" hidden>
+      <div class="row" style="justify-content:space-between">
+        <h3 data-i18n="py.all"></h3>
+        <span class="muted" style="font-size:.78rem" data-i18n="py.tap"></span>
+      </div>
+      <div style="margin-top:10px" id="allRows"></div>
+      <label class="fld" for="cDues" style="margin-top:14px" data-i18n="py.dues"></label>
+      <div class="row" style="flex-wrap:nowrap">
+        <input id="cDues" type="number" min="0" step="10">
+        <button class="btn sm" id="duesSave" data-i18n="st.save"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ מעלית שבת ============ -->
+  <div class="panel" id="p-elev">
+    <div class="head">
+      <span class="eyebrow" data-i18n="el.eyebrow"></span>
+      <h1 data-i18n="el.h1"></h1>
+      <p class="muted"><b id="wLabel">—</b> · <span class="cd" id="pLeft">—</span>
+        <button class="xbtn" id="prevW">›</button><button class="xbtn" id="nextW">‹</button></p>
+    </div>
+
+    <div class="segs four">
+      <button class="seg on" data-e="me" data-i18n="el.mine"></button>
+      <button class="seg" data-e="board" data-i18n="el.board"></button>
+      <button class="seg" data-e="cost" data-i18n="el.cost"></button>
+      <button class="seg" data-e="vaad" id="segVaad" data-i18n="el.vaad" hidden></button>
+    </div>
+
+    <div class="esec on" id="e-me" style="margin-top:14px">
+      <div class="card" id="lockCard">
+        <div class="lock">
+          <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3 id="lockT"></h3><p id="lockP"></p>
+          <button class="btn" id="lockBtn"></button>
+        </div>
+      </div>
+      <div class="card" id="optOutCard" hidden>
+        <div class="lock">
+          <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+          <h3 data-i18n="el.out.h"></h3>
+          <p data-i18n="el.out.p"></p>
+          <button class="btn" id="optIn" data-i18n="el.out.b"></button>
+        </div>
+      </div>
+
+      <div class="card" id="editCard" hidden>
+        <span class="who"><span data-i18n="w.apt"></span> <b id="whoApt">—</b><span id="whoName"></span></span>
+        <div class="chips" style="margin-top:15px">
+          <button class="chip" data-pre="all" data-i18n="pre.all"></button>
+          <button class="chip" data-pre="tef" data-i18n="pre.tef"></button>
+          <button class="chip" data-pre="day" data-i18n="pre.day"></button>
+          <button class="chip" data-pre="eve" data-i18n="pre.eve"></button>
+          <button class="chip" data-pre="clr" data-i18n="pre.clr"></button>
+        </div>
+        <div class="keys">
+          <span><i class="k1"></i><span data-i18n="lg.mine"></span></span>
+          <span><i class="k2"></i><span data-i18n="lg.cov"></span></span>
+          <span><i class="k3"></i><span data-i18n="lg.fix"></span></span>
+        </div>
+        <div id="picker"></div>
+        <div class="row" style="margin-top:18px">
+          <button class="btn" id="save" data-i18n="me.save"></button>
+          <span class="muted num" id="mine"></span>
+        </div>
+      </div>
+      <p class="note" data-i18n="me.note"></p>
+    </div>
+
+    <div class="esec" id="e-board" style="margin-top:14px">
+      <div class="shaftbox">
+        <div class="shaft" id="shaft"></div>
+        <div class="legend">
+          <span><i class="a"></i><span data-i18n="bd.on"></span></span>
+          <span><i class="b"></i><span data-i18n="bd.off"></span></span>
+          <span><i class="c"></i><span data-i18n="bd.fixed"></span></span>
+        </div>
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="row" style="justify-content:space-between">
+          <h3 data-i18n="bd.win"></h3>
+          <button class="btn ghost sm" id="print" data-i18n="bd.print"></button>
+        </div>
+        <div id="windows"></div>
+      </div>
+    </div>
+
+    <div class="esec" id="e-cost" style="margin-top:14px">
+      <div class="cube">
+        <span class="lbl" data-i18n="ct.now"></span>
+        <span class="big num" id="cNow">—</span>
+        <span class="sub"><span data-i18n="ct.per"></span> <b class="num" id="cPer">—</b> ₪</span>
+      </div>
+      <div class="card">
+        <h3 data-i18n="ct.vs"></h3>
+        <div class="bar full"><div class="cap"><span data-i18n="ct.full"></span><b class="num" id="bFull">—</b></div>
+          <div class="track"><i class="fill" id="fFull"></i></div></div>
+        <div class="bar plan"><div class="cap"><span data-i18n="ct.plan"></span><b class="num" id="bPlan">—</b></div>
+          <div class="track"><i class="fill" id="fPlan"></i></div></div>
+        <div class="stats">
+          <div class="stat gold"><b class="num" id="sSave">—</b><span data-i18n="ct.saved"></span></div>
+          <div class="stat"><b class="num" id="sYear">—</b><span data-i18n="ct.year"></span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="ct.calc"></h3>
+        <table class="calc">
+          <tr><td data-i18n="ct.k1"></td><td id="kH">—</td></tr>
+          <tr><td data-i18n="ct.k2"></td><td id="kOff">—</td></tr>
+          <tr><td data-i18n="ct.k3"></td><td id="kKw">—</td></tr>
+          <tr><td data-i18n="ct.k4"></td><td id="kRate">—</td></tr>
+          <tr><td data-i18n="ct.k5"></td><td id="kUnits">—</td></tr>
+          <tr><td data-i18n="ct.k6"></td><td id="kTot">—</td></tr>
+        </table>
+        <p class="note" data-i18n="ct.note"></p>
+      </div>
+    </div>
+
+    <div class="esec" id="e-vaad" style="margin-top:14px">
+      <div class="card">
+        <h3 data-i18n="pp.h1"></h3>
+        <p class="muted" id="respCount">—</p>
+        <div class="prog"><i id="progBar"></i></div>
+        <div class="units" id="units" style="margin-top:14px"></div>
+      </div>
+      <div class="card">
+        <h3 data-i18n="fx.h"></h3>
+        <p class="muted" data-i18n="fx.p"></p>
+        <div id="fixPicker"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn sm" id="fixSave" data-i18n="fx.save"></button>
+          <button class="btn ghost sm" id="fixClear" data-i18n="fx.clear"></button>
+          <span class="muted num" id="fixCount"></span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <h3 data-i18n="pp.rem"></h3><span class="muted num" id="remCount">—</span>
+        </div>
+        <div id="remBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ חניה ============ -->
+  <div class="panel" id="p-park">
+    <div class="head">
+      <span class="eyebrow" data-i18n="pk.eyebrow"></span>
+      <h1 data-i18n="pk.h1"></h1>
+    </div>
+    <div class="soon">
+      <span class="tag" data-i18n="pk.soon"></span>
+      <h3 data-i18n="pk.h1"></h3>
+      <p data-i18n="pk.p"></p>
+    </div>
+  </div>
+
+</main>
+
+<nav class="tabbar" id="tabbar" data-n="5">
+  <button class="tab on" data-tab="home">
+    <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></svg><span data-i18n="nav.home"></span></button>
+  <button class="tab" data-tab="rep">
+    <svg viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span class="dot" id="repDot"></span><span data-i18n="nav.rep"></span></button>
+  <button class="tab" data-tab="pay">
+    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg><span data-i18n="nav.pay"></span></button>
+  <button class="tab" data-tab="elev">
+    <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/><path d="M15.5 9l1.5-2 1.5 2"/><path d="M18.5 15l-1.5 2-1.5-2"/></svg><span data-i18n="nav.elev"></span></button>
+  <button class="tab" data-tab="park">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9.5 17V8h3.2a2.9 2.9 0 0 1 0 5.8H9.5"/></svg><span data-i18n="nav.park"></span></button>
+</nav>
+
+<div class="sheetbg" id="sheetBg"></div>
+<div class="sheet" id="sheet">
+  <div class="handle"></div>
+
+  <div id="wizard">
+    <div class="steps"><i class="on" data-s="0"></i><i data-s="1"></i><i data-s="2"></i><i data-s="3"></i></div>
+
+    <div class="step on" data-step="0">
+      <h2 data-i18n="wz.addr.h"></h2>
+      <p class="muted" data-i18n="wz.addr.p"></p>
+      <div style="margin-top:14px">
+        <label class="fld" for="wAddr" data-i18n="wz.addr.l"></label>
+        <input id="wAddr" placeholder="שרה אהרונסון 12" autocomplete="street-address">
+      </div>
+      <div class="stat-line" id="addrStat" hidden></div>
+      <h3 style="margin-top:20px" data-i18n="wz.lang.h"></h3>
+      <div class="segs"><button class="seg" data-lang="he">עברית</button><button class="seg" data-lang="en">English</button></div>
+      <h3 style="margin-top:16px" data-i18n="ac.theme"></h3>
+      <div class="segs"><button class="seg" data-theme="light" data-i18n="th.light"></button><button class="seg" data-theme="dark" data-i18n="th.dark"></button></div>
+      <div class="row" style="margin-top:18px">
+        <button class="btn" id="w0next" data-i18n="wz.next"></button>
+        <button class="btn ghost sm" id="wClose" data-i18n="wz.cancel"></button>
+      </div>
+    </div>
+
+    <div class="step" data-step="1">
+      <h2 data-i18n="wz.who.h"></h2>
+      <p class="muted" data-i18n="wz.who.p"></p>
+      <div class="grid2" style="margin-top:14px">
+        <div><label class="fld" for="wFam" data-i18n="wz.fam"></label><input id="wFam" autocomplete="name"></div>
+        <div><label class="fld" for="wApt" data-i18n="wz.apt"></label><select id="wApt"></select></div>
+      </div>
+      <div id="aptWho" class="muted" style="margin-top:8px;font-size:.82rem"></div>
+      <div class="sw" id="swAnon" style="margin-top:8px">
+        <span class="lb"><span data-i18n="wz.anon"></span><small data-i18n="wz.anon.s"></small></span><span class="tg"></span>
+      </div>
+      <div class="sw on" id="swElev">
+        <span class="lb"><span data-i18n="wz.elev"></span><small data-i18n="wz.elev.s"></small></span><span class="tg"></span>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="w1next" data-i18n="wz.next"></button>
+        <button class="btn ghost sm" data-back="0" data-i18n="wz.back"></button>
+      </div>
+    </div>
+
+    <div class="step" data-step="2">
+      <h2 data-i18n="wz.wa.h"></h2>
+      <p class="muted" data-i18n="wz.wa.p"></p>
+      <div class="sw" id="swWa" style="margin-top:10px">
+        <span class="lb"><span data-i18n="wz.wa"></span><small data-i18n="wz.wa.s"></small></span><span class="tg"></span>
+      </div>
+      <div id="phoneWrap" hidden>
+        <label class="fld" for="wPhone" data-i18n="wz.phone"></label>
+        <input id="wPhone" type="tel" inputmode="tel" placeholder="050-0000000" autocomplete="tel">
+      </div>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="w2next" data-i18n="wz.next"></button>
+        <button class="btn ghost sm" data-back="1" data-i18n="wz.back"></button>
+      </div>
+    </div>
+
+    <div class="step" data-step="3">
+      <h2 id="payH"></h2>
+      <div id="payFree" hidden>
+        <div class="stat-line free" style="margin-top:12px" id="freeTxt"></div>
+        <p class="muted" style="margin-top:12px" data-i18n="wz.pay.nothing"></p>
+      </div>
+      <div id="payNeed" hidden>
+        <p class="muted" data-i18n="wz.pay.p"></p>
+        <div class="price">
+          <span class="big num" id="prAmt">—</span><div class="per" id="prPer">—</div>
+          <ul><li data-i18n="wz.f1"></li><li data-i18n="wz.f2"></li><li data-i18n="wz.f3"></li></ul>
+        </div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn" id="payGo" data-i18n="wz.pay.go"></button>
+          <button class="btn ghost sm" id="payDone" data-i18n="wz.pay.done"></button>
+        </div>
+      </div>
+      <div class="row" style="margin-top:18px">
+        <button class="btn" id="wFinish"></button>
+        <button class="btn ghost sm" data-back="2" data-i18n="wz.back"></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="account" hidden>
+    <h2 data-i18n="ac.h"></h2>
+    <p class="muted" id="acctLine">—</p>
+    <div class="ver" id="verLine"></div>
+    <div class="sw" id="swAnon2" style="margin-top:10px">
+      <span class="lb"><span data-i18n="wz.anon"></span><small data-i18n="wz.anon.s"></small></span><span class="tg"></span>
+    </div>
+    <div class="sw" id="swElev2">
+      <span class="lb"><span data-i18n="wz.elev"></span><small data-i18n="wz.elev.s"></small></span><span class="tg"></span>
+    </div>
+    <div class="sw" id="swWa2">
+      <span class="lb"><span data-i18n="ac.wa"></span><small data-i18n="wz.wa.s"></small></span><span class="tg"></span>
+    </div>
+    <div id="phoneWrap2" hidden style="margin-top:6px">
+      <label class="fld" for="aPhone" data-i18n="wz.phone"></label>
+      <input id="aPhone" type="tel" inputmode="tel" placeholder="050-0000000">
+    </div>
+    <h3 style="margin-top:18px" data-i18n="ac.lang"></h3>
+    <div class="segs"><button class="seg" data-lang2="he">עברית</button><button class="seg" data-lang2="en">English</button></div>
+    <h3 style="margin-top:16px" data-i18n="ac.theme"></h3>
+    <div class="segs"><button class="seg" data-theme2="light" data-i18n="th.light"></button><button class="seg" data-theme2="dark" data-i18n="th.dark"></button></div>
+
+    <h2 style="margin-top:24px" data-i18n="vd.h"></h2>
+    <p class="muted" data-i18n="vd.p"></p>
+    <div id="vaadBox"></div>
+
+    <h2 style="margin-top:24px" data-i18n="st.struct"></h2>
+    <p class="muted" data-i18n="st.struct.p"></p>
+    <div class="grid2" style="margin-top:12px">
+      <div><label class="fld" for="cFloors" data-i18n="st.floors"></label><input id="cFloors" type="number" min="1" max="60"></div>
+      <div><label class="fld" for="cFirst" data-i18n="st.first"></label><input id="cFirst" type="number" min="0" max="10"></div>
+      <div><label class="fld" for="cPer" data-i18n="st.perfloor"></label><input id="cPer" type="number" min="1" max="12"></div>
+      <div><label class="fld" for="cPentU" data-i18n="st.pentu"></label><input id="cPentU" type="number" min="0" max="6"></div>
+    </div>
+    <div class="sw" id="swPent"><span class="lb"><span data-i18n="st.pent"></span></span><span class="tg"></span></div>
+    <div id="floorPrev"></div>
+
+    <h2 style="margin-top:24px" data-i18n="ac.set"></h2>
+    <div class="grid2" style="margin-top:12px">
+      <div><label class="fld" for="cAddr" data-i18n="st.addr"></label><input id="cAddr"></div>
+      <div><label class="fld" for="cName" data-i18n="st.name"></label><input id="cName"></div>
+      <div><label class="fld" for="cGap" data-i18n="st.gap"></label><input id="cGap" type="number" step="30" min="0" max="240"></div>
+      <div><label class="fld" for="cCandle" data-i18n="st.candle"></label><input id="cCandle" type="number" min="0" max="60"></div>
+      <div><label class="fld" for="cTzeit" data-i18n="st.tzeit"></label><input id="cTzeit" type="number" min="0" max="90"></div>
+      <div><label class="fld" for="cKw" data-i18n="st.kw"></label><input id="cKw" type="number" step="0.1" min="0"></div>
+      <div><label class="fld" for="cRate" data-i18n="st.rate"></label><input id="cRate" type="number" step="0.01" min="0"></div>
+      <div><label class="fld" for="cLat" data-i18n="st.geo"></label><div class="row" style="flex-wrap:nowrap;gap:8px"><input id="cLat" type="number" step="0.0001"><input id="cLng" type="number" step="0.0001"></div></div>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn sm" id="saveCfg" data-i18n="st.save"></button>
+      <button class="btn ghost sm" id="closeSheet" data-i18n="st.close"></button>
+      <button class="btn ghost sm" id="reset" data-i18n="st.reset"></button>
+      <button class="btn ghost sm" id="logout" data-i18n="st.logout"></button>
+    </div>
+    <p class="note" data-i18n="st.note"></p>
+  </div>
+</div>
+
+<div id="sheetPrint">
+  <h2 id="shTitle"></h2>
+  <div id="shSub"></div>
+  <table><thead><tr><th id="prF"></th><th id="prT"></th><th id="prD"></th></tr></thead><tbody id="shBody"></tbody></table>
+  <p id="shFoot" style="margin-top:12pt;font-size:12pt"></p>
+</div>
+
+<div class="upd" id="upd">
+  <span class="dotp"></span>
+  <span data-i18n="up.msg"></span>
+  <button id="updBtn" data-i18n="up.btn"></button>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>
+const I18N = {
+he:{
+'th.light':'בהיר','th.dark':'כהה','ac.theme':'ערכת נושא',
+'gt.h':'התקינו את האפליקציה','gt.p':'מעלית שבת עובדת כאפליקציה במסך הבית — כך היא נפתחת מהר ובלי דפדפן.',
+'gt.i1':'לחצו על כפתור <b>שיתוף</b> בתחתית ספארי','gt.i2':'בחרו <b>הוספה למסך הבית</b>','gt.i3':'לחצו <b>הוספה</b> — והאפליקציה תופיע במסך הבית',
+'gt.a1':'פתחו את תפריט הדפדפן (שלוש נקודות)','gt.a2':'בחרו <b>התקנת אפליקציה</b>','gt.btn':'התקנה עכשיו',
+'gt.browser':'המשך בדפדפן במקום',
+'fx.h':'שעות קבועות','fx.p':'שעות שהמעלית תפעל בהן בכל שבת, בלי קשר לבקשות הדיירים. מסומנות בכחול אצל כולם.',
+'fx.save':'שמירת השעות הקבועות','fx.clear':'ניקוי','fx.n':'{n} שעות קבועות',
+'lg.fix':'שעה קבועה של הוועד','bd.fixed':'שעה קבועה',
+'ts.fixsaved':'השעות הקבועות נשמרו','wz.already':'רשומים כבר בדירה זו: {n}',
+'app.name':'הבניין שלי',
+'wz.elev':'אני משתמש במעלית שבת','wz.elev.s':'אם לא — לא נבקש ממך לסמן שעות ולא נספור אותך בלוח.',
+'el.out.h':'לא רשום למעלית שבת','el.out.p':'סימנת שאינך משתמש במעלית בשבת, ולכן לא מבקשים ממך שעות. אפשר לשנות בכל רגע.','el.out.b':'אני כן משתמש',
+'st.struct':'מבנה הבניין','st.struct.p':'הגדרת הקומות והדירות. מספר הדירות מחושב אוטומטית.',
+'st.floors':'מספר קומות','st.first':'קומה ראשונה עם דירות','st.perfloor':'דירות בקומה',
+'st.pent':'פנטהאוז בקומה העליונה','st.pentu':'דירות בפנטהאוז',
+'fl.n':'קומה {n}','fl.pent':'פנטהאוז','fl.sum':'סה״כ <b>{u}</b> דירות ב-<b>{f}</b> קומות',
+'wz.aptf':'דירה {n} · קומה {f}','wz.aptp':'דירה {n} · פנטהאוז',
+'pp.optout':'{n} דיירים לא משתמשים במעלית',
+'ts.conn':'אין חיבור לשרת','ts.retry':'נסה שוב','up.msg':'עדכון חדש מחכה לך','up.btn':'הפעלה מחדש','up.none':'האפליקציה מעודכנת','up.check':'בדיקת עדכון','ver.l':'גרסה {v}','ts.joined':'נרשמת לבניין','ts.structsaved':'מבנה הבניין נשמר',
+'lk.h':'ברוכים הבאים','lk.p':'האפליקציה מנוהלת לפי בניין. הירשמו פעם אחת כדי לראות את לוח המודעות, הקודים, הדיווחים והתשלומים.',
+
+'nav.home':'בית','nav.rep':'דיווחים','nav.pay':'תשלומים','nav.elev':'מעלית','nav.park':'חניה',
+'hm.eyebrow':'הבניין שלי','hm.h1':'לוח המודעות','hm.p':'מה חדש בבניין, ומה שצריך לדעת.',
+'hm.open':'דיווחים פתוחים','hm.paid':'החודש','hm.sab':'שעות בשבת',
+'hm.paid.yes':'שולם','hm.paid.no':'טרם','hm.paid.na':'—',
+'nb.h':'לוח מודעות','nb.empty':'אין הודעות כרגע.','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
+'nb.pin':'נעיצה למעלה','nb.post':'פרסום','nb.pinned':'נעוץ','nb.del':'מחיקה','ts.nbposted':'ההודעה פורסמה',
+'cd.h':'קודי הבניין','cd.p':'קוד שער, דלת כניסה, ואטסאפ של הוועד — מה שצריך ביום־יום.',
+'cd.show':'הצגה','cd.hide':'הסתרה','cd.edit':'עריכה','cd.add':'שורה חדשה','cd.label':'שם','cd.value':'קוד',
+'cd.save':'שמירה','cd.empty':'עדיין לא הוזנו קודים.','cd.lock':'הקודים גלויים לדיירים רשומים בלבד.','ts.cdsaved':'הקודים נשמרו',
+'rp.eyebrow':'תחזוקה','rp.h1':'דיווחים','rp.p':'ניקיון, תקלות, וכל מה שצריך טיפול.',
+'rp.new':'דיווח חדש','rp.kind':'סוג','rp.clean':'ניקיון','rp.fault':'תקלה','rp.topic':'נושא',
+'rp.loc':'מיקום','rp.text':'תיאור','rp.photo':'הוספת תמונה','rp.send':'שליחת דיווח','rp.cancel':'ביטול',
+'rp.empty':'אין דיווחים להצגה.','rp.all':'הכול','rp.lock':'כדי לפתוח דיווח צריך להירשם.',
+'rp.needtext':'צריך תיאור קצר','rp.photoload':'טוען תמונה…',
+'tp.elev':'מעלית','tp.light':'תאורה','tp.water':'מים','tp.stairs':'חדר מדרגות','tp.trash':'אשפה',
+'tp.garden':'גינה','tp.inter':'אינטרקום','tp.park':'חניה','tp.other':'אחר',
+'stt.open':'פתוח','stt.prog':'בטיפול','stt.done':'טופל',
+'ts.repsent':'הדיווח נשלח','ts.repup':'הסטטוס עודכן','ts.photobig':'התמונה כבדה מדי — נסה תמונה קטנה יותר',
+'py.eyebrow':'ועד בית','py.h1':'החשבון שלי','py.p':'מה שולם, ובאילו חודשים.',
+'py.dues':'דמי ועד לחודש (₪)','py.paidn':'חודשים ששולמו','py.total':'סה״כ השנה (₪)',
+'py.all':'כל הדירות','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
+'py.tap':'לחיצה מסמנת חודש','py.note':'הסימון נעשה על ידי ועד הבית. אם משהו לא מסתדר — פנו אליו.',
+'ts.paysaved':'עודכן','ts.dues':'הסכום עודכן',
+'pk.eyebrow':'בקרוב','pk.h1':'חניה','pk.p':'המודול הזה בפיתוח. בקרוב יהיה אפשר לנהל כאן את החניות בבניין.','pk.soon':'בפיתוח',
+'el.eyebrow':'שבת','el.h1':'מעלית שבת','el.mine':'הבקשה שלי','el.board':'הלוח','el.cost':'עלויות','el.vaad':'ועד',
+
+'acct.reg':'הרשמה','acct.apt':'דירה {n}','w.apt':'דירה',
+'week.closed':'ההגשה נסגרה','week.days':'עוד {n} ימים','week.in':'נסגר בעוד {t}',
+'me.eyebrow':'הדירה שלי','me.h1':'אילו שעות אתה צריך?',
+'me.p':'סמן משבצות של חצי שעה — אפשר לגרור. מה שאף אחד לא יבקש, לא יידלק.',
+'me.lock.t':'צפייה בלבד','me.lock.p':'אפשר לראות את הלוח והעלויות בלי הרשמה. כדי לסמן שעות בשם הדירה שלך צריך להירשם פעם אחת.','me.lock.b':'הרשמה לבניין',
+'me.pend.t':'ההרשמה ממתינה לתשלום','me.pend.p':'הפרטים נשמרו. אחרי השלמת התשלום ייפתח סימון השעות.','me.pend.b':'השלמת תשלום',
+'pre.all':'כל השבת','pre.tef':'זמני תפילה','pre.day':'שעות היום','pre.eve':'ערבים בלבד','pre.clr':'נקה בחירות שלי',
+'lg.mine':'הבחירה שלי','lg.cov':'כבר ביקשו דיירים אחרים',
+'me.save':'שמירת הבקשה','me.hours':'{n} שעות',
+'me.note':'הטופס נסגר בכניסת השבת. אחרי זה אפשר לערוך רק לקראת שבת הבאה.',
+'g.night':'ליל שבת','g.late':'שעות הלילה','g.morn':'שבת בבוקר','g.noon':'אחר הצהריים','g.eve':'לקראת צאת שבת',
+'bd.eyebrow':'לוח מאוחד','bd.h1':'מתי המעלית פועלת',
+'bd.p':'שעה שדייר אחד לפחות ביקש — דולקת. ככל שהזהב חזק יותר, יותר דיירים צריכים אותה.',
+'bd.on':'פועלת','bd.off':'מנוחה','bd.win':'חלונות לתכנות שעון השבת','bd.print':'הדפסה',
+'bd.empty':'עדיין אין בקשות. ברגע שדייר ראשון ישמור — חלונות ההפעלה יופיעו כאן.','bd.hrs':'{n} שעות',
+'ct.eyebrow':'שקוף לכל הדיירים','ct.h1':'כמה זה עולה',
+'ct.p':'כל המספרים והנוסחה גלויים. כל דייר יכול לבדוק ולעדכן את ההנחות בהגדרות.',
+'ct.now':'עלות המעלית בשבת הזו','ct.per':'לכל דירה:','ct.vs':'לעומת הפעלה רצופה',
+'ct.full':'כל השבת ברצף','ct.plan':'לפי בקשות הדיירים','ct.saved':'נחסך השבת (₪)','ct.year':'לדירה בשנה (₪)',
+'ct.calc':'החישוב, בגלוי','ct.k1':'שעות הפעלה בפועל','ct.k2':'שעות מנוחה','ct.k3':'הספק ממוצע',
+'ct.k4':'תעריף חשמל','ct.k5':'מספר דירות','ct.k6':'שעות × הספק × תעריף','ct.hr':'ש׳','ct.kwh':'₪{r} לקוט״ש',
+'ct.note':'ההספק הוא הערכה ממוצעת ותלוי בדגם המעלית ובמספר הנסיעות. כדאי לאמת מול חברת המעליות לפני שמציגים מספר לאסיפת הדיירים.',
+'pp.eyebrow':'ועד הבית','pp.h1':'מי כבר ענה','pp.count':'{d} מתוך {u} דיירים סימנו · {r} נותרו',
+'pp.rem':'תזכורות יום חמישי','pp.regs':'{n} רשומים','pp.none':'אף דייר לא ביקש תזכורת עדיין.',
+'pp.alldone':'כל מי שביקש תזכורת כבר סימן שעות.','pp.copy':'העתקת הרשימה ל-n8n','pp.send':'שליחה',
+'pp.note':'דירה שלא סימנה לא נספרת כ״לא צריך״ — היא פשוט לא משפיעה על הלוח. שווה להזכיר לפני כניסת השבת.',
+'u.wait':'ממתין','u.none':'לא רשום','u.anon':'אנונימי','u.hrs':'{n} שעות',
+'wz.addr.h':'כתובת הבניין','wz.addr.p':'כל הדיירים בכתובת אחת רואים את אותו לוח.','wz.addr.l':'רחוב ומספר',
+'wz.next':'המשך','wz.cancel':'ביטול','wz.back':'חזרה',
+'wz.free':'✓ הכתובת הזו פטורה מתשלום','wz.pay':'לכתובת הזו נדרש מנוי בניין — הפרטים בשלב האחרון',
+'wz.who.h':'מי אתם','wz.who.p':'כדי שנדע איזו דירה ביקשה מה. אפשר שכמה בני בית יירשמו לאותה דירה — בעל ואישה, ילדים בוגרים.','wz.fam':'שם משפחה','wz.apt':'מספר דירה',
+'wz.pick':'— בחר —','wz.aptn':'דירה {n}',
+'wz.anon':'בקשות אנונימיות','wz.anon.s':'השם לא יוצג ליד השעות שביקשת — רק מספר הדירה.',
+'wz.lang.h':'שפה','wz.wa.h':'תזכורת בוואטסאפ','wz.wa.p':'בכל יום חמישי, תזכורת לסמן שעות לפני שבת.',
+'wz.wa':'שלחו לי תזכורת','wz.wa.s':'הודעה אחת בשבוע. אפשר לבטל בכל רגע.','wz.phone':'מספר וואטסאפ',
+'wz.pay.h':'מנוי הבניין','wz.pay.freeh':'הבניין שלכם פטור',
+'wz.pay.p':'הכתובת הזו אינה ברשימת הבניינים הפטורים, ולכן נדרש מנוי לבניין. תשלום אחד מכסה את כל הדירות.',
+'wz.pay.free':'✓ {a} — ללא עלות','wz.pay.nothing':'אין מה לשלם. אפשר להתחיל.',
+'wz.f1':'לוח משותף לכל הדיירים','wz.f2':'תזכורות וואטסאפ בימי חמישי','wz.f3':'דוח עלויות חשמל לוועד הבית',
+'wz.pay.go':'מעבר לתשלום','wz.pay.done':'כבר שילמנו','wz.finish':'סיום ההרשמה','wz.later':'שמירה והמשך אחר כך',
+'wz.per':'{p} · כ-₪{d} לדירה',
+'ac.h':'החשבון שלי','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
+'st.addr':'כתובת הבניין','st.units':'מספר דירות','st.name':'שם תצוגה','st.gap':'איחוד הפסקה קצרה מ־(דק׳)',
+'st.candle':'הדלקת נרות (דק׳ לפני שקיעה)','st.tzeit':'צאת שבת (דק׳ אחרי שקיעה)','st.kw':'הספק ממוצע (kW)',
+'st.rate':'תעריף חשמל (₪ לקוט״ש)','st.geo':'קו רוחב / אורך','st.save':'שמירה','st.close':'סגירה',
+'st.reset':'איפוס בקשות השבת','st.logout':'יציאה',
+'st.note':'זמני השבת מחושבים לפי המיקום. אם המנהג בשכונה שונה — עדכן את ההיסטים.',
+'vd.h':'ועד הבית','vd.p':'הדירה האחראית על המעלית. רק היא רואה מי כבר ענה ואת רשימת התזכורות.',
+'vd.apt':'דירת הוועד','vd.pass':'סיסמה','vd.set':'הגדרת ועד הבית','vd.login':'כניסת ועד הבית',
+'vd.logout':'יציאה ממצב ועד','vd.in':'מחובר כוועד הבית · דירה {n}','vd.cfg':'ועד הבית: דירה {n}','vd.none':'עדיין לא הוגדר ועד בית. הדייר הראשון שיגדיר — יקבל את הגישה.',
+'pr.title':'מעלית שבת','pr.from':'מופעלת מ־','pr.to':'עד','pr.dur':'משך','pr.empty':'לא התקבלו בקשות',
+'pr.foot':'סה״כ {h} שעות הפעלה · עלות משוערת ₪{c}','pr.sub':'{a} · שבת {d} · כניסה {i} · צאת שבת {o}',
+'wa.msg':'תזכורת ממעלית שבת · {b}\nעד כניסת השבת ({t}) אפשר לסמן אילו שעות אתם צריכים את המעלית.',
+'ts.needreg':'צריך להירשם קודם','ts.saved':'נשמר · דירה {n}','ts.addr':'צריך כתובת','ts.fam':'צריך שם משפחה',
+'ts.apt':'צריך מספר דירה','ts.phone':'צריך מספר טלפון לתזכורת','ts.nolink':'קישור התשלום עדיין לא הוגדר',
+'ts.welcome':'ברוכים הבאים, דירה {n}','ts.pending':'נשמר — ממתין לתשלום','ts.cfg':'ההגדרות עודכנו',
+'ts.reset':'הבקשות אופסו','ts.out':'יצאת','ts.copied':'הועתק','ts.badpass':'סיסמה שגויה',
+'ts.vaadin':'מחובר כוועד הבית','ts.vaadset':'ועד הבית הוגדר','ts.updated':'עודכן','ts.needpass':'צריך סיסמה'
+},
+en:{
+'th.light':'Light','th.dark':'Dark','ac.theme':'Theme',
+'gt.h':'Install the app','gt.p':'Shabbat Elevator runs as an app on your home screen — it opens faster and without a browser.',
+'gt.i1':'Tap the <b>Share</b> button at the bottom of Safari','gt.i2':'Choose <b>Add to Home Screen</b>','gt.i3':'Tap <b>Add</b> — the app appears on your home screen',
+'gt.a1':'Open the browser menu (three dots)','gt.a2':'Choose <b>Install app</b>','gt.btn':'Install now',
+'gt.browser':'Continue in the browser instead',
+'fx.h':'Fixed hours','fx.p':'Hours the elevator runs every Shabbat regardless of requests. Everyone sees them marked in blue.',
+'fx.save':'Save fixed hours','fx.clear':'Clear','fx.n':'{n} fixed hours',
+'lg.fix':'Committee fixed hour','bd.fixed':'Fixed hour',
+'ts.fixsaved':'Fixed hours saved','wz.already':'Already registered in this apartment: {n}',
+'app.name':'My Building',
+'wz.elev':'I use the Shabbat elevator','wz.elev.s':'If not, we will not ask you for hours or count you on the board.',
+'el.out.h':'Not signed up for the Shabbat elevator','el.out.p':'You marked that you do not use the elevator on Shabbat, so we do not ask you for hours. You can change this anytime.','el.out.b':'I do use it',
+'st.struct':'Building structure','st.struct.p':'Set the floors and apartments. The apartment count is calculated automatically.',
+'st.floors':'Floors','st.first':'First floor with apartments','st.perfloor':'Apartments per floor',
+'st.pent':'Penthouse on the top floor','st.pentu':'Penthouse apartments',
+'fl.n':'Floor {n}','fl.pent':'Penthouse','fl.sum':'<b>{u}</b> apartments across <b>{f}</b> floors',
+'wz.aptf':'Apt {n} · floor {f}','wz.aptp':'Apt {n} · penthouse',
+'pp.optout':'{n} residents do not use the elevator',
+'ts.conn':'No connection to the server','ts.retry':'Try again','up.msg':'A new version is ready','up.btn':'Restart','up.none':'You are on the latest version','up.check':'Check for updates','ver.l':'Version {v}','ts.joined':'You joined the building','ts.structsaved':'Building structure saved',
+'lk.h':'Welcome','lk.p':'The app is organised per building. Register once to see the notice board, codes, reports and payments.',
+
+'nav.home':'Home','nav.rep':'Reports','nav.pay':'Payments','nav.elev':'Elevator','nav.park':'Parking',
+'hm.eyebrow':'My building','hm.h1':'Notice board','hm.p':'What is new in the building, and what you need to know.',
+'hm.open':'Open reports','hm.paid':'This month','hm.sab':'Hours on Shabbat',
+'hm.paid.yes':'Paid','hm.paid.no':'Not yet','hm.paid.na':'—',
+'nb.h':'Notice board','nb.empty':'No notices right now.','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
+'nb.pin':'Pin to top','nb.post':'Post','nb.pinned':'Pinned','nb.del':'Delete','ts.nbposted':'Notice posted',
+'cd.h':'Building codes','cd.p':'Gate code, entrance door, committee WhatsApp — the day-to-day essentials.',
+'cd.show':'Show','cd.hide':'Hide','cd.edit':'Edit','cd.add':'Add row','cd.label':'Name','cd.value':'Code',
+'cd.save':'Save','cd.empty':'No codes entered yet.','cd.lock':'Codes are visible to registered residents only.','ts.cdsaved':'Codes saved',
+'rp.eyebrow':'Maintenance','rp.h1':'Reports','rp.p':'Cleaning, faults, anything that needs attention.',
+'rp.new':'New report','rp.kind':'Type','rp.clean':'Cleaning','rp.fault':'Fault','rp.topic':'Subject',
+'rp.loc':'Location','rp.text':'Description','rp.photo':'Add a photo','rp.send':'Send report','rp.cancel':'Cancel',
+'rp.empty':'Nothing to show.','rp.all':'All','rp.lock':'Sign up to open a report.',
+'rp.needtext':'A short description is required','rp.photoload':'Loading photo…',
+'tp.elev':'Elevator','tp.light':'Lighting','tp.water':'Water','tp.stairs':'Stairwell','tp.trash':'Rubbish',
+'tp.garden':'Garden','tp.inter':'Intercom','tp.park':'Parking','tp.other':'Other',
+'stt.open':'Open','stt.prog':'In progress','stt.done':'Resolved',
+'ts.repsent':'Report sent','ts.repup':'Status updated','ts.photobig':'Photo too large — try a smaller one',
+'py.eyebrow':'Committee','py.h1':'My account','py.p':'What has been paid, and for which months.',
+'py.dues':'Monthly dues (₪)','py.paidn':'Months paid','py.total':'Total this year (₪)',
+'py.all':'All apartments','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
+'py.tap':'Tap to mark a month','py.note':'Marking is done by the building committee. If something looks wrong, contact them.',
+'ts.paysaved':'Updated','ts.dues':'Amount updated',
+'pk.eyebrow':'Coming soon','pk.h1':'Parking','pk.p':'This module is in development. Parking management is coming.','pk.soon':'In development',
+'el.eyebrow':'Shabbat','el.h1':'Shabbat elevator','el.mine':'My request','el.board':'Schedule','el.cost':'Cost','el.vaad':'Committee',
+
+'acct.reg':'Sign up','acct.apt':'Apt {n}','w.apt':'Apt',
+'week.closed':'Submissions closed','week.days':'in {n} days','week.in':'closes in {t}',
+'me.eyebrow':'My apartment','me.h1':'Which hours do you need?',
+'me.p':'Tap half-hour blocks — you can drag across them. Anything nobody asks for stays off.',
+'me.lock.t':'View only','me.lock.p':'The schedule and costs are open to everyone. To request hours for your apartment, sign up once.','me.lock.b':'Sign up',
+'me.pend.t':'Registration awaiting payment','me.pend.p':'Your details are saved. Hour selection opens once payment is complete.','me.pend.b':'Complete payment',
+'pre.all':'All Shabbat','pre.tef':'Prayer times','pre.day':'Daytime','pre.eve':'Evenings only','pre.clr':'Clear my selection',
+'lg.mine':'My selection','lg.cov':'Already requested by others',
+'me.save':'Save request','me.hours':'{n} h',
+'me.note':'The form closes at candle lighting. After that you can only edit for next Shabbat.',
+'g.night':'Friday night','g.late':'Late night','g.morn':'Shabbat morning','g.noon':'Afternoon','g.eve':'Toward Shabbat end',
+'bd.eyebrow':'Merged schedule','bd.h1':'When the elevator runs',
+'bd.p':'Any hour at least one resident asked for is on. Stronger gold means more residents need it.',
+'bd.on':'Running','bd.off':'Resting','bd.win':'Windows to program into the timer','bd.print':'Print',
+'bd.empty':'No requests yet. Once the first resident saves, the windows appear here.','bd.hrs':'{n} h',
+'ct.eyebrow':'Open to every resident','ct.h1':'What it costs',
+'ct.p':'Every number and the formula are visible. Any resident can check them and update the assumptions in settings.',
+'ct.now':'Elevator cost this Shabbat','ct.per':'Per apartment:','ct.vs':'Versus running non-stop',
+'ct.full':'Running all Shabbat','ct.plan':'Based on resident requests','ct.saved':'Saved this Shabbat (₪)','ct.year':'Per apartment per year (₪)',
+'ct.calc':'The calculation, in the open','ct.k1':'Hours actually running','ct.k2':'Resting hours','ct.k3':'Average power',
+'ct.k4':'Electricity rate','ct.k5':'Apartments','ct.k6':'Hours × power × rate','ct.hr':'h','ct.kwh':'₪{r} per kWh',
+'ct.note':'Average power is an estimate and depends on the elevator model and number of trips. Verify it with the elevator company before presenting a figure at a residents meeting.',
+'pp.eyebrow':'Committee','pp.h1':'Who has responded','pp.count':'{d} of {u} residents responded · {r} left',
+'pp.rem':'Thursday reminders','pp.regs':'{n} signed up','pp.none':'No resident has asked for reminders yet.',
+'pp.alldone':'Everyone who asked for a reminder has already responded.','pp.copy':'Copy list for n8n','pp.send':'Send',
+'pp.note':'An apartment that has not responded is not counted as "not needed" — it simply does not affect the schedule. Worth a reminder before Shabbat.',
+'u.wait':'Pending','u.none':'Not signed up','u.anon':'Anonymous','u.hrs':'{n} h',
+'wz.addr.h':'Building address','wz.addr.p':'Everyone at the same address shares one schedule.','wz.addr.l':'Street and number',
+'wz.next':'Continue','wz.cancel':'Cancel','wz.back':'Back',
+'wz.free':'✓ This address is free of charge','wz.pay':'This address requires a building subscription — details in the last step',
+'wz.who.h':'Who you are','wz.who.p':'So the committee knows which apartment asked for what. Several people can register for the same apartment — spouses, adult children.','wz.fam':'Family name','wz.apt':'Apartment number',
+'wz.pick':'— select —','wz.aptn':'Apt {n}',
+'wz.anon':'Anonymous requests','wz.anon.s':'Your name is not shown next to the hours you request — only the apartment number.',
+'wz.lang.h':'Language','wz.wa.h':'WhatsApp reminder','wz.wa.p':'Every Thursday, a reminder to set your hours before Shabbat.',
+'wz.wa':'Send me a reminder','wz.wa.s':'One message a week. You can turn it off anytime.','wz.phone':'WhatsApp number',
+'wz.pay.h':'Building subscription','wz.pay.freeh':'Your building is free',
+'wz.pay.p':'This address is not on the free list, so the building needs a subscription. One payment covers every apartment.',
+'wz.pay.free':'✓ {a} — no charge','wz.pay.nothing':'Nothing to pay. You can start.',
+'wz.f1':'One shared schedule for every resident','wz.f2':'WhatsApp reminders on Thursdays','wz.f3':'Electricity cost report for the committee',
+'wz.pay.go':'Go to payment','wz.pay.done':'We already paid','wz.finish':'Finish sign-up','wz.later':'Save and continue later',
+'wz.per':'{p} · about ₪{d} per apartment',
+'ac.h':'My account','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
+'st.addr':'Building address','st.units':'Apartments','st.name':'Display name','st.gap':'Merge gaps shorter than (min)',
+'st.candle':'Candle lighting (min before sunset)','st.tzeit':'Shabbat ends (min after sunset)','st.kw':'Average power (kW)',
+'st.rate':'Electricity rate (₪ per kWh)','st.geo':'Latitude / longitude','st.save':'Save','st.close':'Close',
+'st.reset':'Reset this Shabbat','st.logout':'Sign out',
+'st.note':'Shabbat times are calculated from the location. If your local custom differs, adjust the offsets.',
+'vd.h':'Building committee','vd.p':'The apartment responsible for the elevator. Only it sees who has responded and the reminder list.',
+'vd.apt':'Committee apartment','vd.pass':'Password','vd.set':'Set committee','vd.login':'Committee sign-in',
+'vd.logout':'Exit committee mode','vd.in':'Signed in as committee · Apt {n}','vd.cfg':'Committee: Apt {n}','vd.none':'No committee set yet. The first resident to set one gets the access.',
+'pr.title':'Shabbat elevator','pr.from':'Runs from','pr.to':'Until','pr.dur':'Length','pr.empty':'No requests received',
+'pr.foot':'Total {h} running hours · estimated cost ₪{c}','pr.sub':'{a} · Shabbat {d} · candle lighting {i} · ends {o}',
+'wa.msg':'Reminder from the Shabbat elevator · {b}\nUntil candle lighting ({t}) you can mark which hours you need the elevator.',
+'ts.needreg':'Sign up first','ts.saved':'Saved · Apt {n}','ts.addr':'Address required','ts.fam':'Family name required',
+'ts.apt':'Apartment number required','ts.phone':'Phone number required for reminders','ts.nolink':'Payment link is not configured yet',
+'ts.welcome':'Welcome, Apt {n}','ts.pending':'Saved — awaiting payment','ts.cfg':'Settings updated',
+'ts.reset':'Requests cleared','ts.out':'Signed out','ts.copied':'Copied','ts.badpass':'Wrong password',
+'ts.vaadin':'Signed in as committee','ts.vaadset':'Committee set','ts.updated':'Updated','ts.needpass':'Password required'
+}};
+
+/* ==================================================================
+   שכבת הנתונים — Supabase
+   כל הנתונים בשרת. ההרשאות נאכפות ב-RLS, לא כאן.
+   ================================================================== */
+const SB_URL = 'https://rxlmfthgacwmtrkmbcau.supabase.co';
+const SB_KEY = 'sb_publishable_H0lNbfAdwx_dA_V9lmV3Bw_csgdX1u-';
+
+const memPrefs = {};
+const prefs = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return memPrefs[k] ?? null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) { memPrefs[k] = v; } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) { delete memPrefs[k]; } }
+};
+let sb = null, uid = null, online = false, dbError = '';
+
+async function dbInit() {
+  dbError = '';
+  if (typeof supabase === 'undefined') { dbError = 'ספריית Supabase לא נטענה — בדוק חיבור לאינטרנט'; return false; }
+  try {
+    sb = supabase.createClient(SB_URL, SB_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false,
+              storage: { getItem: prefs.get, setItem: prefs.set, removeItem: prefs.del } }
+    });
+    let s = (await sb.auth.getSession()).data.session;
+    if (!s) {
+      const r = await sb.auth.signInAnonymously();
+      if (r.error) {
+        dbError = /anonymous/i.test(r.error.message || '')
+          ? 'הרשמה אנונימית כבויה בפרויקט Supabase. Authentication ← Providers ← Allow anonymous sign-ins'
+          : (r.error.message || 'שגיאת התחברות');
+        return false;
+      }
+      s = r.data.session;
+    }
+    uid = s && s.user ? s.user.id : null;
+    online = !!uid;
+    if (!online) dbError = 'לא התקבל משתמש מהשרת';
+    return online;
+  } catch (e) {
+    dbError = (e && e.message) || 'שגיאה לא ידועה';
+    return false;
+  }
+}
+
+/* ---------- המרות בין שורות למבנה שהמסכים מצפים לו ---------- */
+function rowToCfg(r) {
+  return { id: r.id, address: r.address, name: r.name || r.address, units: r.units,
+    lat: +r.lat, lng: +r.lng, candle: r.candle_min, tzeit: r.tzeit_min,
+    kw: +r.kw, rate: +r.rate, gap: r.gap_min, dues: +r.dues, plan: r.plan,
+    joinCode: r.join_code, vaadApt: r.vaad_apartment, fixed: r.fixed_hours || [],
+    floors: r.floors, firstFloor: r.first_floor, perFloor: r.per_floor,
+    penthouse: r.penthouse, penthouseUnits: r.penthouse_units };
+}
+const cfgPatch = c => ({
+  name: c.name, candle_min: c.candle, tzeit_min: c.tzeit, kw: c.kw, rate: c.rate,
+  gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng
+});
+const structPatch = c => ({
+  floors: c.floors, first_floor: c.firstFloor, per_floor: c.perFloor,
+  penthouse: c.penthouse, penthouse_units: c.penthouseUnits
+});
+const rowToPerson = r => ({ id: r.id, apt: r.apartment, family: r.full_name, anon: r.anon,
+  wa: r.wa, phone: r.phone, lang: r.lang, theme: r.theme, isVaad: r.is_vaad,
+  elevator: r.elevator_opt_in });
+
+const DB = {
+  /* בניין */
+  async findBuilding(address) {
+    const { data, error } = await sb.rpc('find_or_create_building', { p_address: address });
+    if (error || !data || !data[0]) return null;
+    return data[0];
+  },
+  async building(id) {
+    const { data } = await sb.from('buildings').select('*').eq('id', id).maybeSingle();
+    return data ? rowToCfg(data) : null;
+  },
+  async saveBuilding(id, patch) {
+    const { error } = await sb.from('buildings').update(patch).eq('id', id);
+    return !error;
+  },
+
+  /* דיירים */
+  async myResident() {
+    const { data } = await sb.from('residents').select('*').eq('user_id', uid).limit(1);
+    return data && data[0] ? { row: data[0], person: rowToPerson(data[0]) } : null;
+  },
+  async join(bid, rec) {
+    const { data, error } = await sb.from('residents').insert({
+      user_id: uid, building_id: bid, apartment: rec.apt, full_name: rec.family,
+      anon: rec.anon, wa: rec.wa, phone: rec.phone, lang: rec.lang, theme: rec.theme,
+      elevator_opt_in: rec.elevator
+    }).select().single();
+    if (error) return null;
+    return rowToPerson(data);
+  },
+  async updateMe(rid, patch) {
+    const { error } = await sb.from('residents').update(patch).eq('id', rid);
+    return !error;
+  },
+  async residents(bid) {
+    const { data } = await sb.from('residents').select('*').eq('building_id', bid);
+    const out = {};
+    (data || []).forEach(r => out[r.id] = rowToPerson(r));
+    return out;
+  },
+
+  /* מעלית שבת */
+  async requests(bid, shabbat) {
+    const { data } = await sb.from('elevator_requests').select('*')
+      .eq('building_id', bid).eq('shabbat', shabbat);
+    return data || [];
+  },
+  async saveRequest(bid, rid, shabbat, keys) {
+    const { error } = await sb.from('elevator_requests')
+      .upsert({ building_id: bid, resident_id: rid, shabbat, slots: keys, updated_at: new Date().toISOString() },
+              { onConflict: 'resident_id,shabbat' });
+    return !error;
+  },
+  async clearWeek(bid, shabbat) {
+    await sb.from('elevator_requests').delete().eq('building_id', bid).eq('shabbat', shabbat);
+  },
+
+  /* ועד */
+  async setVaad(bid, apt, pass) {
+    const { data, error } = await sb.rpc('set_vaad', { b: bid, apt, pass });
+    return !error && data === true;
+  },
+  async claimVaad(bid, pass) {
+    const { data, error } = await sb.rpc('claim_vaad', { b: bid, pass });
+    return !error && data === true;
+  },
+
+  /* לוח מודעות */
+  async notices(bid) {
+    const { data } = await sb.from('notices').select('*').eq('building_id', bid)
+      .order('pinned', { ascending: false }).order('created_at', { ascending: false });
+    const out = {};
+    (data || []).forEach(n => out[n.id] = { id: n.id, title: n.title, body: n.body,
+      pin: n.pinned, ts: new Date(n.created_at).getTime() });
+    return out;
+  },
+  async addNotice(bid, rid, n) {
+    const { data, error } = await sb.from('notices')
+      .insert({ building_id: bid, title: n.title, body: n.body, pinned: n.pin, created_by: rid })
+      .select().single();
+    if (error) return null;
+    return { id: data.id, title: data.title, body: data.body, pin: data.pinned,
+             ts: new Date(data.created_at).getTime() };
+  },
+  async delNotice(id) { await sb.from('notices').delete().eq('id', id); },
+
+  /* קודים */
+  async codes(bid) {
+    const { data } = await sb.from('building_codes').select('*')
+      .eq('building_id', bid).order('sort');
+    return (data || []).map(c => ({ k: c.label, v: c.value }));
+  },
+  async saveCodes(bid, list) {
+    await sb.from('building_codes').delete().eq('building_id', bid);
+    if (!list.length) return true;
+    const { error } = await sb.from('building_codes')
+      .insert(list.map((c, i) => ({ building_id: bid, label: c.k, value: c.v, sort: i })));
+    return !error;
+  },
+
+  /* דיווחים */
+  async reports(bid) {
+    const { data } = await sb.from('reports').select('*')
+      .eq('building_id', bid).order('created_at', { ascending: false });
+    const out = {};
+    (data || []).forEach(r => out[r.id] = { id: r.id, rid: r.resident_id, apt: r.apartment,
+      kind: r.kind, topic: r.topic, loc: r.location, text: r.description,
+      photo: r.photo_path, status: r.status, ts: new Date(r.created_at).getTime() });
+    return out;
+  },
+  async addReport(bid, rid, r, dataUrl) {
+    const { data, error } = await sb.from('reports').insert({
+      building_id: bid, resident_id: rid, apartment: r.apt, kind: r.kind,
+      topic: r.topic, location: r.loc, description: r.text
+    }).select().single();
+    if (error) return null;
+    let path = null;
+    if (dataUrl) {
+      path = `${bid}/${data.id}.jpg`;
+      const blob = await (await fetch(dataUrl)).blob();
+      const up = await sb.storage.from('reports').upload(path, blob, { contentType: 'image/jpeg', upsert: true });
+      if (up.error) path = null;
+      else await sb.from('reports').update({ photo_path: path }).eq('id', data.id);
+    }
+    return { id: data.id, rid, apt: r.apt, kind: r.kind, topic: r.topic, loc: r.loc,
+             text: r.text, photo: path, status: 'open', ts: Date.now() };
+  },
+  async setReportStatus(id, status) { await sb.from('reports').update({ status }).eq('id', id); },
+  async delReport(id, path) {
+    await sb.from('reports').delete().eq('id', id);
+    if (path) await sb.storage.from('reports').remove([path]);
+  },
+  async photoUrl(path) {
+    const { data } = await sb.storage.from('reports').createSignedUrl(path, 3600);
+    return data ? data.signedUrl : null;
+  },
+
+  /* תשלומים */
+  async payments(bid, year) {
+    const { data } = await sb.from('payments').select('*').eq('building_id', bid).eq('year', year);
+    const out = {};
+    (data || []).forEach(p => {
+      const rec = out[p.apartment] || { apt: p.apartment, m: {} };
+      rec.m[p.year + '-' + String(p.month).padStart(2, '0')] = 1;
+      out[p.apartment] = rec;
+    });
+    return out;
+  },
+  async setPaid(bid, apt, year, month, amount, rid) {
+    const { error } = await sb.from('payments')
+      .insert({ building_id: bid, apartment: apt, year, month, amount, marked_by: rid });
+    return !error;
+  },
+  async unsetPaid(bid, apt, year, month) {
+    await sb.from('payments').delete().eq('building_id', bid)
+      .eq('apartment', apt).eq('year', year).eq('month', month);
+  },
+
+  /* עדכון חי */
+  watch(bid, onChange) {
+    if (!sb) return;
+    sb.channel('bld-' + bid)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'elevator_requests', filter: 'building_id=eq.' + bid }, onChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notices', filter: 'building_id=eq.' + bid }, onChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reports', filter: 'building_id=eq.' + bid }, onChange)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'payments', filter: 'building_id=eq.' + bid }, onChange)
+      .subscribe();
+  },
+  async signOut() { if (sb) { await sb.auth.signOut(); await sb.auth.signInAnonymously(); } }
+};
+
+/* ============ הגדרות מוצר — ערוך כאן ============ */
+const BILLING = {
+  freeAddresses: ['שרה אהרונסון 12'],
+  amount: 149,
+  periodKey: { he: 'לשנה · לכל הבניין', en: 'per year · whole building' },
+  payUrl: ''
+};
+const GATE = {
+  force: true,            // לחייב התקנה למסך הבית
+  allowBrowser: true      // false = להסיר לגמרי את "המשך בדפדפן"
+};
+
+const normAddr = s => (s || '').trim().replace(/^(רחוב|רח['׳]?)\s*/, '')
+  .replace(/[^\u0590-\u05FF0-9]/g, '').replace(/אהרנסון/g, 'אהרונסון');
+const FREE = BILLING.freeAddresses.map(normAddr);
+const isFreeAddr = a => { const n = normAddr(a); return !!n && FREE.some(f => n.startsWith(f) && !/^[0-9]/.test(n.slice(f.length))); };
+
+/* ============ שפה + ערכת נושא ============ */
+let lang = 'he', theme = 'light';
+const t = (k, v) => { let s = (I18N[lang] || I18N.he)[k]; if (s === undefined) return k;
+  if (v) Object.keys(v).forEach(x => s = s.split('{' + x + '}').join(v[x])); return s; };
+const $ = s => document.querySelector(s);
+function applyLang() {
+  const d = document.documentElement;
+  d.lang = lang; d.dir = lang === 'he' ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const s = t(el.dataset.i18n);
+    if (s.indexOf('<b>') >= 0) el.innerHTML = s; else el.textContent = s;
+  });
+  document.querySelectorAll('[data-lang]').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  document.querySelectorAll('[data-lang2]').forEach(b => b.classList.toggle('on', b.dataset.lang2 === lang));
+  $('#prF').textContent = t('pr.from'); $('#prT').textContent = t('pr.to'); $('#prD').textContent = t('pr.dur');
+  document.title = t('app.name');
+}
+function applyTheme() {
+  document.documentElement.dataset.theme = theme;
+  const m = document.querySelector('meta[name=theme-color]');
+  if (m) m.content = theme === 'light' ? '#F5F1E9' : '#0A0F14';
+  document.querySelectorAll('[data-theme]').forEach(b => { if (b.tagName === 'BUTTON') b.classList.toggle('on', b.dataset.theme === theme); });
+  document.querySelectorAll('[data-theme2]').forEach(b => b.classList.toggle('on', b.dataset.theme2 === theme));
+}
+
+/* ============ זמני שבת ============ */
+const TZ = 'Asia/Jerusalem', RAD = Math.PI / 180;
+function sunsetMs(dayUTC, lat, lng) {
+  const J = dayUTC / 864e5 + 2440587.5, n = Math.round(J - 2451545 + 0.0008), Js = n - lng / 360;
+  const M = (357.5291 + 0.98560028 * Js) % 360;
+  const C = 1.9148 * Math.sin(M * RAD) + 0.02 * Math.sin(2 * M * RAD) + 0.0003 * Math.sin(3 * M * RAD);
+  const L = (M + C + 180 + 102.9372) % 360;
+  const Jt = 2451545 + Js + 0.0053 * Math.sin(M * RAD) - 0.0069 * Math.sin(2 * L * RAD);
+  const dec = Math.asin(Math.sin(L * RAD) * Math.sin(23.44 * RAD));
+  const cw = (Math.sin(-0.833 * RAD) - Math.sin(lat * RAD) * Math.sin(dec)) / (Math.cos(lat * RAD) * Math.cos(dec));
+  const w = Math.acos(Math.max(-1, Math.min(1, cw))) / RAD;
+  return ((Jt + w / 360) - 2440587.5) * 864e5;
+}
+const locale = () => lang === 'he' ? 'he-IL' : 'en-GB';
+const fmtT = ms => new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: TZ, hour12: false }).format(new Date(ms));
+const fmtD = ms => new Intl.DateTimeFormat(locale(), { day: 'numeric', month: 'long', timeZone: TZ }).format(new Date(ms));
+const locHour = ms => +new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hour12: false, timeZone: TZ }).format(new Date(ms));
+const isoDay = ms => new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date(ms)).replace(/-/g, '');
+function fridayUTC(off) {
+  const n = new Date(), d = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate()));
+  const dw = d.getUTCDay(); let add = (5 - dw + 7) % 7; if (dw === 6) add = 6;
+  return d.getTime() + (add + off * 7) * 864e5;
+}
+
+/* ============ מצב ============ */
+const DEF = { id: null, name: '', address: '', units: 15, lat: 31.7497, lng: 34.9887,
+  candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150,
+  plan: 'pending', floors: 8, firstFloor: 1, perFloor: 2, penthouse: true, penthouseUnits: 1 };
+let cfg = { ...DEF }, weekOff = 0, sabb = null, slots = [], reqs = {}, people = {};
+let me = null, isVaad = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
+const canEdit = () => !!(me && me.apt && cfg.plan !== 'pending');
+const usesElevator = () => !!(me && me.elevator !== false);
+let notes = {}, codes = [], reports = {}, pays = {}, repFilter = 'open', repKind = 'clean';
+let payView = 'mine', payYear = new Date().getFullYear(), codesOpen = false, codesEdit = false;
+let lastOnH = 0, pendingPhoto = null;
+const MON = n => new Intl.DateTimeFormat(locale(), { month: 'short' }).format(new Date(2020, n, 1));
+const ymKey = (y, m) => y + '-' + String(m + 1).padStart(2, '0');
+
+function buildSabbath() {
+  const fri = fridayUTC(weekOff), step = 18e5;
+  const inMs = sunsetMs(fri, cfg.lat, cfg.lng) - cfg.candle * 6e4;
+  const outMs = sunsetMs(fri + 864e5, cfg.lat, cfg.lng) + cfg.tzeit * 6e4;
+  const start = Math.floor(inMs / step) * step, end = Math.ceil(outMs / step) * step;
+  sabb = { fri, inMs, outMs, start, end, id: isoDay(fri),
+           iso: new Intl.DateTimeFormat('en-CA', { timeZone: TZ }).format(new Date(fri)) };
+  slots = []; for (let x = start; x < end; x += step) slots.push(x);
+  keyMs = {}; slots.forEach(x => keyMs[fixKey(x)] = x);
+}
+const keysOf = set => [...set].map(fixKey);
+const msOf = keys => (keys || []).map(k => keyMs[k]).filter(x => x !== undefined);
+
+/* ---------- מבנה הבניין ---------- */
+function aptFloor(a) {
+  const res = Math.max(0, cfg.floors - cfg.firstFloor + 1 - (cfg.penthouse ? 1 : 0));
+  const normal = res * cfg.perFloor;
+  if (cfg.penthouse && a > normal) return { floor: cfg.floors, pent: true };
+  return { floor: cfg.firstFloor + Math.floor((a - 1) / cfg.perFloor), pent: false };
+}
+const aptLabel = a => { const f = aptFloor(a);
+  return f.pent ? t('wz.aptp', { n: a }) : t('wz.aptf', { n: a, f: f.floor }); };
+function renderFloors() {
+  const box = $('#floorPrev'); if (!box) return;
+  box.innerHTML = '';
+  const rows = {};
+  for (let a = 1; a <= cfg.units; a++) {
+    const f = aptFloor(a); const k = f.pent ? 'p' : f.floor;
+    (rows[k] = rows[k] || { pent: f.pent, floor: f.floor, aps: [] }).aps.push(a);
+  }
+  Object.values(rows).sort((x, y) => y.floor - x.floor || (y.pent ? 1 : -1)).forEach(r => {
+    const d = document.createElement('div'); d.className = 'flr' + (r.pent ? ' pent' : '');
+    d.innerHTML = `<b>${r.pent ? t('fl.pent') : t('fl.n', { n: r.floor })}</b>
+      <div class="aps">${r.aps.map(a => `<span class="ap">${a}</span>`).join('')}</div>`;
+    box.appendChild(d);
+  });
+  const s = document.createElement('div'); s.className = 'sum';
+  s.innerHTML = t('fl.sum', { u: cfg.units, f: cfg.floors });
+  box.appendChild(s);
+}
+function calcUnits() {
+  const res = Math.max(0, cfg.floors - cfg.firstFloor + 1 - (cfg.penthouse ? 1 : 0));
+  return Math.min(200, Math.max(1, res * cfg.perFloor + (cfg.penthouse ? cfg.penthouseUnits : 0)));
+}
+const dayIdx = ms => (isoDay(ms) === sabb.id ? 0 : 1);
+const fixKey = ms => dayIdx(ms) + '-' + fmtT(ms);
+const isFixed = ms => (cfg.fixed || []).indexOf(fixKey(ms)) >= 0;
+const hrs = n => (n / 2).toFixed(1).replace('.0', '');
+
+/* ============ בורר שעות ============ */
+const groups = [
+  { k: 'g.night', f: (h, d) => d === 0 || (d === 1 && h < 1) },
+  { k: 'g.late', f: (h, d) => d === 1 && h >= 1 && h < 6 },
+  { k: 'g.morn', f: (h, d) => d === 1 && h >= 6 && h < 12 },
+  { k: 'g.noon', f: (h, d) => d === 1 && h >= 12 && h < 17 },
+  { k: 'g.eve', f: (h, d) => d === 1 && h >= 17 }
+];
+function coveredByOthers() {
+  const s = new Set(), mine = me && me.id;
+  Object.values(reqs).forEach(r => { if (r.rid !== mine) (r.slots || []).forEach(x => s.add(+x)); });
+  return s;
+}
+function buildGrid(box, mark, opts) {
+  box.innerHTML = '';
+  groups.forEach(g => {
+    const list = slots.filter(x => g.f(locHour(x), dayIdx(x)));
+    if (!list.length) return;
+    const w = document.createElement('div'); w.className = 'per';
+    w.innerHTML = `<h4>${t(g.k)}</h4>`;
+    const grid = document.createElement('div'); grid.className = 'slots';
+    list.forEach(x => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = 'slot ' + mark(x); b.dataset.t = x; b.textContent = fmtT(x);
+      grid.appendChild(b);
+    });
+    w.appendChild(grid); box.appendChild(w);
+  });
+}
+function renderPicker() {
+  const cov = coveredByOthers();
+  buildGrid($('#picker'), x => sel.has(x) ? 'on' : (isFixed(x) ? 'fix' : (cov.has(x) ? 'cov' : '')));
+  $('#mine').textContent = sel.size ? t('me.hours', { n: hrs(sel.size) }) : '';
+}
+function renderFixed() {
+  buildGrid($('#fixPicker'), x => fixDraft.has(fixKey(x)) ? 'on' : '');
+  $('#fixCount').textContent = t('fx.n', { n: hrs(fixDraft.size) });
+}
+
+/* ============ חישוב ============ */
+function demand() {
+  const m = new Map();
+  Object.values(reqs).forEach(r => (r.slots || []).forEach(x => {
+    const k = +x, s = m.get(k) || new Set(); s.add(+r.apt); m.set(k, s);
+  }));
+  const c = new Map(); m.forEach((v, k) => c.set(k, v.size)); return c;
+}
+const elevPeople = () => Object.values(people).filter(p => p.elevator !== false);
+function windows(dm) {
+  const on = slots.map(x => isFixed(x) || (dm.get(x) || 0) > 0), gs = Math.round(cfg.gap / 30);
+  for (let i = 0; i < on.length; i++) {
+    if (on[i]) continue;
+    let j = i; while (j < on.length && !on[j]) j++;
+    if (i > 0 && j < on.length && (j - i) <= gs) for (let k = i; k < j; k++) on[k] = true;
+    i = j - 1;
+  }
+  const out = []; let s = null;
+  on.forEach((v, i) => { if (v && s === null) s = slots[i]; if (!v && s !== null) { out.push([s, slots[i]]); s = null; } });
+  if (s !== null) out.push([s, sabb.end]);
+  return { on, out };
+}
+const byApt = () => { const m = {}; Object.values(people).forEach(p => (m[p.apt] = m[p.apt] || []).push(p)); return m; };
+
+function renderAll() {
+  const dm = demand(), { on, out } = windows(dm), max = Math.max(1, ...dm.values());
+
+  const sh = $('#shaft'); sh.innerHTML = '';
+  for (let i = 0; i < slots.length; i += 2) {
+    const row = document.createElement('div');
+    row.className = 'hr'; row.style.setProperty('--i', i / 2);
+    const lb = document.createElement('div'); lb.className = 't'; lb.textContent = fmtT(slots[i]); row.appendChild(lb);
+    [i, i + 1].forEach(k => {
+      const c = document.createElement('div');
+      c.className = 'cell' + (on[k] ? ' lit' : '') + (slots[k] !== undefined && isFixed(slots[k]) ? ' fix' : '');
+      if (slots[k] !== undefined) {
+        c.style.setProperty('--d', ((dm.get(slots[k]) || 0) / max).toFixed(2));
+        c.title = fmtT(slots[k]) + ' · ' + (dm.get(slots[k]) || 0);
+      }
+      row.appendChild(c);
+    });
+    sh.appendChild(row);
+  }
+  document.querySelectorAll('.hr:not(.in)').forEach(el => io2.observe(el));
+
+  const wb = $('#windows'); wb.innerHTML = '';
+  if (!out.length) wb.innerHTML = `<p class="muted" style="margin-top:8px">${t('bd.empty')}</p>`;
+  else out.forEach(([a, b]) => {
+    const el = document.createElement('div'); el.className = 'win';
+    el.innerHTML = `<span class="num">${fmtT(a)} — ${fmtT(b)}</span><small>${t('bd.hrs', { n: ((b - a) / 36e5).toFixed(1).replace('.0', '') })}</small>`;
+    wb.appendChild(el);
+  });
+
+  const onH = on.filter(Boolean).length / 2, totH = slots.length / 2, offH = totH - onH;
+  const cost = onH * cfg.kw * cfg.rate, full = totH * cfg.kw * cfg.rate, save = full - cost;
+  count($('#cNow'), cost, 1, '₪ ');
+  $('#cPer').textContent = (cost / cfg.units).toFixed(2);
+  $('#bFull').textContent = '₪' + full.toFixed(1);
+  $('#bPlan').textContent = '₪' + cost.toFixed(1);
+  requestAnimationFrame(() => { $('#fFull').style.width = '100%';
+    $('#fPlan').style.width = (full ? Math.max(3, cost / full * 100) : 0) + '%'; });
+  count($('#sSave'), save, 1); count($('#sYear'), save * 52 / cfg.units, 0);
+  $('#kH').textContent = onH.toFixed(1).replace('.0', '') + ' ' + t('ct.hr');
+  $('#kOff').textContent = offH.toFixed(1).replace('.0', '') + ' ' + t('ct.hr');
+  $('#kKw').textContent = cfg.kw + ' kW';
+  $('#kRate').textContent = t('ct.kwh', { r: cfg.rate });
+  $('#kUnits').textContent = cfg.units;
+  $('#kTot').textContent = '₪' + cost.toFixed(2);
+
+  const map = byApt(), answered = {};
+  Object.values(reqs).forEach(r => answered[r.apt] = (answered[r.apt] || 0) + 1);
+  const optOut = Object.values(people).filter(p => p.elevator === false).length;
+  const u = $('#units'); u.innerHTML = ''; let done = 0;
+  for (let i = 1; i <= cfg.units; i++) {
+    const ppl = (map[i] || []).filter(p => p.elevator !== false), el = document.createElement('div');
+    const ans = !!answered[i];
+    el.className = 'unit' + (ans ? ' done' : '');
+    const names = ppl.map(p => p.anon ? t('u.anon') : (p.family || '')).filter(Boolean).join(' · ');
+    const who = names ? `<small class="who2${ppl.every(p => p.anon) ? ' an' : ''}">${names}</small>` : '';
+    const hoursForApt = Object.values(reqs).filter(r => +r.apt === i)
+      .reduce((s, r) => { (r.slots || []).forEach(x => s.add(+x)); return s; }, new Set()).size;
+    const lbl = ans ? t('u.hrs', { n: hrs(hoursForApt) }) : (ppl.length ? t('u.wait') : t('u.none'));
+    el.innerHTML = `<b>${i}</b>${who}<small>${lbl}</small>`;
+    if (ans) done++;
+    u.appendChild(el);
+  }
+  $('#respCount').textContent = t('pp.count', { d: done, u: cfg.units, r: cfg.units - done })
+    + (optOut ? ' · ' + t('pp.optout', { n: optOut }) : '');
+  requestAnimationFrame(() => $('#progBar').style.width = (done / cfg.units * 100) + '%');
+  renderReminders();
+
+  $('#shTitle').textContent = t('pr.title') + ' — ' + (cfg.name || cfg.address);
+  $('#shSub').textContent = t('pr.sub', { a: cfg.address || '', d: fmtD(sabb.fri), i: fmtT(sabb.inMs), o: fmtT(sabb.outMs) });
+  $('#shBody').innerHTML = out.map(([a, b]) => `<tr><td>${fmtT(a)}</td><td>${fmtT(b)}</td><td>${((b - a) / 36e5).toFixed(1).replace('.0', '')}</td></tr>`).join('')
+    || `<tr><td colspan="3">${t('pr.empty')}</td></tr>`;
+  $('#shFoot').textContent = t('pr.foot', { h: onH.toFixed(1).replace('.0', ''), c: cost.toFixed(2) });
+  lastOnH = onH;
+  renderHome();
+}
+
+const waPhone = p => { const d = (p || '').replace(/\D/g, '');
+  return d.startsWith('972') ? d : d.startsWith('0') ? '972' + d.slice(1) : d; };
+function renderReminders() {
+  const opted = Object.values(people).filter(p => p.wa && p.phone && p.elevator !== false);
+  $('#remCount').textContent = t('pp.regs', { n: opted.length });
+  const box = $('#remBody'); box.innerHTML = '';
+  const pend = opted.filter(p => !reqs[p.id]);
+  if (!pend.length) {
+    box.innerHTML = `<p class="muted" style="margin-top:8px">${opted.length ? t('pp.alldone') : t('pp.none')}</p>`;
+    return;
+  }
+  const msg = encodeURIComponent(t('wa.msg', { b: cfg.name || cfg.address, t: fmtT(sabb.inMs) }));
+  pend.forEach(p => {
+    const el = document.createElement('div'); el.className = 'rem';
+    const nm = (p.anon ? '' : p.family) || t('acct.apt', { n: p.apt });
+    el.innerHTML = `<span class="nm">${nm} · ${t('acct.apt', { n: p.apt })}<small>${p.phone}</small></span>
+      <a class="wa" target="_blank" rel="noopener" href="https://wa.me/${waPhone(p.phone)}?text=${msg}">${t('pp.send')}</a>`;
+    box.appendChild(el);
+  });
+  const b = document.createElement('button');
+  b.className = 'btn ghost sm'; b.style.marginTop = '12px'; b.textContent = t('pp.copy');
+  b.onclick = () => {
+    const data = JSON.stringify({ building: cfg.name || cfg.address, address: cfg.address, shabbat: sabb.id,
+      candle: fmtT(sabb.inMs), pending: pend.map(p => ({ apt: p.apt, name: p.family, phone: waPhone(p.phone) })) }, null, 2);
+    if (navigator.clipboard) navigator.clipboard.writeText(data).then(() => toast(t('ts.copied')));
+  };
+  box.appendChild(b);
+}
+function count(el, val, dec, pre) {
+  const from = parseFloat((el.textContent || '0').replace(/[^\d.]/g, '')) || 0, t0 = performance.now();
+  const step = now => { const p = Math.min(1, (now - t0) / 650), e = 1 - Math.pow(1 - p, 3);
+    el.textContent = (pre || '') + (from + (val - from) * e).toFixed(dec);
+    if (p < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function renderHeader() {
+  $('#bName').textContent = cfg.name || cfg.address || t('pr.title');
+  $('#pIn').textContent = fmtT(sabb.inMs); $('#pOut').textContent = fmtT(sabb.outMs);
+  $('#wLabel').textContent = fmtD(sabb.fri);
+  tick();
+}
+function tick() {
+  if (!sabb) return;
+  const d = sabb.inMs - Date.now(), el = $('#pLeft');
+  if (d <= 0) { el.textContent = t('week.closed'); el.style.color = 'var(--rest-tx)'; return; }
+  el.style.color = '';
+  const h = Math.floor(d / 36e5), m = Math.floor(d % 36e5 / 6e4);
+  el.textContent = h > 47 ? t('week.days', { n: Math.floor(h / 24) })
+    : t('week.in', { t: h + ':' + String(m).padStart(2, '0') });
+}
+setInterval(tick, 30000);
+
+function showConnError() {
+  $('#lockCard').hidden = false; $('#editCard').hidden = true; $('#optOutCard').hidden = true;
+  $('#lockT').textContent = t('ts.conn');
+  $('#lockP').textContent = dbError;
+  $('#lockBtn').textContent = t('ts.retry');
+  $('#lockBtn').onclick = () => location.reload();
+  ['#p-home', '#p-rep', '#p-pay'].forEach(id => {
+    const el = document.querySelector(id + ' .head p'); if (el) el.textContent = dbError;
+  });
+  go('elev');
+}
+function renderGate() {
+  const ok = canEdit(), uses = usesElevator();
+  $('#lockCard').hidden = ok;
+  $('#optOutCard').hidden = !(ok && !uses);
+  $('#editCard').hidden = !(ok && uses);
+  $('#acctBtn').classList.toggle('reg', !!(me && me.apt));
+  $('#acctLbl').textContent = me && me.apt ? t('acct.apt', { n: me.apt }) : t('acct.reg');
+  const pend = me && me.plan === 'pending';
+  $('#lockT').textContent = t(pend ? 'me.pend.t' : 'lk.h');
+  $('#lockP').textContent = t(pend ? 'me.pend.p' : 'lk.p');
+  $('#lockBtn').textContent = t(pend ? 'me.pend.b' : 'me.lock.b');
+  if (ok) {
+    $('#whoApt').textContent = me.apt;
+    $('#whoName').innerHTML = me.anon ? `<span class="an">· ${t('u.anon')}</span>` : (me.family ? '· ' + me.family : '');
+  }
+  $('#segVaad').hidden = !isVaad;
+  if (!isVaad && $('#e-vaad').classList.contains('on')) goE('me');
+  $('#nbAdd').hidden = !isVaad;
+  $('#cdEdit').hidden = !isVaad;
+  $('#pySegs').hidden = !isVaad;
+  $('#rpNew').hidden = !canEdit();
+  if (typeof renderCodes === 'function') { renderCodes(); renderPay(); }
+}
+
+/* ============ אינטראקציה ============ */
+let painting = null;
+$('#picker').addEventListener('pointerdown', e => {
+  const b = e.target.closest('.slot'); if (!b || b.classList.contains('fix')) return;
+  const x = +b.dataset.t; painting = !sel.has(x); toggle(x, painting, b);
+});
+$('#picker').addEventListener('pointermove', e => {
+  if (painting === null) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const b = el && el.closest && el.closest('.slot');
+  if (!b || b.classList.contains('fix')) return;
+  toggle(+b.dataset.t, painting, b);
+});
+addEventListener('pointerup', () => painting = null);
+addEventListener('pointercancel', () => painting = null);
+function toggle(x, v, el) {
+  const cov = coveredByOthers();
+  if (v) sel.add(x); else sel.delete(x);
+  el.className = 'slot ' + (v ? 'on' : (cov.has(x) ? 'cov' : ''));
+  $('#mine').textContent = sel.size ? t('me.hours', { n: hrs(sel.size) }) : '';
+}
+document.querySelectorAll('[data-pre]').forEach(b => b.addEventListener('click', () => {
+  const p = b.dataset.pre; sel.clear();
+  slots.forEach(x => {
+    const h = locHour(x), d = dayIdx(x); let hit = false;
+    if (p === 'all') hit = true;
+    else if (p === 'tef') hit = d === 0 || (d === 1 && (h < 1 || (h >= 6 && h < 12) || h >= 16));
+    else if (p === 'day') hit = d === 0 || (d === 1 && h >= 7 && h < 23);
+    else if (p === 'eve') hit = d === 0 || (d === 1 && (h < 1 || h >= 17));
+    if (hit && !isFixed(x)) sel.add(x);
+  });
+  renderPicker();
+}));
+$('#save').addEventListener('click', async () => {
+  if (!canEdit()) return toast(t('ts.needreg'));
+  const rec = { rid: me.id, apt: me.apt, slots: [...sel] };
+  reqs[me.id] = rec;
+  renderAll(); renderPicker(); goE('board');
+  const ok = await DB.saveRequest(cfg.id, me.id, sabb.iso, keysOf(sel));
+  toast(ok ? t('ts.saved', { n: me.apt }) : t('ts.conn'));
+});
+$('#print').addEventListener('click', () => print());
+$('#prevW').addEventListener('click', () => { weekOff--; boot(false); });
+$('#nextW').addEventListener('click', () => { weekOff++; boot(false); });
+function go(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + name));
+  document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x.dataset.tab === name));
+  scrollTo({ top: 0, behavior: 'smooth' });
+}
+document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', () => go(x.dataset.tab)));
+$('#optIn').addEventListener('click', () => { me.elevator = true; saveMe(); renderGate(); renderPicker(); });
+function goE(name) {
+  document.querySelectorAll('.esec').forEach(p => p.classList.toggle('on', p.id === 'e-' + name));
+  document.querySelectorAll('.seg[data-e]').forEach(x => x.classList.toggle('on', x.dataset.e === name));
+}
+document.querySelectorAll('.seg[data-e]').forEach(x => x.addEventListener('click', () => goE(x.dataset.e)));
+
+/* שעות קבועות */
+$('#fixPicker').addEventListener('click', e => {
+  const b = e.target.closest('.slot'); if (!b) return;
+  const k = fixKey(+b.dataset.t);
+  if (fixDraft.has(k)) fixDraft.delete(k); else fixDraft.add(k);
+  b.className = 'slot ' + (fixDraft.has(k) ? 'on' : '');
+  $('#fixCount').textContent = t('fx.n', { n: hrs(fixDraft.size) });
+});
+$('#fixSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  cfg.fixed = [...fixDraft];
+  const ok = await DB.saveBuilding(cfg.id, { fixed_hours: cfg.fixed });
+  renderAll(); renderPicker(); toast(ok ? t('ts.fixsaved') : t('ts.conn'));
+});
+$('#fixClear').addEventListener('click', () => { fixDraft.clear(); renderFixed(); });
+
+/* ============ גיליון ============ */
+const openSheet = v => { $('#sheet').classList.toggle('open', v); $('#sheetBg').classList.toggle('open', v); };
+function showSheet() {
+  const reg = !!(me && me.apt);
+  $('#wizard').hidden = reg; $('#account').hidden = !reg;
+  if (reg) fillAccount(); else { wStep(0); $('#wAddr').value = cfg.address || ''; checkAddr(); }
+  openSheet(true);
+}
+$('#acctBtn').addEventListener('click', showSheet);
+$('#lockBtn').addEventListener('click', () => {
+  if (me && me.plan === 'pending') { $('#wizard').hidden = false; $('#account').hidden = true; wStep(3); openSheet(true); }
+  else showSheet();
+});
+$('#sheetBg').addEventListener('click', () => openSheet(false));
+$('#wClose').addEventListener('click', () => openSheet(false));
+$('#closeSheet').addEventListener('click', () => openSheet(false));
+
+const sw = (el, on) => el.classList.toggle('on', !!on);
+let draft = { anon: false, wa: false, elevator: true };
+$('#swAnon').addEventListener('click', () => { draft.anon = !draft.anon; sw($('#swAnon'), draft.anon); });
+$('#swWa').addEventListener('click', () => { draft.wa = !draft.wa; sw($('#swWa'), draft.wa); $('#phoneWrap').hidden = !draft.wa; });
+$('#swAnon2').addEventListener('click', () => { me.anon = !me.anon; sw($('#swAnon2'), me.anon); saveMe(); });
+$('#swWa2').addEventListener('click', () => { me.wa = !me.wa; sw($('#swWa2'), me.wa); $('#phoneWrap2').hidden = !me.wa; saveMe(); });
+$('#swElev2').addEventListener('click', () => { me.elevator = !me.elevator; sw($('#swElev2'), me.elevator); saveMe(); renderGate(); });
+$('#swElev').addEventListener('click', () => { draft.elevator = !draft.elevator; sw($('#swElev'), draft.elevator); });
+$('#swPent').addEventListener('click', () => {
+  if (!isVaad) return; cfg.penthouse = !cfg.penthouse; sw($('#swPent'), cfg.penthouse);
+  cfg.units = calcUnits(); renderFloors(); });
+['cFloors','cFirst','cPer','cPentU'].forEach(id => $('#' + id).addEventListener('input', () => {
+  cfg.floors = +$('#cFloors').value || 1; cfg.firstFloor = +$('#cFirst').value || 1;
+  cfg.perFloor = +$('#cPer').value || 1; cfg.penthouseUnits = +$('#cPentU').value || 0;
+  cfg.units = calcUnits(); renderFloors(); }));
+$('#aPhone').addEventListener('change', () => { me.phone = $('#aPhone').value.trim(); saveMe(); toast(t('ts.updated')); });
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { lang = b.dataset.lang; setLang(); }));
+document.querySelectorAll('[data-lang2]').forEach(b => b.addEventListener('click', () => {
+  lang = b.dataset.lang2; if (me) { me.lang = lang; saveMe(); } setLang(); }));
+document.querySelectorAll('.seg[data-theme]').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.theme)));
+document.querySelectorAll('[data-theme2]').forEach(b => b.addEventListener('click', () => {
+  setTheme(b.dataset.theme2); if (me) { me.theme = theme; saveMe(); } }));
+function setTheme(v) { theme = v; applyTheme(); prefs.set('bld:theme', theme); }
+function setLang() {
+  applyLang(); fillApts(); renderHeader(); renderGate(); renderPicker(); renderFixed(); renderAll(); renderVaad();
+  renderNotes(); renderCodes(); fillTopics(); renderReports(); renderPay();
+  if (!$('#wizard').hidden) { checkAddr(); if (step === 3) renderPayStep(); }
+  prefs.set('bld:lang', lang);
+}
+
+/* אשף */
+let step = 0;
+function wStep(n) {
+  step = n;
+  document.querySelectorAll('.step').forEach(s => s.classList.toggle('on', +s.dataset.step === n));
+  document.querySelectorAll('.steps i').forEach(i => i.classList.toggle('on', +i.dataset.s <= n));
+  if (n === 1) showAptWho();
+  if (n === 3) renderPayStep();
+}
+document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', () => wStep(+b.dataset.back)));
+function checkAddr() {
+  const v = $('#wAddr').value.trim(), el = $('#addrStat');
+  if (!v) { el.hidden = true; return; }
+  el.hidden = false;
+  const free = isFreeAddr(v);
+  el.className = 'stat-line ' + (free ? 'free' : 'pay');
+  el.textContent = t(free ? 'wz.free' : 'wz.pay');
+}
+function showAptWho() {
+  const a = +$('#wApt').value, box = $('#aptWho');
+  const list = Object.values(people).filter(p => +p.apt === a && (!me || p.id !== me.id));
+  box.textContent = (a && list.length) ? t('wz.already', { n: list.map(p => p.anon ? t('u.anon') : p.family).join(' · ') }) : '';
+}
+$('#wAddr').addEventListener('input', checkAddr);
+$('#wApt').addEventListener('change', showAptWho);
+$('#w0next').addEventListener('click', async () => {
+  const v = $('#wAddr').value.trim();
+  if (!v) return toast(t('ts.addr'));
+  const b = await DB.findBuilding(v);
+  if (!b) return toast(t('ts.conn'));
+  const full = await DB.building(b.id);
+  if (!full) return toast(t('ts.conn'));
+  cfg = { ...DEF, ...full };
+  people = await DB.residents(cfg.id);
+  renderHeader(); fillApts(); showAptWho(); wStep(1);
+});
+$('#w1next').addEventListener('click', () => {
+  if (!$('#wFam').value.trim()) return toast(t('ts.fam'));
+  if (!$('#wApt').value) return toast(t('ts.apt'));
+  wStep(2);
+});
+$('#w2next').addEventListener('click', () => {
+  if (draft.wa && !$('#wPhone').value.trim()) return toast(t('ts.phone'));
+  wStep(3);
+});
+function renderPayStep() {
+  const free = cfg.plan === 'free';
+  $('#payFree').hidden = !free; $('#payNeed').hidden = free;
+  $('#payH').textContent = t(free ? 'wz.pay.freeh' : 'wz.pay.h');
+  $('#freeTxt').textContent = t('wz.pay.free', { a: cfg.address });
+  $('#prAmt').textContent = '₪' + BILLING.amount;
+  $('#prPer').textContent = t('wz.per', { p: BILLING.periodKey[lang] || BILLING.periodKey.he,
+    d: (BILLING.amount / (cfg.units || 1)).toFixed(0) });
+  $('#wFinish').textContent = t(free ? 'wz.finish' : 'wz.later');
+}
+$('#payGo').addEventListener('click', () => {
+  if (!BILLING.payUrl) return toast(t('ts.nolink'));
+  open(BILLING.payUrl, '_blank');
+});
+$('#payDone').addEventListener('click', () => finish());
+$('#wFinish').addEventListener('click', () => finish());
+
+async function finish() {
+  const apt = +$('#wApt').value, family = $('#wFam').value.trim();
+  if (!apt) return toast(t('ts.apt'));
+  if (!family) { wStep(1); return toast(t('ts.fam')); }
+  if (!cfg.id) { wStep(0); return toast(t('ts.addr')); }
+  const p = await DB.join(cfg.id, { apt, family, anon: draft.anon, wa: draft.wa,
+    phone: draft.wa ? $('#wPhone').value.trim() : '', lang, theme, elevator: draft.elevator });
+  if (!p) return toast(t('ts.conn'));
+  me = p; people[me.id] = p;
+  openSheet(false);
+  toast(cfg.plan === 'pending' ? t('ts.pending') : t('ts.welcome', { n: apt }));
+  await boot(false);
+}
+function saveMe() {
+  if (!me) return;
+  people[me.id] = { ...me };
+  renderGate(); renderReminders();
+  DB.updateMe(me.id, { full_name: me.family, anon: me.anon, wa: me.wa, phone: me.phone,
+    lang: me.lang || lang, theme: me.theme || theme, elevator_opt_in: me.elevator !== false });
+}
+function fillAccount() {
+  $('#acctLine').textContent = aptLabel(me.apt) + (me.family ? ' · ' + me.family : '') + ' · ' + (cfg.address || cfg.name);
+  sw($('#swAnon2'), me.anon); sw($('#swWa2'), me.wa); sw($('#swElev2'), me.elevator !== false);
+  $('#phoneWrap2').hidden = !me.wa; $('#aPhone').value = me.phone || '';
+  const v = $('#verLine');
+  v.textContent = t('ver.l', { v: APP_VERSION }) + ' · ';
+  const b = document.createElement('button');
+  b.className = 'xbtn'; b.textContent = t('up.check');
+  b.onclick = () => checkUpdate(true);
+  v.appendChild(b);
+  fillCfgForm(); renderFloors(); renderVaad();
+}
+$('#logout').addEventListener('click', async () => {
+  await DB.signOut();
+  me = null; isVaad = false; sel.clear(); cfg = { ...DEF };
+  reqs = {}; people = {}; notes = {}; reports = {}; pays = {}; codes = [];
+  openSheet(false); toast(t('ts.out'));
+  renderGate(); renderPicker(); renderAll(); renderNotes(); renderCodes(); renderReports(); renderPay();
+});
+
+/* ============ ועד הבית ============ */
+function aptOptions(selVal) {
+  return Array.from({ length: cfg.units }, (_, i) =>
+    `<option value="${i + 1}"${i + 1 === +selVal ? ' selected' : ''}>${aptLabel(i + 1)}</option>`).join('');
+}
+function renderVaad() {
+  const box = $('#vaadBox'); if (!box) return;
+  box.innerHTML = '';
+  const set = !!cfg.vaadApt;
+  const form = (pass, apt) => {
+    const d = document.createElement('div');
+    d.className = apt ? 'grid2' : ''; d.style.marginTop = '12px';
+    d.innerHTML = (apt ? `<div><label class="fld">${t('vd.apt')}</label><select id="vApt">${aptOptions(cfg.vaadApt)}</select></div>` : '')
+      + `<div><label class="fld">${t('vd.pass')}</label><input id="vPass" type="password" autocomplete="${pass}"></div>`;
+    return d;
+  };
+  if (isVaad) {
+    box.innerHTML = `<div class="stat-line free" style="margin-top:12px">${t('vd.in', { n: cfg.vaadApt })}</div>`;
+    box.appendChild(form('new-password', true));
+    const r = document.createElement('div'); r.className = 'row'; r.style.marginTop = '12px';
+    const b1 = document.createElement('button'); b1.className = 'btn sm'; b1.textContent = t('vd.set'); b1.onclick = setVaad;
+    const b2 = document.createElement('button'); b2.className = 'btn ghost sm'; b2.textContent = t('vd.logout');
+    b2.onclick = () => { isVaad = false; renderGate(); renderVaad(); renderPay(); };
+    r.append(b1, b2); box.appendChild(r); return;
+  }
+  if (set) {
+    box.innerHTML = `<div class="stat-line pay" style="margin-top:12px">${t('vd.cfg', { n: cfg.vaadApt })}</div>`;
+    box.appendChild(form('current-password', false));
+    const b = document.createElement('button'); b.className = 'btn sm'; b.style.marginTop = '12px';
+    b.textContent = t('vd.login');
+    b.onclick = async () => {
+      const p = $('#vPass').value; if (!p) return toast(t('ts.needpass'));
+      if (!await DB.claimVaad(cfg.id, p)) return toast(t('ts.badpass'));
+      isVaad = true; if (me) me.isVaad = true;
+      fixDraft = new Set(cfg.fixed || []); renderFixed();
+      renderGate(); renderVaad(); renderPay(); toast(t('ts.vaadin'));
+    };
+    box.appendChild(b); return;
+  }
+  box.innerHTML = `<p class="muted" style="margin-top:10px">${t('vd.none')}</p>`;
+  box.appendChild(form('new-password', true));
+  const b = document.createElement('button'); b.className = 'btn sm'; b.style.marginTop = '12px';
+  b.textContent = t('vd.set'); b.onclick = setVaad;
+  box.appendChild(b);
+}
+async function setVaad() {
+  if (!canEdit()) return toast(t('ts.needreg'));
+  const p = $('#vPass').value;
+  if (!p) return toast(t('ts.needpass'));
+  const apt = +$('#vApt').value;
+  if (!await DB.setVaad(cfg.id, apt, p)) return toast(t('ts.conn'));
+  cfg.vaadApt = apt; isVaad = (me.apt === apt); if (me) me.isVaad = isVaad;
+  fixDraft = new Set(cfg.fixed || []); renderFixed();
+  renderGate(); renderVaad(); renderPay(); toast(t('ts.vaadset'));
+}
+$('#saveCfg').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  cfg = { ...cfg, name: $('#cName').value.trim(),
+    candle: +$('#cCandle').value, tzeit: +$('#cTzeit').value,
+    kw: +$('#cKw').value, rate: +$('#cRate').value, gap: +$('#cGap').value,
+    lat: +$('#cLat').value, lng: +$('#cLng').value };
+  const ok = await DB.saveBuilding(cfg.id, { ...cfgPatch(cfg), ...structPatch(cfg) });
+  if (!ok) return toast(t('ts.conn'));
+  openSheet(false); toast(t('ts.structsaved')); boot(false);
+});
+$('#reset').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  await DB.clearWeek(cfg.id, sabb.iso);
+  reqs = {}; sel.clear(); renderPicker(); renderAll(); openSheet(false); toast(t('ts.reset'));
+});
+let toastT = null;
+function hideToast() { clearTimeout(toastT); toastT = null; $('#toast').classList.remove('show'); }
+function toast(m, ms) {
+  const el = $('#toast');
+  clearTimeout(toastT);
+  el.textContent = m;
+  el.classList.add('show');
+  toastT = setTimeout(hideToast, ms || 2600);
+}
+$('#toast').addEventListener('click', hideToast);
+document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', hideToast));
+
+/* ============ מסך התקנה ============ */
+let deferredPrompt = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredPrompt = e; $('#gateBtn').hidden = false; });
+function standalone() {
+  return matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+function initGate() {
+  const embedded = window.self !== window.top;
+  if (embedded || standalone() || !GATE.force) return;
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  $('#gateIos').hidden = !ios; $('#gateAnd').hidden = ios;
+  $('#gateSkip').hidden = !GATE.allowBrowser;
+  $('#gate').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+$('#gateBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt = null;
+});
+$('#gateSkip').addEventListener('click', () => {
+  $('#gate').classList.remove('on'); document.body.style.overflow = '';
+});
+/* ---------- זיהוי עדכון והפעלה מחדש ---------- */
+const APP_VERSION = '2026.08.19.4';
+let swReg = null, waitingSW = null, reloading = false;
+
+function showUpdate(worker) {
+  waitingSW = worker;
+  $('#upd').classList.add('show');
+  document.body.classList.add('has-upd');
+}
+$('#updBtn').addEventListener('click', () => {
+  if (!waitingSW) return location.reload();
+  $('#updBtn').textContent = '…';
+  waitingSW.postMessage({ type: 'SKIP_WAITING' });
+  setTimeout(() => { if (!reloading) location.reload(); }, 1500);
+});
+async function checkUpdate(loud) {
+  if (!swReg) { if (loud) toast(t('up.none')); return; }
+  try { await swReg.update(); } catch (e) {}
+  if (swReg.waiting) showUpdate(swReg.waiting);
+  else if (loud) toast(t('up.none'));
+}
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloading) return; reloading = true; location.reload();
+  });
+  addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      swReg = reg;
+      if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing; if (!nw) return;
+        nw.addEventListener('statechange', () => {
+          if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdate(nw);
+        });
+      });
+      setInterval(() => checkUpdate(false), 30 * 60 * 1000);
+    }).catch(() => {});
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) checkUpdate(false); });
+}
+
+/* ============ טעינה ============ */
+function fillCfgForm() {
+  $('#cName').value = cfg.name || ''; $('#cAddr').value = cfg.address || '';
+  $('#cCandle').value = cfg.candle; $('#cTzeit').value = cfg.tzeit; $('#cKw').value = cfg.kw;
+  $('#cRate').value = cfg.rate; $('#cGap').value = cfg.gap; $('#cLat').value = cfg.lat; $('#cLng').value = cfg.lng;
+  $('#cFloors').value = cfg.floors; $('#cFirst').value = cfg.firstFloor;
+  $('#cPer').value = cfg.perFloor; $('#cPentU').value = cfg.penthouseUnits;
+  sw($('#swPent'), cfg.penthouse);
+  $('#cAddr').disabled = true;
+}
+function fillApts() {
+  const s = $('#wApt'), cur = s.value;
+  s.innerHTML = `<option value="">${t('wz.pick')}</option>` +
+    Array.from({ length: cfg.units }, (_, i) => `<option value="${i + 1}">${aptLabel(i + 1)}</option>`).join('');
+  if (cur) s.value = cur; else if (me && me.apt) s.value = me.apt;
+}
+function loadMine() {
+  const r = me && reqs[me.id];
+  sel = new Set(((r && r.slots) || []).map(Number));
+  renderPicker();
+}
+async function boot(first) {
+  if (first) {
+    initGate();
+    lang = prefs.get('bld:lang') || 'he';
+    theme = prefs.get('bld:theme') || 'light';
+    applyLang(); applyTheme();
+    if (!await dbInit()) { showConnError(); return; }
+    const mine = await DB.myResident();
+    if (mine) {
+      me = mine.person;
+      lang = me.lang || lang; theme = me.theme || theme;
+      applyLang(); applyTheme();
+      const b = await DB.building(mine.row.building_id);
+      if (b) cfg = { ...DEF, ...b };
+      isVaad = !!me.isVaad;
+      draft = { anon: !!me.anon, wa: !!me.wa, elevator: me.elevator !== false };
+      $('#wFam').value = me.family || ''; $('#wPhone').value = me.phone || '';
+      sw($('#swAnon'), draft.anon); sw($('#swWa'), draft.wa); sw($('#swElev'), draft.elevator);
+      $('#phoneWrap').hidden = !draft.wa;
+      DB.watch(cfg.id, () => boot(false));
+    }
+  }
+  buildSabbath(); fillCfgForm(); fillApts(); renderHeader();
+  reqs = {}; people = {};
+  if (cfg.id) {
+    people = await DB.residents(cfg.id);
+    if (me && people[me.id]) { me = { ...me, ...people[me.id] }; isVaad = !!me.isVaad; }
+    (await DB.requests(cfg.id, sabb.iso)).forEach(r => {
+      const p = people[r.resident_id];
+      reqs[r.resident_id] = { rid: r.resident_id, apt: p ? p.apt : 0, slots: msOf(r.slots) };
+    });
+  }
+  fixDraft = new Set(cfg.fixed || []);
+  renderGate(); renderVaad(); renderFixed(); renderFloors();
+  loadMine(); renderAll();
+  await loadBuilding();
+  if (first && !me) showSheet();
+}
+const io2 = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('in'); io2.unobserve(e.target); } }), { threshold: .08 });
+addEventListener('scroll', () => document.body.style.setProperty('--par', (scrollY * .04) + 'px'), { passive: true });
+
+/* ==================================================================
+   מודולים: לוח מודעות · קודים · דיווחים · תשלומים · מסך בית
+   ================================================================== */
+
+/* ---------- מסך בית ---------- */
+function renderHome() {
+  const open = Object.values(reports).filter(r => r.status !== 'done').length;
+  $('#tOpen').textContent = open;
+  $('#repDot').classList.toggle('show', open > 0);
+  const now = new Date(), ym = ymKey(now.getFullYear(), now.getMonth());
+  const p = me && pays[me.apt];
+  $('#tPaid').textContent = !me ? t('hm.paid.na') : (p && p.m && p.m[ym] ? t('hm.paid.yes') : t('hm.paid.no'));
+  $('#tSab').textContent = lastOnH ? lastOnH.toFixed(1).replace('.0', '') : '—';
+}
+
+/* ---------- לוח מודעות ---------- */
+let nbPin = false;
+$('#nbPin').addEventListener('click', () => { nbPin = !nbPin; sw($('#nbPin'), nbPin); });
+$('#nbAdd').addEventListener('click', () => { $('#nbForm').hidden = false; $('#nbAdd').hidden = true; });
+$('#nbCancel').addEventListener('click', () => { $('#nbForm').hidden = true; $('#nbAdd').hidden = !isVaad; });
+$('#nbPost').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const title = $('#nbT').value.trim(), body = $('#nbB').value.trim();
+  if (!title && !body) return toast(t('rp.needtext'));
+  const n = await DB.addNotice(cfg.id, me.id, { title, body, pin: nbPin });
+  if (!n) return toast(t('ts.conn'));
+  notes[n.id] = n;
+  $('#nbT').value = ''; $('#nbB').value = ''; nbPin = false; sw($('#nbPin'), false);
+  $('#nbForm').hidden = true; $('#nbAdd').hidden = false;
+  renderNotes(); toast(t('ts.nbposted'));
+});
+function renderNotes() {
+  const box = $('#nbList'); box.innerHTML = '';
+  const list = Object.values(notes).sort((a, b) => (b.pin - a.pin) || (b.ts - a.ts));
+  if (!list.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('nb.empty')}</p>`; return; }
+  list.forEach(n => {
+    const el = document.createElement('div'); el.className = 'notice' + (n.pin ? ' pin' : '');
+    el.innerHTML = `${n.pin ? `<div class="pinflag">${t('nb.pinned')}</div>` : ''}
+      <h4>${esc(n.title)}</h4>${n.body ? `<p>${esc(n.body)}</p>` : ''}
+      <div class="meta"><span>${dstamp(n.ts)}</span></div>`;
+    if (isVaad) {
+      const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('nb.del');
+      b.onclick = () => { delete notes[n.id]; renderNotes(); DB.delNotice(n.id); };
+      el.querySelector('.meta').appendChild(b);
+    }
+    box.appendChild(el);
+  });
+}
+const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dstamp = ms => new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ms));
+
+/* ---------- קודי הבניין ---------- */
+$('#cdEye').addEventListener('click', () => { codesOpen = !codesOpen; renderCodes(); });
+$('#cdEdit').addEventListener('click', () => { codesEdit = !codesEdit; codesOpen = true; renderCodes(); });
+$('#cdAdd').addEventListener('click', () => { codes.push({ k: '', v: '' }); renderCodes(); });
+$('#cdSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const rows = [...document.querySelectorAll('#cdList .cdrow')];
+  codes = rows.map(r => ({ k: r.querySelector('.ck').value.trim(), v: r.querySelector('.cv').value.trim() }))
+    .filter(x => x.k && x.v);
+  codesEdit = false; renderCodes();
+  toast(await DB.saveCodes(cfg.id, codes) ? t('ts.cdsaved') : t('ts.conn'));
+});
+function renderCodes() {
+  const box = $('#cdList'); box.innerHTML = '';
+  $('#cdBtns').hidden = !codesEdit;
+  $('#cdEye').textContent = t(codesOpen ? 'cd.hide' : 'cd.show');
+  $('#cdEye').hidden = codesEdit;
+  if (!canEdit()) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('cd.lock')}</p>`; return; }
+  if (codesEdit) {
+    codes.forEach(c => {
+      const d = document.createElement('div'); d.className = 'cdrow grid2'; d.style.marginTop = '8px';
+      d.innerHTML = `<input class="ck" value="${esc(c.k)}" placeholder="${t('cd.label')}">
+        <input class="cv" value="${esc(c.v)}" placeholder="${t('cd.value')}">`;
+      box.appendChild(d);
+    });
+    if (!codes.length) { codes.push({ k: '', v: '' }); renderCodes(); }
+    return;
+  }
+  if (!codes.length) { box.innerHTML = `<p class="muted" style="margin-top:10px">${t('cd.empty')}</p>`; return; }
+  codes.forEach(c => {
+    const d = document.createElement('div'); d.className = 'code';
+    d.innerHTML = `<span class="k">${esc(c.k)}</span>
+      <span class="v${codesOpen ? '' : ' mask'}">${codesOpen ? esc(c.v) : '••••••'}</span>`;
+    d.querySelector('.v').onclick = () => { codesOpen = true; renderCodes(); };
+    box.appendChild(d);
+  });
+}
+
+/* ---------- דיווחים ---------- */
+const TOPICS = ['tp.elev', 'tp.light', 'tp.water', 'tp.stairs', 'tp.trash', 'tp.garden', 'tp.inter', 'tp.park', 'tp.other'];
+function fillTopics() {
+  const s = $('#rpTopic'), cur = s.value;
+  s.innerHTML = TOPICS.map(k => `<option value="${k}">${t(k)}</option>`).join('');
+  if (cur) s.value = cur;
+}
+document.querySelectorAll('[data-kind]').forEach(b => b.addEventListener('click', () => {
+  repKind = b.dataset.kind;
+  document.querySelectorAll('[data-kind]').forEach(x => x.classList.toggle('on', x.dataset.kind === repKind));
+}));
+document.querySelectorAll('[data-flt]').forEach(b => b.addEventListener('click', () => {
+  repFilter = b.dataset.flt;
+  document.querySelectorAll('[data-flt]').forEach(x => x.classList.toggle('on', x.dataset.flt === repFilter));
+  renderReports();
+}));
+$('#rpNew').addEventListener('click', () => {
+  if (!canEdit()) return toast(t('rp.lock'));
+  $('#rpForm').hidden = false; fillTopics();
+});
+$('#rpCancel').addEventListener('click', () => { $('#rpForm').hidden = true; clearPhoto(); });
+$('#rpDrop').addEventListener('click', clearPhoto);
+function clearPhoto() { pendingPhoto = null; $('#rpPrev').hidden = true; $('#rpFile').value = ''; }
+$('#rpFile').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try {
+    pendingPhoto = await shrink(f);
+    if (pendingPhoto.length > 4.4e6) { pendingPhoto = null; return toast(t('ts.photobig')); }
+    $('#rpImg').src = pendingPhoto; $('#rpPrev').hidden = false;
+  } catch (err) { toast(t('ts.photobig')); }
+});
+function shrink(file, max = 900, q = 0.6) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const s = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        res(c.toDataURL('image/jpeg', q));
+      };
+      img.onerror = rej; img.src = fr.result;
+    };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+$('#rpSend').addEventListener('click', async () => {
+  if (!canEdit()) return toast(t('rp.lock'));
+  const text = $('#rpText').value.trim();
+  if (!text) return toast(t('rp.needtext'));
+  const draftR = { kind: repKind, topic: $('#rpTopic').value, loc: $('#rpLoc').value.trim(),
+    text, apt: me.apt };
+  const ph = pendingPhoto;
+  $('#rpText').value = ''; $('#rpLoc').value = ''; clearPhoto();
+  $('#rpForm').hidden = true;
+  repFilter = 'open';
+  document.querySelectorAll('[data-flt]').forEach(x => x.classList.toggle('on', x.dataset.flt === 'open'));
+  const r = await DB.addReport(cfg.id, me.id, draftR, ph);
+  if (!r) return toast(t('ts.conn'));
+  reports[r.id] = r;
+  renderReports(); renderHome(); toast(t('ts.repsent'));
+});
+function renderReports() {
+  const box = $('#rpList'); box.innerHTML = '';
+  let list = Object.values(reports).sort((a, b) => b.ts - a.ts);
+  if (repFilter === 'open') list = list.filter(r => r.status !== 'done');
+  else if (repFilter === 'clean' || repFilter === 'fault') list = list.filter(r => r.kind === repFilter);
+  if (!list.length) { box.innerHTML = `<p class="muted" style="margin-top:14px">${t('rp.empty')}</p>`; return; }
+  list.forEach(r => {
+    const el = document.createElement('div'); el.className = 'rep2';
+    const p = people[r.rid];
+    const who = (!p || p.anon) ? t('u.anon') : (p.family || t('acct.apt', { n: r.apt }));
+    el.innerHTML = `<div class="top">
+        <span class="badge ${r.status === 'done' ? 'done' : r.status === 'prog' ? 'prog' : 'open'}">${t('stt.' + r.status)}</span>
+        <span class="badge kind">${t(r.kind === 'clean' ? 'rp.clean' : 'rp.fault')} · ${t(r.topic)}</span>
+        ${r.loc ? `<span class="badge kind">${esc(r.loc)}</span>` : ''}
+      </div><p>${esc(r.text)}</p>`;
+    if (r.photo) {
+      const im = document.createElement('div'); im.className = 'shot ph'; im.textContent = t('rp.photoload');
+      el.appendChild(im);
+      DB.photoUrl(r.photo).then(u => {
+        if (!u) { im.textContent = '—'; return; }
+        const img = document.createElement('img'); img.className = 'shot'; img.src = u; img.alt = '';
+        im.replaceWith(img);
+      });
+    }
+    const meta = document.createElement('div'); meta.className = 'meta';
+    meta.innerHTML = `<span>${who} · ${aptLabel(r.apt)} · ${dstamp(r.ts)}</span>`;
+    if (isVaad) {
+      const wrap = document.createElement('span'); wrap.className = 'row'; wrap.style.gap = '6px';
+      ['open', 'prog', 'done'].forEach(s => {
+        if (s === r.status) return;
+        const b = document.createElement('button'); b.className = 'xbtn'; b.textContent = t('stt.' + s);
+        b.onclick = () => { r.status = s; renderReports(); renderHome(); toast(t('ts.repup')); DB.setReportStatus(r.id, s); };
+        wrap.appendChild(b);
+      });
+      const d = document.createElement('button'); d.className = 'xbtn'; d.textContent = t('nb.del');
+      d.onclick = () => { const ph = r.photo; delete reports[r.id]; renderReports(); renderHome(); DB.delReport(r.id, ph); };
+      wrap.appendChild(d);
+      meta.appendChild(wrap);
+    }
+    el.appendChild(meta);
+    box.appendChild(el);
+  });
+}
+
+/* ---------- תשלומים ---------- */
+document.querySelectorAll('[data-pv]').forEach(b => b.addEventListener('click', () => {
+  payView = b.dataset.pv;
+  document.querySelectorAll('[data-pv]').forEach(x => x.classList.toggle('on', x.dataset.pv === payView));
+  renderPay();
+}));
+$('#yPrev').addEventListener('click', async () => { payYear--; if (cfg.id) pays = await DB.payments(cfg.id, payYear); renderPay(); });
+$('#yNext').addEventListener('click', async () => { payYear++; if (cfg.id) pays = await DB.payments(cfg.id, payYear); renderPay(); });
+$('#duesSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  cfg.dues = +$('#cDues').value || 0;
+  const ok = await DB.saveBuilding(cfg.id, { dues: cfg.dues });
+  renderPay(); toast(ok ? t('ts.dues') : t('ts.conn'));
+});
+async function togglePay(apt, m) {
+  if (!isVaad) return;
+  const rec = pays[apt] || { apt, m: {} };
+  const k = ymKey(payYear, m), on = !!rec.m[k];
+  if (on) { delete rec.m[k]; DB.unsetPaid(cfg.id, apt, payYear, m + 1); }
+  else { rec.m[k] = 1; DB.setPaid(cfg.id, apt, payYear, m + 1, cfg.dues, me.id); }
+  pays[apt] = rec;
+  renderPay(); renderHome(); toast(t('ts.paysaved'));
+}
+function renderPay() {
+  $('#yLbl').textContent = payYear;
+  $('#cDues').value = cfg.dues;
+  const vaadAll = isVaad && payView === 'all';
+  $('#pyMine').hidden = vaadAll; $('#pyAll').hidden = !vaadAll;
+  if (!canEdit()) {
+    $('#pyMine').innerHTML = `<p class="muted">${t('py.lock')}</p>`;
+    return;
+  }
+  const now = new Date(), curY = now.getFullYear(), curM = now.getMonth();
+  if (!vaadAll) {
+    const rec = (me && pays[me.apt]) || { m: {} };
+    let paid = 0;
+    const g = $('#myMonths'); g.innerHTML = '';
+    for (let m = 0; m < 12; m++) {
+      const k = ymKey(payYear, m), on = !!(rec.m && rec.m[k]);
+      if (on) paid++;
+      const c = document.createElement('div');
+      c.className = 'mycell' + (on ? ' paid' : '') + (payYear === curY && m === curM ? ' now' : '');
+      c.innerHTML = `<b>${MON(m)}</b><small>${on ? '₪' + cfg.dues : '—'}</small>`;
+      if (isVaad && me) c.onclick = () => togglePay(me.apt, m);
+      g.appendChild(c);
+    }
+    $('#pyPaid').textContent = paid + '/12';
+    $('#pyTotal').textContent = paid * cfg.dues;
+    $('#pyNote').textContent = t('py.note');
+    return;
+  }
+  const box = $('#allRows'); box.innerHTML = '';
+  for (let a = 1; a <= cfg.units; a++) {
+    const rec = pays[a] || { m: {} };
+    const row = document.createElement('div'); row.className = 'mrow';
+    const lab = document.createElement('b'); lab.textContent = a;
+    const mons = document.createElement('div'); mons.className = 'mons';
+    for (let m = 0; m < 12; m++) {
+      const k = ymKey(payYear, m), on = !!(rec.m && rec.m[k]);
+      const b = document.createElement('button');
+      b.className = 'mon' + (on ? ' paid' : '') + (payYear === curY && m === curM ? ' now' : '');
+      b.textContent = m + 1; b.title = MON(m);
+      b.onclick = () => togglePay(a, m);
+      mons.appendChild(b);
+    }
+    row.append(lab, mons); box.appendChild(row);
+  }
+}
+
+/* ---------- טעינת נתוני הבניין ---------- */
+async function loadBuilding() {
+  notes = {}; reports = {}; pays = {}; codes = [];
+  if (cfg.id) {
+    const [n, c, r, p] = await Promise.all([
+      DB.notices(cfg.id), DB.codes(cfg.id), DB.reports(cfg.id), DB.payments(cfg.id, payYear)
+    ]);
+    notes = n; codes = c; reports = r; pays = p;
+  }
+  renderNotes(); renderCodes(); fillTopics(); renderReports(); renderPay(); renderHome();
+}
+
+boot(true);
+
+</script>
+</body>
+</html>
