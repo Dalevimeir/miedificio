@@ -829,6 +829,27 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         <div class="pbar"><i id="progBar"></i></div>
         <div class="units" id="units" style="margin-top:14px"></div>
       </div>
+      <div class="card" id="tuyaCard">
+        <div class="row" style="justify-content:space-between">
+          <h3 data-i18n="tu.h"></h3>
+          <span class="badge" id="tuState">—</span>
+        </div>
+        <p class="muted" style="font-size:.82rem" id="tuName">—</p>
+        <div class="row" style="margin-top:12px">
+          <button class="btn sm" id="tuOn" data-i18n="tu.on"></button>
+          <button class="btn ghost sm" id="tuOff" data-i18n="tu.off"></button>
+          <button class="btn ghost sm" id="tuRead" data-i18n="tu.read"></button>
+        </div>
+        <div style="margin-top:12px">
+          <label class="fld" for="tuDev" data-i18n="tu.dev"></label>
+          <div class="row" style="flex-wrap:nowrap">
+            <input id="tuDev" placeholder="bfcaf…" style="direction:ltr">
+            <button class="btn ghost sm" id="tuSave" data-i18n="st.save"></button>
+          </div>
+        </div>
+        <p class="note" data-i18n="tu.note"></p>
+      </div>
+
       <div class="card">
         <h3 data-i18n="fx.h"></h3>
         <p class="muted" data-i18n="fx.p"></p>
@@ -1276,6 +1297,11 @@ he:{
 'lk2.h':'הלוח ננעל','lk2.p':'הלוח ננעל ב-{t} כדי שאפשר יהיה לתכנת את השעון מראש. השעות שלך נשמרו.',
 'lk2.vaad':'הלוח נעול לדיירים. כוועד עדיין אפשר לערוך.','lk2.mine':'סימנת {n} שעות',
 'week.lock':'ננעל בעוד {t}','week.locked':'הלוח ננעל',
+'tu.h':'שעון שבת חכם','tu.on':'הדלקה','tu.off':'כיבוי','tu.read':'רענון מצב',
+'tu.dev':'מזהה המכשיר (Tuya / Smart Life)','tu.state.on':'דולק','tu.state.off':'כבוי',
+'tu.state.off2':'מנותק','tu.state.none':'לא מוגדר',
+'tu.note':'שליטה ישירה בשעון, לבדיקה בלבד. הפעלה בשבת עצמה אינה נעשית מכאן — הטיימרים נכתבים למכשיר מראש.',
+'ts.tuon':'השעון הודלק','ts.tuoff':'השעון כובה','ts.tusaved':'מזהה המכשיר נשמר',
 'el.eyebrow':'שבת','sb.in':'כניסת שבת','sb.out':'צאת שבת','el.h1':'מעלית שבת','el.mine':'הבקשה שלי','el.board':'הלוח','el.cost':'עלויות','el.vaad':'ועד',
 
 'acct.reg':'הרשמה','acct.apt':'דירה {n}','w.apt':'דירה',
@@ -1425,6 +1451,11 @@ en:{
 'lk2.h':'The board is locked','lk2.p':'The board locked at {t} so the timer can be programmed in advance. Your hours are saved.',
 'lk2.vaad':'Locked for residents. As committee you can still edit.','lk2.mine':'You marked {n} hours',
 'week.lock':'locks in {t}','week.locked':'The board is locked',
+'tu.h':'Smart Shabbat timer','tu.on':'Turn on','tu.off':'Turn off','tu.read':'Refresh',
+'tu.dev':'Device ID (Tuya / Smart Life)','tu.state.on':'On','tu.state.off':'Off',
+'tu.state.off2':'Offline','tu.state.none':'Not set',
+'tu.note':'Direct control, for testing only. Shabbat itself is not driven from here — timers are written to the device in advance.',
+'ts.tuon':'Timer switched on','ts.tuoff':'Timer switched off','ts.tusaved':'Device ID saved',
 'el.eyebrow':'Shabbat','sb.in':'Candle lighting','sb.out':'Shabbat ends','el.h1':'Shabbat elevator','el.mine':'My request','el.board':'Schedule','el.cost':'Cost','el.vaad':'Committee',
 
 'acct.reg':'Sign up','acct.apt':'Apt {n}','w.apt':'Apt',
@@ -1583,7 +1614,7 @@ function rowToCfg(r) {
     joinCode: r.join_code, vaadApt: r.vaad_apartment, fixed: r.fixed_hours || [],
     floors: r.floors, firstFloor: r.first_floor, perFloor: r.per_floor,
     penthouse: r.penthouse, penthouseUnits: r.penthouse_units,
-    parkingOn: r.parking_enabled === true,
+    parkingOn: r.parking_enabled === true, tuyaDev: r.tuya_device_id || '',
     lockHours: r.lock_hours_before === null || r.lock_hours_before === undefined ? 3 : +r.lock_hours_before };
 }
 const cfgPatch = c => ({
@@ -1827,6 +1858,16 @@ const DB = {
       { onConflict: 'building_id,apartment' });
     if (error) dbError = 'rate: ' + error.message;
     return !error;
+  },
+
+  /* שעון שבת חכם */
+  async tuya(bid, action) {
+    try {
+      const { data, error } = await sb.functions.invoke('tuya-control', { body: { building_id: bid, action } });
+      if (error) { dbError = error.message || 'tuya error'; return null; }
+      if (data && data.error) { dbError = data.error + (data.detail ? ' · ' + data.detail : ''); return null; }
+      return data;
+    } catch (e) { dbError = (e && e.message) || 'tuya error'; return null; }
   },
 
   /* הפעלת מודולים */
@@ -2496,6 +2537,37 @@ function fillAccount() {
   v.appendChild(b);
   fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit(); renderAdmin(); refreshPushState();
 }
+/* ---------- שעון שבת חכם ---------- */
+function tuShow(r) {
+  const st = $('#tuState');
+  if (!cfg.tuyaDev) { st.textContent = t('tu.state.none'); st.className = 'badge kind'; $('#tuName').textContent = ''; return; }
+  if (!r) { st.textContent = '—'; st.className = 'badge kind'; return; }
+  const on = r.on === true, online = r.online === true;
+  st.textContent = !online ? t('tu.state.off2') : t(on ? 'tu.state.on' : 'tu.state.off');
+  st.className = 'badge ' + (!online ? 'done' : (on ? 'open' : 'prog'));
+  $('#tuName').textContent = (r.device || '') + ' · ' + fmtT(r.at || Date.now());
+}
+async function tuDo(action) {
+  if (!isVaad) return toast(t('ts.needreg'));
+  if (!cfg.tuyaDev) return toast(t('tu.state.none'));
+  ['#tuOn', '#tuOff', '#tuRead'].forEach(i => $(i).disabled = true);
+  const r = await DB.tuya(cfg.id, action);
+  ['#tuOn', '#tuOff', '#tuRead'].forEach(i => $(i).disabled = false);
+  if (!r) return toast(dbError || t('ts.conn'), 6000);
+  tuShow(r);
+  if (action === 'on') toast(t('ts.tuon'));
+  if (action === 'off') toast(t('ts.tuoff'));
+}
+$('#tuOn').addEventListener('click', () => tuDo('on'));
+$('#tuOff').addEventListener('click', () => tuDo('off'));
+$('#tuRead').addEventListener('click', () => tuDo('status'));
+$('#tuSave').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  cfg.tuyaDev = $('#tuDev').value.trim();
+  const ok = await DB.saveBuilding(cfg.id, { tuya_device_id: cfg.tuyaDev || null });
+  tuShow(null); toast(ok ? t('ts.tusaved') : dbError);
+});
+
 /* ---------- התראות במכשיר ---------- */
 const VAPID_PUB = 'BJAnd9gu5vCB4XHCkMjt7IXA0EqLOP0eqw8u1xSzvCYiL6Y7-GqIgJ9FtxCmM5equL8630NGH9XSXE2cW6wItjE';
 let pushOn = false;
@@ -2715,7 +2787,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.27';
+const APP_VERSION = '2026.08.19.28';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2811,6 +2883,7 @@ async function boot(first) {
     });
   }
   fixDraft = new Set(cfg.fixed || []);
+  $('#tuDev').value = cfg.tuyaDev || ''; tuShow(null);
   renderGate(); renderVaad(); renderFixed(); renderFloors();
   loadMine(); renderAll();
   await loadBuilding();
