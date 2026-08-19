@@ -2816,23 +2816,27 @@ function go(name, dir) {
   if (reduce || !m.animate) { swapPanels(name); scrollTo({ top: 0 }); return; }
 
   swapping = true;
-  const out = m.animate(
-    [{ transform: 'none', opacity: 1 },
-     { transform: `translateX(${d > 0 ? -7 : 7}%) scale(.9)`, opacity: 0 }],
-    { duration: 160, easing: 'cubic-bezier(.4,0,.9,.6)', fill: 'forwards' });
+  const DUR = 640, MID = 0.44;   // אנימציה אחת רציפה — בלי הבהוב באמצע
 
-  out.finished.then(() => {
+  const anim = m.animate([
+    { offset: 0,    transform: 'none', opacity: 1,
+      easing: 'cubic-bezier(.45,0,.75,.35)' },
+    { offset: MID,  transform: `translateX(${d > 0 ? -11 : 11}%) scale(.86)`, opacity: 0,
+      easing: 'linear' },
+    { offset: MID + .05, transform: `translateX(${d > 0 ? 13 : -13}%) scale(.86)`, opacity: 0,
+      easing: 'cubic-bezier(.16,.9,.28,1)' },
+    { offset: 1,    transform: 'none', opacity: 1 }
+  ], { duration: DUR });
+
+  // ההחלפה קורית כשהמסך שקוף לחלוטין, אז לא רואים אותה
+  setTimeout(() => {
     swapPanels(name, true);
     scrollTo({ top: 0 });
-    out.cancel();
-    const inn = m.animate(
-      [{ transform: `translateX(${d > 0 ? 9 : -9}%) scale(.9)`, opacity: 0 },
-       { transform: 'none', opacity: 1 }],
-      { duration: 260, easing: 'cubic-bezier(.2,.85,.3,1)' });
-    inn.finished.then(() => {
-      swapping = false;
-      document.querySelectorAll('.panel.quick').forEach(p => p.classList.remove('quick'));
-    });
+  }, DUR * (MID + 0.02));
+
+  anim.finished.then(() => {
+    swapping = false;
+    document.querySelectorAll('.panel.quick').forEach(p => p.classList.remove('quick'));
   });
 }
 document.querySelectorAll('.tab').forEach(x => x.addEventListener('click', () => go(x.dataset.tab)));
@@ -3336,7 +3340,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.45';
+const APP_VERSION = '2026.08.19.46';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
