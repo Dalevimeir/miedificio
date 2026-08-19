@@ -49,6 +49,8 @@ html[data-theme=dark]{
 :root{ --bar-h:66px; --img-top:url(''); --img-shaft:url(''); }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* כללי מחלקה עם display דורסים את [hidden] של הדפדפן — זה מחזיר את הסדר */
+[hidden]{display:none!important}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--text);font-family:'Heebo',system-ui,sans-serif;
   line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
@@ -2163,7 +2165,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.12';
+const APP_VERSION = '2026.08.19.13';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
