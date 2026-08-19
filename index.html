@@ -829,6 +829,14 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <p data-i18n="pk.p2"></p>
     </div>
 
+    <div class="soon" id="parkLocked" hidden>
+      <span class="tag" data-i18n="pk.locked.tag"></span>
+      <h3 data-i18n="pk.locked.h"></h3>
+      <p data-i18n="pk.locked.p"></p>
+      <button class="btn" id="parkAsk" style="margin-top:16px" hidden data-i18n="pk.locked.b"></button>
+      <p class="muted" id="parkAsked" style="margin-top:12px;font-size:.82rem" hidden data-i18n="pk.locked.sent"></p>
+    </div>
+
     <div class="card" id="mySpotCard" hidden>
       <h3 data-i18n="pk.mine"></h3>
       <div id="mySpot"></div>
@@ -886,7 +894,7 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
     <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg><span data-i18n="nav.pay"></span></button>
   <button class="tab" data-tab="elev">
     <svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18"/><path d="M15.5 9l1.5-2 1.5 2"/><path d="M18.5 15l-1.5 2-1.5-2"/></svg><span data-i18n="nav.elev"></span></button>
-  <button class="tab" data-tab="park">
+  <button class="tab" data-tab="park" id="tabPark">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9.5 17V8h3.2a2.9 2.9 0 0 1 0 5.8H9.5"/></svg><span data-i18n="nav.park"></span></button>
 </nav>
 
@@ -1022,6 +1030,14 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
     <div id="adminBox" style="margin-top:24px">
       <h2 data-i18n="ad.h"></h2>
       <p class="muted" id="adminState">—</p>
+      <div id="adminOps" hidden>
+        <div class="sw" id="swParkOn">
+          <span class="lb"><span data-i18n="ad.park"></span><small data-i18n="ad.park.s"></small></span>
+          <span class="tg"></span>
+        </div>
+        <h3 style="margin-top:14px" data-i18n="ad.reqs"></h3>
+        <div id="adminReqs"></div>
+      </div>
       <div id="adminForm">
         <label class="fld" for="adCode" data-i18n="ad.code"></label>
         <input id="adCode" type="password" autocomplete="off">
@@ -1206,6 +1222,12 @@ he:{
 'py.all':'כל הדירות','py.vaadview':'ועד','py.only':'גלוי לוועד בלבד','py.mine':'הדירה שלי','py.lock':'התשלומים גלויים לדיירים רשומים בלבד.',
 'py.tap':'לחיצה מסמנת חודש','py.note':'הסימון נעשה על ידי ועד הבית. אם משהו לא מסתדר — פנו אליו.',
 'ts.paysaved':'עודכן','ts.dues':'הסכום עודכן',
+'pk.locked.tag':'מודול נוסף','pk.locked.h':'ניהול חניות אינו פעיל בבניין',
+'pk.locked.p':'שחרור ותפיסה של חניות, התראות כשמתפנה מקום וניהול חניות לפי דירה. ההפעלה נעשית מול מפעיל האפליקציה.',
+'pk.locked.b':'בקשת הפעלה','pk.locked.sent':'הבקשה נשלחה וממתינה לאישור.',
+'ad.park':'מודול חניה בבניין הזה','ad.park.s':'פתיחה או סגירה של ניהול החניות עבור הבניין שמוצג כעת.',
+'ad.reqs':'בקשות הפעלה','ad.noreqs':'אין בקשות פתוחות.','ad.enable':'הפעלה',
+'ts.reqsent':'הבקשה נשלחה','ts.parkon':'מודול החניה הופעל','ts.parkoff':'מודול החניה כובה',
 'pk.eyebrow2':'חניה','pk.p2':'שחרור חניה כשיוצאים, ותפיסה כשמתפנה. כל הקודם זוכה.',
 'pk.mine':'החניה שלי','pk.myclaim':'החניה שתפסתי','pk.open':'חניות פנויות עכשיו','pk.none':'אין חניות פנויות כרגע.',
 'pk.free':'אני יוצא · שחרור חניה','pk.cancel':'ביטול השחרור','pk.back':'אני חוזר','pk.take':'תפיסה',
@@ -1345,6 +1367,12 @@ en:{
 'py.all':'All apartments','py.vaadview':'Committee','py.only':'Committee only','py.mine':'My apartment','py.lock':'Payments are visible to registered residents only.',
 'py.tap':'Tap to mark a month','py.note':'Marking is done by the building committee. If something looks wrong, contact them.',
 'ts.paysaved':'Updated','ts.dues':'Amount updated',
+'pk.locked.tag':'Add-on module','pk.locked.h':'Parking management is not active here',
+'pk.locked.p':'Release and take spots, alerts when one frees up, and spot assignment per apartment. Activation goes through the app operator.',
+'pk.locked.b':'Request activation','pk.locked.sent':'Your request was sent and is awaiting approval.',
+'ad.park':'Parking module for this building','ad.park.s':'Turn parking management on or off for the building shown now.',
+'ad.reqs':'Activation requests','ad.noreqs':'No open requests.','ad.enable':'Enable',
+'ts.reqsent':'Request sent','ts.parkon':'Parking module enabled','ts.parkoff':'Parking module disabled',
 'pk.eyebrow2':'Parking','pk.p2':'Release your spot when you leave, take one when it frees up. First come, first served.',
 'pk.mine':'My spot','pk.myclaim':'The spot I took','pk.open':'Free right now','pk.none':'No free spots right now.',
 'pk.free':'I am leaving · release','pk.cancel':'Cancel release','pk.back':'I am coming back','pk.take':'Take it',
@@ -1517,7 +1545,8 @@ function rowToCfg(r) {
     kw: +r.kw, rate: +r.rate, gap: r.gap_min, dues: +r.dues, plan: r.plan,
     joinCode: r.join_code, vaadApt: r.vaad_apartment, fixed: r.fixed_hours || [],
     floors: r.floors, firstFloor: r.first_floor, perFloor: r.per_floor,
-    penthouse: r.penthouse, penthouseUnits: r.penthouse_units };
+    penthouse: r.penthouse, penthouseUnits: r.penthouse_units,
+    parkingOn: r.parking_enabled === true };
 }
 const cfgPatch = c => ({
   name: c.name, candle_min: c.candle, tzeit_min: c.tzeit, kw: c.kw, rate: c.rate,
@@ -1760,6 +1789,28 @@ const DB = {
       { onConflict: 'building_id,apartment' });
     if (error) dbError = 'rate: ' + error.message;
     return !error;
+  },
+
+  /* הפעלת מודולים */
+  async setParking(bid, on) {
+    const { data, error } = await sb.rpc('set_parking', { b: bid, on_off: on });
+    if (error) dbError = error.message;
+    return !error && data === true;
+  },
+  async requestFeature(bid, rid, feature) {
+    const { error } = await sb.from('feature_requests')
+      .insert({ building_id: bid, requested_by: rid, feature });
+    if (error) dbError = error.message;
+    return !error;
+  },
+  async myRequests(bid) {
+    const { data } = await sb.from('feature_requests').select('feature,status')
+      .eq('building_id', bid).eq('status', 'pending');
+    return data || [];
+  },
+  async pendingFeatures() {
+    const { data } = await sb.rpc('pending_features');
+    return data || [];
   },
 
   /* חניה */
@@ -2462,10 +2513,36 @@ $('#pnSend').addEventListener('click', async () => {
   toast(r.sent ? t('ts.pnsent', { n: r.sent }) : t('ts.pnnone'), 4000);
 });
 
-function renderAdmin() {
+async function renderAdmin() {
   $('#adminState').textContent = t(isAdmin ? 'ad.on' : 'ad.off');
   $('#adminForm').hidden = isAdmin;
+  $('#adminOps').hidden = !isAdmin;
+  if (!isAdmin) return;
+  sw($('#swParkOn'), cfg.parkingOn === true);
+  const box = $('#adminReqs'); box.innerHTML = '';
+  const reqs = await DB.pendingFeatures();
+  if (!reqs.length) { box.innerHTML = `<p class="muted" style="margin-top:8px">${t('ad.noreqs')}</p>`; return; }
+  reqs.forEach(r => {
+    const d = document.createElement('div'); d.className = 'rem';
+    d.innerHTML = `<span class="nm">${r.address}<small>${r.feature}</small></span>`;
+    const b = document.createElement('button'); b.className = 'btn sm'; b.textContent = t('ad.enable');
+    b.onclick = async () => {
+      if (!await DB.setParking(r.building_id, true)) return toast(dbError || t('ts.conn'));
+      if (r.building_id === cfg.id) cfg.parkingOn = true;
+      toast(t('ts.parkon')); renderAdmin(); loadParking();
+    };
+    d.appendChild(b); box.appendChild(d);
+  });
 }
+$('#swParkOn').addEventListener('click', async () => {
+  if (!isAdmin) return;
+  const next = !(cfg.parkingOn === true);
+  if (!await DB.setParking(cfg.id, next)) return toast(dbError || t('ts.conn'));
+  cfg.parkingOn = next;
+  sw($('#swParkOn'), next);
+  toast(t(next ? 'ts.parkon' : 'ts.parkoff'));
+  loadParking();
+});
 $('#adClaim').addEventListener('click', async () => {
   const c = $('#adCode').value.trim();
   if (!c) return;
@@ -2588,7 +2665,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.24';
+const APP_VERSION = '2026.08.19.25';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3190,7 +3267,26 @@ $('#relGo').addEventListener('click', async () => {
 });
 
 /* ---------- רינדור ---------- */
+let featPending = false;
+
+function parkingOn() { return cfg.parkingOn === true || isAdmin; }
+
 function renderParking() {
+  const on = parkingOn();
+  // הטאב מוסתר לדיירים כשהמודול כבוי; הוועד רואה מסך נעול כדי שיוכל לבקש
+  $('#tabPark').hidden = !(on || isVaad);
+  $('#tabbar').dataset.n = $('#tabPark').hidden ? 4 : 5;
+  if ($('#tabPark').hidden && $('#p-park').classList.contains('on')) go('home');
+
+  $('#parkLocked').hidden = on;
+  ['#mySpotCard', '#myClaimCard'].forEach(id => { if (!on) $(id).hidden = true; });
+  document.querySelectorAll('#p-park > .card').forEach(c => { c.hidden = !on; });
+  if (!on) {
+    $('#parkAsk').hidden = !(isVaad && !featPending);
+    $('#parkAsked').hidden = !featPending;
+    return;
+  }
+
   const canPark = canEdit();
   $('#spotAdmin').hidden = !isVaad;
   sw($('#swPark'), me ? me.parking !== false : false);
@@ -3320,11 +3416,22 @@ $('#carSave').addEventListener('click', async () => {
   toast(t('ts.carsaved'));
 });
 
+$('#parkAsk').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  const ok = await DB.requestFeature(cfg.id, me.id, 'parking');
+  if (!ok) return toast(dbError || t('ts.conn'), 5000);
+  featPending = true; renderParking(); toast(t('ts.reqsent'));
+});
+
 async function loadParking() {
   spots = []; offers = [];
   if (cfg.id) {
-    const [sp, of] = await Promise.all([DB.spots(cfg.id), DB.offers(cfg.id)]);
-    spots = sp; offers = of;
+    if (parkingOn()) {
+      const [sp, of] = await Promise.all([DB.spots(cfg.id), DB.offers(cfg.id)]);
+      spots = sp; offers = of;
+    } else {
+      featPending = (await DB.myRequests(cfg.id)).length > 0;
+    }
   }
   renderParking();
 }
