@@ -1086,6 +1086,15 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         </div>
         <h3 style="margin-top:14px" data-i18n="ad.reqs"></h3>
         <div id="adminReqs"></div>
+
+        <div class="row" style="justify-content:space-between;margin-top:18px">
+          <h3 data-i18n="ad.usage"></h3>
+          <button class="btn ghost sm" id="adRefresh" data-i18n="tu.read"></button>
+        </div>
+        <div id="adminStats"></div>
+        <h3 style="margin-top:16px" data-i18n="ad.people"></h3>
+        <div id="adminPeople"></div>
+        <p class="note" data-i18n="ad.note"></p>
       </div>
       <div id="adminForm">
         <label class="fld" for="adCode" data-i18n="ad.code"></label>
@@ -1276,6 +1285,10 @@ he:{
 'pk.locked.p':'שחרור ותפיסה של חניות, התראות כשמתפנה מקום וניהול חניות לפי דירה. ההפעלה נעשית מול מפעיל האפליקציה.',
 'pk.locked.b':'בקשת הפעלה','pk.locked.sent':'הבקשה נשלחה וממתינה לאישור.',
 'ad.park':'מודול חניה בבניין הזה','ad.park.s':'פתיחה או סגירה של ניהול החניות עבור הבניין שמוצג כעת.',
+'ad.usage':'שימוש בבניינים','ad.people':'דיירים בבניין שלי','ad.none':'אין נתונים עדיין.',
+'ad.st':'{r} דיירים · {i} התקינו · {p} עם התראות · {a} פעילים ביממה',
+'ad.now':'עכשיו','ad.today':'היום','ad.never':'לא נכנס','ad.inst':'מותקן','ad.web':'דפדפן',
+'ad.note':'"פעיל" נמדד לפי הפעם האחרונה שהאפליקציה נפתחה, לא לפי חיבור רציף — באפליקציית ווב אין דרך לדעת מי מחובר ברגע זה.',
 'ad.reqs':'בקשות הפעלה','ad.noreqs':'אין בקשות פתוחות.','ad.enable':'הפעלה',
 'ts.reqsent':'הבקשה נשלחה','ts.parkon':'מודול החניה הופעל','ts.parkoff':'מודול החניה כובה',
 'pk.eyebrow2':'חניה','pk.p2':'שחרור חניה כשיוצאים, ותפיסה כשמתפנה. כל הקודם זוכה.',
@@ -1430,6 +1443,10 @@ en:{
 'pk.locked.p':'Release and take spots, alerts when one frees up, and spot assignment per apartment. Activation goes through the app operator.',
 'pk.locked.b':'Request activation','pk.locked.sent':'Your request was sent and is awaiting approval.',
 'ad.park':'Parking module for this building','ad.park.s':'Turn parking management on or off for the building shown now.',
+'ad.usage':'Building usage','ad.people':'Residents in my building','ad.none':'No data yet.',
+'ad.st':'{r} residents · {i} installed · {p} with notifications · {a} active in 24h',
+'ad.now':'now','ad.today':'today','ad.never':'never opened','ad.inst':'installed','ad.web':'browser',
+'ad.note':'"Active" means the last time the app was opened, not a live connection — a web app cannot know who is online right now.',
 'ad.reqs':'Activation requests','ad.noreqs':'No open requests.','ad.enable':'Enable',
 'ts.reqsent':'Request sent','ts.parkon':'Parking module enabled','ts.parkoff':'Parking module disabled',
 'pk.eyebrow2':'Parking','pk.p2':'Release your spot when you leave, take one when it frees up. First come, first served.',
@@ -1713,6 +1730,17 @@ const DB = {
       return data;
     } catch (e) { dbError = (e && e.message) || 'function error'; return null; }
   },
+  async overview() {
+    const { data, error } = await sb.rpc('admin_overview');
+    if (error) { dbError = error.message; return []; }
+    return data || [];
+  },
+  async residentsOf(bid) {
+    const { data, error } = await sb.rpc('admin_residents', { b: bid });
+    if (error) { dbError = error.message; return []; }
+    return data || [];
+  },
+  async ping(rid, patch) { await sb.from('residents').update(patch).eq('id', rid); },
   async isAdmin() {
     try { const { data, error } = await sb.rpc('am_i_admin'); return !error && data === true; }
     catch (e) { return false; }
@@ -2641,6 +2669,7 @@ async function renderAdmin() {
   $('#adminOps').hidden = !isAdmin;
   if (!isAdmin) return;
   sw($('#swParkOn'), cfg.parkingOn === true);
+  renderStats();
   const box = $('#adminReqs'); box.innerHTML = '';
   const reqs = await DB.pendingFeatures();
   if (!reqs.length) { box.innerHTML = `<p class="muted" style="margin-top:8px">${t('ad.noreqs')}</p>`; return; }
@@ -2656,6 +2685,43 @@ async function renderAdmin() {
     d.appendChild(b); box.appendChild(d);
   });
 }
+function ago(ts) {
+  if (!ts) return t('ad.never');
+  const d = Date.now() - new Date(ts).getTime();
+  if (d < 6e5) return t('ad.now');
+  if (d < 864e5) return t('ad.today') + ' ' + fmtT(new Date(ts).getTime());
+  return Math.floor(d / 864e5) + 'd';
+}
+async function renderStats() {
+  if (!isAdmin) return;
+  const box = $('#adminStats'); box.innerHTML = '';
+  const rows = await DB.overview();
+  if (!rows.length) { box.innerHTML = `<p class="muted">${t('ad.none')}</p>`; }
+  rows.forEach(b => {
+    const d = document.createElement('div'); d.className = 'rem';
+    d.innerHTML = `<span class="nm">${esc(b.address)}
+      <small>${t('ad.st', { r: b.residents, i: b.installed, p: b.push, a: b.active_24h })}</small></span>
+      <span class="badge ${b.plan === 'free' ? 'prog' : 'kind'}">${b.plan}</span>`;
+    box.appendChild(d);
+  });
+
+  const pb = $('#adminPeople'); pb.innerHTML = '';
+  if (!cfg.id) return;
+  const ppl = await DB.residentsOf(cfg.id);
+  if (!ppl.length) { pb.innerHTML = `<p class="muted">${t('ad.none')}</p>`; return; }
+  ppl.forEach(p => {
+    const d = document.createElement('div'); d.className = 'rem';
+    const tags = [p.installed ? t('ad.inst') : t('ad.web')];
+    if (p.push) tags.push('🔔');
+    if (p.is_vaad) tags.push(t('vd.h'));
+    d.innerHTML = `<span class="nm">${aptLabel(p.apartment)} · ${esc(p.full_name || '')}
+      <small>${tags.join(' · ')}${p.platform ? ' · ' + esc(p.platform) : ''}</small></span>
+      <span class="badge kind">${ago(p.last_seen)}</span>`;
+    pb.appendChild(d);
+  });
+}
+$('#adRefresh').addEventListener('click', renderStats);
+
 $('#swParkOn').addEventListener('click', async () => {
   if (!isAdmin) return;
   const next = !(cfg.parkingOn === true);
@@ -2787,7 +2853,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.28';
+const APP_VERSION = '2026.08.19.29';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2871,6 +2937,12 @@ async function boot(first) {
       $('#phoneWrap').hidden = !draft.wa;
       DB.watch(cfg.id, () => boot(false));
     }
+  }
+  if (me && me.id) {
+    const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    const ua = navigator.userAgent;
+    const plat = /iPhone|iPad|iPod/.test(ua) ? 'iOS' : /Android/.test(ua) ? 'Android' : 'Desktop';
+    DB.ping(me.id, { last_seen: new Date().toISOString(), installed: standalone, platform: plat });
   }
   buildSabbath(); fillCfgForm(); fillApts(); renderHeader();
   reqs = {}; people = {};
