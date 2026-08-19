@@ -807,6 +807,8 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
         <div class="row" style="justify-content:space-between">
           <h3 data-i18n="pp.rem"></h3><span class="muted num" id="remCount">—</span>
         </div>
+        <button class="btn sm" id="pnSend" style="margin-top:10px" data-i18n="pn.send"></button>
+        <p class="muted" style="font-size:.78rem;margin-top:6px" data-i18n="pn.send.s"></p>
         <div id="remBody"></div>
       </div>
     </div>
@@ -937,6 +939,14 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
     </div>
     <div class="sw" id="swWa2">
       <span class="lb"><span data-i18n="ac.wa"></span><small data-i18n="wz.wa.s"></small></span><span class="tg"></span>
+    </div>
+    <div class="sw" id="swPush">
+      <span class="lb"><span data-i18n="pn.on"></span><small data-i18n="pn.on.s"></small></span>
+      <span class="tg"></span>
+    </div>
+    <div class="row" id="pushRow" style="margin-top:6px" hidden>
+      <button class="btn ghost sm" id="pnTest" data-i18n="pn.test"></button>
+      <span class="muted" style="font-size:.78rem" id="pnState"></span>
     </div>
     <div id="phoneWrap2" hidden style="margin-top:6px">
       <label class="fld" for="aPhone" data-i18n="wz.phone"></label>
@@ -1161,7 +1171,13 @@ he:{
 'wz.f1':'לוח משותף לכל הדיירים','wz.f2':'תזכורות וואטסאפ בימי חמישי','wz.f3':'דוח עלויות חשמל לוועד הבית',
 'wz.pay.go':'מעבר לתשלום','wz.pay.done':'כבר שילמנו','wz.finish':'סיום ההרשמה','wz.later':'שמירה והמשך אחר כך',
 'wz.per':'{p} · כ-₪{d} לדירה',
-'ac.h':'החשבון שלי','ac.admin':'מנהל מערכת','ad.h':'מנהל מערכת','ad.code':'קוד מנהל','ad.claim':'הפעלת גישת מנהל','ad.on':'מחובר כמנהל מערכת · גישה לכל בניין','ad.off':'הזן את קוד המנהל כדי לפתוח גישה לכל הבניינים.','ts.adok':'גישת מנהל הופעלה','ts.adbad':'קוד שגוי','ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
+'ac.h':'החשבון שלי','ac.admin':'מנהל מערכת','ad.h':'מנהל מערכת','ad.code':'קוד מנהל','ad.claim':'הפעלת גישת מנהל','ad.on':'מחובר כמנהל מערכת · גישה לכל בניין','ad.off':'הזן את קוד המנהל כדי לפתוח גישה לכל הבניינים.','ts.adok':'גישת מנהל הופעלה','ts.adbad':'קוד שגוי','pn.on':'התראות במכשיר','pn.on.s':'תזכורת בימי חמישי לסמן שעות למעלית, עם צליל — גם כשהאפליקציה סגורה.',
+'pn.test':'בדיקת התראה','pn.send':'שליחת תזכורת עכשיו','pn.send.s':'נשלחת לכל הדיירים שאישרו התראות ועדיין לא סימנו שעות.',
+'pn.ok':'ההתראות פעילות במכשיר הזה','pn.off':'ההתראות כבויות','pn.denied':'ההתראות חסומות בהגדרות המכשיר',
+'pn.unsup':'המכשיר לא תומך בהתראות','ts.pnon':'התראות הופעלו','ts.pnoff':'התראות בוטלו',
+'ts.pnfail':'לא ניתן להפעיל התראות','ts.pnsent':'נשלחו {n} תזכורות','ts.pnnone':'אין למי לשלוח כרגע',
+'pn.ttl':'בדיקה · הבניין שלי','pn.tbody':'ככה תיראה התזכורת בימי חמישי.',
+'ac.wa':'תזכורת וואטסאפ בחמישי','ac.lang':'שפת הממשק','ac.set':'הגדרות הבניין',
 'st.addr':'כתובת הבניין','st.units':'מספר דירות','st.name':'שם תצוגה','st.gap':'איחוד הפסקה קצרה מ־(דק׳)',
 'st.candle':'הדלקת נרות (דק׳ לפני שקיעה)','st.tzeit':'צאת שבת (דק׳ אחרי שקיעה)','st.kw':'הספק ממוצע (kW)',
 'st.rate':'תעריף חשמל (₪ לקוט״ש)','st.geo':'קו רוחב / אורך','st.save':'שמירה','st.close':'סגירה',
@@ -1280,7 +1296,13 @@ en:{
 'wz.f1':'One shared schedule for every resident','wz.f2':'WhatsApp reminders on Thursdays','wz.f3':'Electricity cost report for the committee',
 'wz.pay.go':'Go to payment','wz.pay.done':'We already paid','wz.finish':'Finish sign-up','wz.later':'Save and continue later',
 'wz.per':'{p} · about ₪{d} per apartment',
-'ac.h':'My account','ac.admin':'Platform admin','ad.h':'Platform admin','ad.code':'Admin code','ad.claim':'Enable admin access','ad.on':'Signed in as platform admin · access to every building','ad.off':'Enter the admin code to unlock access to all buildings.','ts.adok':'Admin access enabled','ts.adbad':'Wrong code','ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
+'ac.h':'My account','ac.admin':'Platform admin','ad.h':'Platform admin','ad.code':'Admin code','ad.claim':'Enable admin access','ad.on':'Signed in as platform admin · access to every building','ad.off':'Enter the admin code to unlock access to all buildings.','ts.adok':'Admin access enabled','ts.adbad':'Wrong code','pn.on':'Device notifications','pn.on.s':'A Thursday reminder to set your elevator hours, with sound — even when the app is closed.',
+'pn.test':'Test notification','pn.send':'Send reminders now','pn.send.s':'Goes to every resident who enabled notifications and has not set hours yet.',
+'pn.ok':'Notifications are on for this device','pn.off':'Notifications are off','pn.denied':'Notifications are blocked in device settings',
+'pn.unsup':'This device does not support notifications','ts.pnon':'Notifications enabled','ts.pnoff':'Notifications disabled',
+'ts.pnfail':'Could not enable notifications','ts.pnsent':'{n} reminders sent','ts.pnnone':'Nobody to notify right now',
+'pn.ttl':'Test · My Building','pn.tbody':'This is how the Thursday reminder will look.',
+'ac.wa':'Thursday WhatsApp reminder','ac.lang':'Interface language','ac.set':'Building settings',
 'st.addr':'Building address','st.units':'Apartments','st.name':'Display name','st.gap':'Merge gaps shorter than (min)',
 'st.candle':'Candle lighting (min before sunset)','st.tzeit':'Shabbat ends (min after sunset)','st.kw':'Average power (kW)',
 'st.rate':'Electricity rate (₪ per kWh)','st.geo':'Latitude / longitude','st.save':'Save','st.close':'Close',
@@ -1461,6 +1483,29 @@ const DB = {
     try { const { data, error } = await sb.rpc('claim_admin', { p_code: code });
       if (error) dbError = error.message; return !error && data === true; }
     catch (e) { dbError = e && e.message; return false; }
+  },
+  /* התראות */
+  async savePush(rid, bid, sub) {
+    const j = sub.toJSON();
+    const { error } = await sb.from('push_subs').upsert({
+      resident_id: rid, building_id: bid, endpoint: j.endpoint,
+      p256dh: j.keys.p256dh, auth: j.keys.auth }, { onConflict: 'endpoint' });
+    if (error) dbError = 'push: ' + error.message;
+    return !error;
+  },
+  async delPush(endpoint) {
+    await sb.from('push_subs').delete().eq('endpoint', endpoint);
+  },
+  async hasPush(rid) {
+    const { data } = await sb.from('push_subs').select('id').eq('resident_id', rid).limit(1);
+    return !!(data && data.length);
+  },
+  async sendReminders(bid) {
+    try {
+      const { data, error } = await sb.functions.invoke('send-reminders', { body: { building_id: bid } });
+      if (error) { dbError = error.message || 'function error'; return null; }
+      return data;
+    } catch (e) { dbError = (e && e.message) || 'function error'; return null; }
   },
   async isAdmin() {
     try { const { data, error } = await sb.rpc('am_i_admin'); return !error && data === true; }
@@ -2199,8 +2244,75 @@ function fillAccount() {
   b.className = 'xbtn'; b.textContent = t('up.check');
   b.onclick = () => checkUpdate(true);
   v.appendChild(b);
-  fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit(); renderAdmin();
+  fillCfgForm(); renderFloors(); renderVaad(); renderCodesEdit(); renderAdmin(); refreshPushState();
 }
+/* ---------- התראות במכשיר ---------- */
+const VAPID_PUB = 'BJAnd9gu5vCB4XHCkMjt7IXA0EqLOP0eqw8u1xSzvCYiL6Y7-GqIgJ9FtxCmM5equL8630NGH9XSXE2cW6wItjE';
+let pushOn = false;
+
+function b64ToU8(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+const pushSupported = () =>
+  'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+
+async function refreshPushState() {
+  const st = $('#pnState');
+  if (!pushSupported()) { pushOn = false; sw($('#swPush'), false); st.textContent = t('pn.unsup');
+    $('#pushRow').hidden = false; return; }
+  if (Notification.permission === 'denied') {
+    pushOn = false; sw($('#swPush'), false); st.textContent = t('pn.denied');
+    $('#pushRow').hidden = false; return;
+  }
+  const reg = swReg || await navigator.serviceWorker.getRegistration();
+  const sub = reg ? await reg.pushManager.getSubscription() : null;
+  pushOn = !!sub;
+  sw($('#swPush'), pushOn);
+  st.textContent = t(pushOn ? 'pn.ok' : 'pn.off');
+  $('#pushRow').hidden = !pushOn;
+}
+
+$('#swPush').addEventListener('click', async () => {
+  if (!pushSupported()) return toast(t('pn.unsup'));
+  if (!me) return toast(t('ts.needreg'));
+  if (pushOn) {
+    const reg = swReg || await navigator.serviceWorker.getRegistration();
+    const sub = reg && await reg.pushManager.getSubscription();
+    if (sub) { await DB.delPush(sub.endpoint); await sub.unsubscribe(); }
+    await refreshPushState(); return toast(t('ts.pnoff'));
+  }
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') { await refreshPushState(); return toast(t('ts.pnfail')); }
+  try {
+    const reg = swReg || await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true, applicationServerKey: b64ToU8(VAPID_PUB) });
+    const ok = await DB.savePush(me.id, cfg.id, sub);
+    await refreshPushState();
+    toast(ok ? t('ts.pnon') : dbError);
+  } catch (e) { await refreshPushState(); toast(t('ts.pnfail') + ' · ' + (e && e.message || '')); }
+});
+
+$('#pnTest').addEventListener('click', async () => {
+  const reg = swReg || await navigator.serviceWorker.getRegistration();
+  if (!reg) return toast(t('pn.unsup'));
+  reg.showNotification(t('pn.ttl'), {
+    body: t('pn.tbody'), icon: './icon-192.png', badge: './icon-192.png',
+    vibrate: [180, 90, 180], dir: 'rtl', lang: 'he', tag: 'test', renotify: true
+  });
+});
+
+$('#pnSend').addEventListener('click', async () => {
+  if (!isVaad) return toast(t('ts.needreg'));
+  $('#pnSend').disabled = true;
+  const r = await DB.sendReminders(cfg.id);
+  $('#pnSend').disabled = false;
+  if (!r) return toast(dbError || t('ts.conn'), 6000);
+  toast(r.sent ? t('ts.pnsent', { n: r.sent }) : t('ts.pnnone'), 4000);
+});
+
 function renderAdmin() {
   $('#adminState').textContent = t(isAdmin ? 'ad.on' : 'ad.off');
   $('#adminForm').hidden = isAdmin;
@@ -2327,7 +2439,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.21';
+const APP_VERSION = '2026.08.19.22';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
