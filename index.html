@@ -355,6 +355,19 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 .pinflag{font-size:.63rem;letter-spacing:.1em;color:var(--gold-tx);font-weight:700}
 .xbtn{background:none;border:0;color:var(--dim);font-size:.75rem;text-decoration:underline;padding:0}
 
+/* ---------- שיתוף ---------- */
+.shr{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+.shr button{padding:12px 10px;border-radius:12px;border:1px solid var(--line);
+  background:var(--glass-2);color:var(--text);font-size:.88rem;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px}
+.shr button:hover{border-color:var(--gold)}
+.shr button.wa{background:rgba(37,211,102,.12);border-color:rgba(37,211,102,.4);color:#1a8f4c}
+html[data-theme=dark] .shr button.wa{color:#7ee2a8}
+.shr button.main{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:var(--gold-ink);border:0}
+.qrbox{margin-top:14px;text-align:center;padding:16px;border-radius:16px;background:#fff;border:1px solid var(--line)}
+.qrbox canvas{max-width:220px;width:100%;height:auto;display:block;margin:0 auto}
+.qrbox .u{font-family:'Space Grotesk',monospace;font-size:.72rem;color:#333;margin-top:10px;direction:ltr;word-break:break-all}
+
 /* ---------- קודים ---------- */
 .code{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid var(--line-s)}
 .code:last-child{border-bottom:0}
@@ -454,11 +467,18 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
   .hr,.panel>*{opacity:1!important;transform:none!important}}
 
-#sheetPrint{display:none}
+#sheetPrint,#sharePrint{display:none}
 @media print{
   body{background:#fff;color:#000}body::before{display:none}
   .topbar,.week,main,.tabbar,.sheet,.sheetbg,.toast,.gate{display:none!important}
   #sheetPrint{display:block;padding:20px;font-family:'Heebo',sans-serif}
+  body.print-share #sheetPrint{display:none!important}
+  body.print-share #sharePrint{display:block;text-align:center;padding:28px;font-family:'Heebo',sans-serif}
+  body.print-share #sharePrint h1{font-size:30pt;margin:0 0 6pt}
+  body.print-share #sharePrint h2{font-size:17pt;font-weight:400;margin:0 0 18pt;color:#444}
+  body.print-share #sharePrint canvas{width:300pt;height:300pt}
+  body.print-share #sharePrint p{font-size:13pt;color:#333;margin-top:16pt}
+  body.print-share #sharePrint .lnk{font-family:monospace;font-size:12pt;margin-top:8pt}
   #sheetPrint h2{font-size:24pt;margin-bottom:3pt}
   #sheetPrint table{width:100%;border-collapse:collapse;margin-top:12pt}
   #sheetPrint td,#sheetPrint th{border:1px solid #999;padding:8pt 10pt;font-size:15pt;text-align:start}
@@ -468,6 +488,7 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
 <div class="gate" id="gate">
   <div class="box">
@@ -527,6 +548,22 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
         </div>
       </div>
       <div id="nbList"></div>
+    </div>
+
+    <div class="card" id="shareCard">
+      <h3 data-i18n="sh.h"></h3>
+      <p class="muted" style="font-size:.85rem" data-i18n="sh.p"></p>
+      <div class="shr">
+        <button class="main" id="shShare" data-i18n="sh.share"></button>
+        <button class="wa" id="shWa" data-i18n="sh.wa"></button>
+        <button id="shCopy" data-i18n="sh.copy"></button>
+        <button id="shQr" data-i18n="sh.qr"></button>
+      </div>
+      <div class="qrbox" id="qrBox" hidden>
+        <canvas id="qrCanvas"></canvas>
+        <div class="u" id="qrUrl"></div>
+        <button class="btn ghost sm" id="shPrint" style="margin-top:12px" data-i18n="sh.print"></button>
+      </div>
     </div>
 
     <div class="card">
@@ -966,6 +1003,14 @@ body.has-upd .toast{top:calc(env(safe-area-inset-top) + 124px)}
   </div>
 </div>
 
+<div id="sharePrint">
+  <h1 id="spTitle">—</h1>
+  <h2 data-i18n="sh.poster"></h2>
+  <canvas id="qrPrint"></canvas>
+  <p data-i18n="sh.poster.p"></p>
+  <div class="lnk" id="spUrl">—</div>
+</div>
+
 <div id="sheetPrint">
   <h2 id="shTitle"></h2>
   <div id="shSub"></div>
@@ -1041,6 +1086,12 @@ he:{
 'hm.eyebrow':'הבניין שלי','hm.h1':'לוח המודעות','hm.p':'מה חדש בבניין, ומה שצריך לדעת.',
 'hm.open':'דיווחים פתוחים','hm.paid':'החודש','hm.sab':'שעות בשבת',
 'hm.paid.yes':'שולם','hm.paid.no':'טרם','hm.paid.na':'—',
+'sh.h':'הזמנת שכנים','sh.p':'שלחו לשכנים את הקישור, או תלו קוד סריקה בלובי.',
+'sh.share':'שיתוף','sh.wa':'וואטסאפ','sh.copy':'העתקת קישור','sh.qr':'קוד סריקה',
+'sh.print':'הדפסת דף לתלייה','sh.poster':'סרקו והצטרפו לאפליקציית הבניין',
+'sh.poster.p':'לוח מודעות · קודי הבניין · דיווחי תקלות · תשלומי ועד · מעלית שבת',
+'sh.msg':'הצטרפו לאפליקציה של {b} — לוח מודעות, קודי הבניין, דיווחי תקלות ומעלית שבת:',
+'ts.copied2':'הקישור הועתק','ts.qrfail':'לא ניתן ליצור קוד סריקה',
 'nb.h':'לוח מודעות','nb.empty':'אין הודעות או דיווחים פתוחים.','nb.open':'לדיווח','nb.add':'הודעה חדשה','nb.title':'כותרת','nb.body':'תוכן',
 'nb.pin':'נעיצה למעלה','nb.post':'פרסום','nb.pinned':'נעוץ','nb.del':'מחיקה','ts.nbposted':'ההודעה פורסמה',
 'cd.h':'קודי הבניין','cd.p':'קוד שער, דלת כניסה, ואטסאפ של הוועד — מה שצריך ביום־יום.',
@@ -1154,6 +1205,12 @@ en:{
 'hm.eyebrow':'My building','hm.h1':'Notice board','hm.p':'What is new in the building, and what you need to know.',
 'hm.open':'Open reports','hm.paid':'This month','hm.sab':'Hours on Shabbat',
 'hm.paid.yes':'Paid','hm.paid.no':'Not yet','hm.paid.na':'—',
+'sh.h':'Invite neighbours','sh.p':'Send the link, or hang a scan code in the lobby.',
+'sh.share':'Share','sh.wa':'WhatsApp','sh.copy':'Copy link','sh.qr':'Scan code',
+'sh.print':'Print a poster','sh.poster':'Scan to join the building app',
+'sh.poster.p':'Notice board · Building codes · Fault reports · Committee dues · Shabbat elevator',
+'sh.msg':'Join the {b} building app — notice board, building codes, fault reports and the Shabbat elevator:',
+'ts.copied2':'Link copied','ts.qrfail':'Could not create a scan code',
 'nb.h':'Notice board','nb.empty':'No notices or open reports.','nb.open':'Open','nb.add':'New notice','nb.title':'Title','nb.body':'Text',
 'nb.pin':'Pin to top','nb.post':'Post','nb.pinned':'Pinned','nb.del':'Delete','ts.nbposted':'Notice posted',
 'cd.h':'Building codes','cd.p':'Gate code, entrance door, committee WhatsApp — the day-to-day essentials.',
@@ -2270,7 +2327,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.19';
+const APP_VERSION = '2026.08.19.20';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2446,6 +2503,51 @@ function renderNotes() {
 }
 const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const dstamp = ms => new Intl.DateTimeFormat(locale(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ms));
+
+/* ---------- שיתוף האפליקציה ---------- */
+const appUrl = () => location.origin + location.pathname.replace(/[^/]*$/, '');
+const shareText = () => t('sh.msg', { b: cfg.name || cfg.address || t('app.name') }) + '\n' + appUrl();
+
+$('#shShare').addEventListener('click', async () => {
+  const txt = shareText();
+  if (navigator.share) {
+    try { await navigator.share({ title: t('app.name'), text: txt, url: appUrl() }); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  copyLink();
+});
+$('#shWa').addEventListener('click', () => {
+  open('https://wa.me/?text=' + encodeURIComponent(shareText()), '_blank');
+});
+$('#shCopy').addEventListener('click', copyLink);
+function copyLink() {
+  const txt = shareText();
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast(t('ts.copied2')));
+  else prompt(t('sh.copy'), txt);
+}
+$('#shQr').addEventListener('click', () => {
+  const box = $('#qrBox');
+  if (!box.hidden) { box.hidden = true; return; }
+  box.hidden = false;
+  $('#qrUrl').textContent = appUrl();
+  drawQr();
+});
+function drawQr() {
+  if (typeof QRCode === 'undefined') { toast(t('ts.qrfail')); return false; }
+  const o = { width: 440, margin: 1, color: { dark: '#101820', light: '#ffffff' } };
+  try {
+    QRCode.toCanvas($('#qrCanvas'), appUrl(), o);
+    QRCode.toCanvas($('#qrPrint'), appUrl(), { ...o, width: 900 });
+    return true;
+  } catch (e) { toast(t('ts.qrfail')); return false; }
+}
+$('#shPrint').addEventListener('click', () => {
+  if (!drawQr()) return;
+  $('#spTitle').textContent = cfg.name || cfg.address || t('app.name');
+  $('#spUrl').textContent = appUrl();
+  document.body.classList.add('print-share');
+  setTimeout(() => { print(); setTimeout(() => document.body.classList.remove('print-share'), 400); }, 120);
+});
 
 /* ---------- קודי הבניין — תצוגה בעמוד הבית ---------- */
 $('#cdEye').addEventListener('click', () => { codesOpen = !codesOpen; renderCodes(); });
