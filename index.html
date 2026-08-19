@@ -858,6 +858,16 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       </div>
 
       <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <h3 data-i18n="ap.h"></h3><span class="badge open" id="apCount" hidden></span>
+        </div>
+        <div id="apList"></div>
+        <h3 style="margin-top:16px" data-i18n="ap.trust"></h3>
+        <p class="muted" style="font-size:.8rem" data-i18n="ap.trust.p"></p>
+        <div id="trustList"></div>
+      </div>
+
+      <div class="card">
         <h3 data-i18n="fx.h"></h3>
         <p class="muted" data-i18n="fx.p"></p>
         <div id="fixPicker"></div>
@@ -1239,6 +1249,10 @@ he:{
 'gt.i1':'לחצו על כפתור <b>שיתוף</b> בתחתית ספארי','gt.i2':'בחרו <b>הוספה למסך הבית</b>','gt.i3':'לחצו <b>הוספה</b> — והאפליקציה תופיע במסך הבית',
 'gt.a1':'פתחו את תפריט הדפדפן (שלוש נקודות)','gt.a2':'בחרו <b>התקנת אפליקציה</b>','gt.btn':'התקנה עכשיו',
 'gt.browser':'המשך בדפדפן במקום',
+'ap.h':'בקשות לאישור','ap.none':'אין בקשות ממתינות.','ap.ok':'אישור','ap.no':'דחייה',
+'ap.who':'{n} · {h} שעות','ap.trust':'הרשאות שינוי','ap.trust.p':'דייר מורשה משנה את הלוח ישירות. דייר שאינו מורשה — הבקשה שלו מגיעה לאישורך.',
+'ap.pend':'בקשתך הועברה לאישור ועד הבית','ap.mine':'ממתין לאישור הוועד',
+'ts.apok':'הבקשה אושרה','ts.apno':'הבקשה נדחתה','ts.trust':'ההרשאה עודכנה',
 'fx.h':'שעות קבועות','fx.p':'שעות שהמעלית תפעל בהן בכל שבת, בלי קשר לבקשות הדיירים. מסומנות בכחול אצל כולם.',
 'fx.save':'שמירת השעות הקבועות','fx.clear':'ניקוי','fx.n':'{n} שעות קבועות',
 'lg.fix':'שעה קבועה של הוועד','bd.fixed':'שעה קבועה',
@@ -1397,6 +1411,10 @@ en:{
 'gt.i1':'Tap the <b>Share</b> button at the bottom of Safari','gt.i2':'Choose <b>Add to Home Screen</b>','gt.i3':'Tap <b>Add</b> — the app appears on your home screen',
 'gt.a1':'Open the browser menu (three dots)','gt.a2':'Choose <b>Install app</b>','gt.btn':'Install now',
 'gt.browser':'Continue in the browser instead',
+'ap.h':'Requests to approve','ap.none':'No pending requests.','ap.ok':'Approve','ap.no':'Reject',
+'ap.who':'{n} · {h} hours','ap.trust':'Change permissions','ap.trust.p':'A trusted resident changes the board directly. Anyone else sends you a request to approve.',
+'ap.pend':'Your request was sent to the committee','ap.mine':'Waiting for committee approval',
+'ts.apok':'Request approved','ts.apno':'Request rejected','ts.trust':'Permission updated',
 'fx.h':'Fixed hours','fx.p':'Hours the elevator runs every Shabbat regardless of requests. Everyone sees them marked in blue.',
 'fx.save':'Save fixed hours','fx.clear':'Clear','fx.n':'{n} fixed hours',
 'lg.fix':'Committee fixed hour','bd.fixed':'Fixed hour',
@@ -1655,7 +1673,7 @@ const structPatch = c => ({
 });
 const rowToPerson = r => ({ id: r.id, apt: r.apartment, family: r.full_name, anon: r.anon,
   wa: r.wa, phone: r.phone, lang: r.lang, theme: r.theme, isVaad: r.is_vaad,
-  elevator: r.elevator_opt_in, parking: r.parking_alerts,
+  elevator: r.elevator_opt_in, trusted: r.elevator_trusted, parking: r.parking_alerts,
   plate: r.car_plate, car: r.car_desc });
 
 // לפני כל כתיבה — לוודא שיש סשן חי ושהטוקן יצורף לבקשה
@@ -1768,6 +1786,16 @@ const DB = {
     const { data } = await sb.from('elevator_requests').select('*')
       .eq('building_id', bid).eq('shabbat', shabbat);
     return data || [];
+  },
+  async setTrusted(residentId, ok) {
+    const { data, error } = await sb.rpc('set_trusted', { p_resident: residentId, p_ok: ok });
+    if (error) dbError = error.message;
+    return !error && data === true;
+  },
+  async approve(reqId, ok) {
+    const { data, error } = await sb.rpc('approve_request', { p_id: reqId, p_ok: ok });
+    if (error) dbError = error.message;
+    return !error && data === true;
   },
   async saveRequest(bid, rid, shabbat, keys) {
     const { error } = await sb.from('elevator_requests')
@@ -2126,7 +2154,7 @@ const groups = [
 ];
 function coveredByOthers() {
   const s = new Set(), mine = me && me.id;
-  Object.values(reqs).forEach(r => { if (r.rid !== mine) (r.slots || []).forEach(x => s.add(+x)); });
+  Object.values(reqs).forEach(r => { if (r.rid !== mine && r.approved !== false) (r.slots || []).forEach(x => s.add(+x)); });
   return s;
 }
 const minOf = ms => +new Intl.DateTimeFormat('en-GB',
@@ -2183,9 +2211,11 @@ function renderFixed() {
 }
 
 /* ============ חישוב ============ */
+const canChangeBoard = () => !!(me && (isVaad || me.trusted));
+
 function demand() {
   const m = new Map();
-  Object.values(reqs).forEach(r => (r.slots || []).forEach(x => {
+  Object.values(reqs).filter(r => r.approved !== false).forEach(r => (r.slots || []).forEach(x => {
     const k = +x, s = m.get(k) || new Set(); s.add(+r.apt); m.set(k, s);
   }));
   const c = new Map(); m.forEach((v, k) => c.set(k, v.size)); return c;
@@ -2358,6 +2388,58 @@ function showConnError() {
 const lockMs = () => sabb ? sabb.inMs - (cfg.lockHours || 0) * 3600e3 : 0;
 const boardLocked = () => Date.now() > lockMs();
 
+async function reloadRequests() {
+  reqs = {};
+  if (!cfg.id) return;
+  (await DB.requests(cfg.id, sabb.iso)).forEach(r => {
+    const p = people[r.resident_id];
+    reqs[r.resident_id] = { id: r.id, rid: r.resident_id, apt: p ? p.apt : 0,
+      slots: msOf(r.slots), approved: r.approved !== false };
+  });
+}
+
+function renderApprovals() {
+  if (!isVaad) return;
+  const box = $('#apList'); if (!box) return;
+  box.innerHTML = '';
+  const pend = Object.values(reqs).filter(r => r.approved === false);
+  $('#apCount').hidden = !pend.length;
+  $('#apCount').textContent = pend.length;
+  if (!pend.length) box.innerHTML = `<p class="muted" style="margin-top:8px">${t('ap.none')}</p>`;
+  pend.forEach(r => {
+    const p = people[r.rid];
+    const el = document.createElement('div'); el.className = 'rem';
+    el.innerHTML = `<span class="nm">${p && !p.anon ? esc(p.family || '') : t('u.anon')}
+      <small>${t('ap.who', { n: aptLabel(r.apt), h: hrs(r.slots.length) })}</small></span>`;
+    const wrap = document.createElement('span'); wrap.className = 'row'; wrap.style.gap = '6px';
+    const yes = document.createElement('button'); yes.className = 'btn sm'; yes.textContent = t('ap.ok');
+    yes.onclick = async () => {
+      if (!await DB.approve(r.id, true)) return toast(dbError || t('ts.conn'));
+      await reloadRequests(); renderAll(); renderPicker(); renderApprovals(); toast(t('ts.apok'));
+    };
+    const no = document.createElement('button'); no.className = 'btn ghost sm'; no.textContent = t('ap.no');
+    no.onclick = async () => {
+      if (!await DB.approve(r.id, false)) return toast(dbError || t('ts.conn'));
+      await reloadRequests(); renderAll(); renderPicker(); renderApprovals(); toast(t('ts.apno'));
+    };
+    wrap.append(yes, no); el.appendChild(wrap); box.appendChild(el);
+  });
+
+  const tl = $('#trustList'); tl.innerHTML = '';
+  Object.values(people).filter(p => p.elevator !== false).forEach(p => {
+    const row = document.createElement('div'); row.className = 'sw';
+    row.innerHTML = `<span class="lb">${aptLabel(p.apt)}${p.anon ? '' : ' · ' + esc(p.family || '')}
+      <small>${p.isVaad ? t('vd.h') : ''}</small></span><span class="tg"></span>`;
+    sw(row, p.trusted || p.isVaad);
+    if (!p.isVaad) row.onclick = async () => {
+      const next = !p.trusted;
+      if (!await DB.setTrusted(p.id, next)) return toast(dbError || t('ts.conn'));
+      p.trusted = next; sw(row, next); toast(t('ts.trust'));
+    };
+    tl.appendChild(row);
+  });
+}
+
 function renderGate() {
   const ok = canEdit(), uses = usesElevator();
   const shut = boardLocked() && !isVaad;
@@ -2382,6 +2464,8 @@ function renderGate() {
       '<br><span style="opacity:.7">זהות: ' + (uid ? uid.slice(0, 8) : '—') + '</span>';
     $('#lockBtn').after(v);
   }
+  const mineReq = me && reqs[me.id];
+  $('#mine').style.color = (mineReq && mineReq.approved === false) ? 'var(--rest-tx)' : '';
   if (ok) {
     $('#whoApt').textContent = me.apt;
     $('#whoName').innerHTML = me.anon ? `<span class="an">· ${t('u.anon')}</span>` : (me.family ? '· ' + me.family : '');
@@ -2431,11 +2515,12 @@ document.querySelectorAll('[data-pre]').forEach(b => b.addEventListener('click',
 $('#save').addEventListener('click', async () => {
   if (!canEdit()) return toast(t('ts.needreg'));
   if (boardLocked() && !isVaad) { renderGate(); return toast(t('lk2.h')); }
-  const rec = { rid: me.id, apt: me.apt, slots: [...sel] };
-  reqs[me.id] = rec;
-  renderAll(); renderPicker(); goE('board');
   const ok = await DB.saveRequest(cfg.id, me.id, sabb.iso, keysOf(sel));
-  toast(ok ? t('ts.saved', { n: me.apt }) : t('ts.conn'));
+  if (!ok) return toast(dbError || t('ts.conn'), 6000);
+  await reloadRequests();
+  renderAll(); renderPicker();
+  if (canChangeBoard()) { goE('board'); toast(t('ts.saved', { n: me.apt })); }
+  else toast(t('ap.pend'), 5000);
 });
 $('#print').addEventListener('click', () => print());
 $('#prevW').addEventListener('click', () => { weekOff--; boot(false); });
@@ -2898,7 +2983,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.32';
+const APP_VERSION = '2026.08.19.33';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -2995,14 +3080,11 @@ async function boot(first) {
   if (cfg.id) {
     people = await DB.residents(cfg.id);
     if (me && people[me.id]) { me = { ...me, ...people[me.id] }; isVaad = !!me.isVaad || isAdmin; }
-    (await DB.requests(cfg.id, sabb.iso)).forEach(r => {
-      const p = people[r.resident_id];
-      reqs[r.resident_id] = { rid: r.resident_id, apt: p ? p.apt : 0, slots: msOf(r.slots) };
-    });
+    await reloadRequests();
   }
   fixDraft = new Set(cfg.fixed || []);
   $('#tuDev').value = cfg.tuyaDev || ''; tuShow(null);
-  renderGate(); renderVaad(); renderFixed(); renderFloors();
+  renderGate(); renderVaad(); renderFixed(); renderFloors(); renderApprovals();
   loadMine(); renderAll();
   await loadBuilding();
   await loadParking();
