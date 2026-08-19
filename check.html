@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>אבחון · הבניין שלי</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#0f141a;color:#e8e6e1;margin:0;padding:18px;line-height:1.6}
+h1{font-size:1.2rem;margin:0 0 4px}
+.sub{color:#8d9aa5;font-size:.85rem;margin-bottom:16px}
+.row{border:1px solid #263039;border-radius:12px;padding:12px 14px;margin-bottom:9px;background:#141b23}
+.row b{display:block;font-size:.95rem;margin-bottom:3px}
+.ok{border-color:#2f7d55} .ok b::before{content:"✓ ";color:#57c98a}
+.bad{border-color:#a34a4a} .bad b::before{content:"✕ ";color:#ff8a8a}
+.wait b::before{content:"… "}
+.d{font-family:ui-monospace,monospace;font-size:.78rem;color:#9fb0bd;white-space:pre-wrap;
+   word-break:break-all;direction:ltr;text-align:left;margin-top:5px}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:#d8b366;color:#20160a;
+  font-weight:700;font-size:1rem;margin-top:14px}
+</style>
+</head>
+<body>
+<h1>אבחון חיבור</h1>
+<div class="sub" id="ua"></div>
+<div id="out"></div>
+<button id="copy">העתקת כל התוצאות</button>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const URL_ = 'https://rxlmfthgacwmtrkmbcau.supabase.co';
+const KEY = 'sb_publishable_H0lNbfAdwx_dA_V9lmV3Bw_csgdX1u-';
+const out = document.getElementById('out');
+const lines = [];
+function add(title, ok, detail) {
+  lines.push((ok ? 'OK   ' : 'FAIL ') + title + (detail ? ' | ' + detail : ''));
+  const d = document.createElement('div');
+  d.className = 'row ' + (ok ? 'ok' : 'bad');
+  d.innerHTML = '<b>' + title + '</b>' + (detail ? '<div class="d">' + detail + '</div>' : '');
+  out.appendChild(d);
+}
+document.getElementById('ua').textContent = navigator.userAgent;
+lines.push(navigator.userAgent);
+lines.push('standalone: ' + (matchMedia('(display-mode: standalone)').matches || navigator.standalone === true));
+
+(async () => {
+  // 1 גרסת האפליקציה המותקנת
+  try {
+    const r = await fetch('./index.html', { cache: 'no-store' });
+    const txt = await r.text();
+    const m = txt.match(/APP_VERSION = '([^']*)'/);
+    add('גרסת index.html בשרת', !!m, m ? m[1] : 'לא נמצא APP_VERSION — קובץ ישן');
+  } catch (e) { add('טעינת index.html', false, e.message); }
+
+  // 2 אחסון מקומי
+  try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t');
+    add('אחסון מקומי', true, 'זמין');
+  } catch (e) { add('אחסון מקומי', false, e.message); }
+
+  // 3 ספריית supabase
+  const has = typeof supabase !== 'undefined';
+  add('ספריית supabase-js', has, has ? 'נטענה' : 'לא נטענה — חסימת רשת ל-cdn.jsdelivr.net');
+  if (!has) return done();
+
+  const sb = supabase.createClient(URL_, KEY);
+
+  // 4 סשן קיים
+  let s = null;
+  try { s = (await sb.auth.getSession()).data.session;
+    add('סשן שמור', true, s ? ('קיים · user ' + s.user.id) : 'אין (תקין למכשיר חדש)');
+  } catch (e) { add('סשן שמור', false, e.message); }
+
+  // 5 האם הסשן תקף מול השרת
+  if (s) {
+    const u = await sb.auth.getUser();
+    add('הסשן תקף בשרת', !u.error, u.error ? u.error.message : 'כן');
+    if (u.error) { await sb.auth.signOut(); s = null; }
+  }
+
+  // 6 הרשמה אנונימית
+  if (!s) {
+    const r = await sb.auth.signInAnonymously();
+    add('הרשמה אנונימית', !r.error, r.error ? (r.error.status + ' · ' + r.error.message) : 'הצליחה');
+    s = r.data && r.data.session;
+    if (!s) return done();
+  }
+
+  // 7 קריאה לשרת
+  const b = await sb.rpc('find_or_create_building', { p_address: 'שרה אהרונסון 12' });
+  add('חיפוש הבניין', !b.error,
+      b.error ? (b.error.code + ' · ' + b.error.message) :
+      ('plan=' + b.data[0].plan + ' units=' + b.data[0].units));
+
+  // 8 האם אני כבר רשום
+  const me = await sb.from('residents').select('apartment,full_name').limit(1);
+  add('הדייר שלי', !me.error, me.error ? me.error.message :
+      (me.data.length ? ('דירה ' + me.data[0].apartment) : 'עדיין לא רשום'));
+
+  done();
+})().catch(e => { add('שגיאה כללית', false, e && e.message); done(); });
+
+function done() {
+  document.getElementById('copy').onclick = () => {
+    const t = lines.join('\n');
+    if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => alert('הועתק'));
+    else prompt('העתק:', t);
+  };
+}
+</script>
+</body>
+</html>
