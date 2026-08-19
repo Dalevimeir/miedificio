@@ -1385,12 +1385,12 @@ he:{
 'bd.on':'פועלת','bd.off':'מנוחה','bd.win':'חלונות לתכנות שעון השבת','bd.print':'הדפסה',
 'bd.empty':'עדיין אין בקשות. ברגע שדייר ראשון ישמור — חלונות ההפעלה יופיעו כאן.','bd.hrs':'{n} שעות',
 'wr.h':'בלאי המעלית','wr.est':'הערכה בלבד',
-'wr.p':'מעלית נשחקת לפי מספר מחזורים, לא לפי שעות. בשבת היא נוסעת גם כשאיש לא נוסע בה — ולכן שבת אחת שווה לכמה ימי שימוש רגילים.',
-'wr.sab':'בלאי בשבת זו (₪)','wr.year':'לדירה בשנה (₪)','wr.cyc':'מחזורים בשבת','wr.life':'ימי שימוש רגילים','wr.yeard':'ימי שימוש בשנה','st.daily':'מחזורים ביום רגיל',
-'wr.k1':'שעות הפעלה × מחזורים לשעה','wr.k2':'עלות שיפוץ צפויה','wr.k3':'תוחלת חיים במחזורים',
-'wr.k4':'עלות למחזור','wr.k5':'חשמל + בלאי לשבת','wr.k6':'מחזורים ביום רגיל בבניין',
+'wr.p':'מעלית נשחקת לפי מספר עצירות, לא לפי שעות. בשבת היא עוצרת בכל קומה גם כשאיש לא נוסע — ולכן שבת אחת שווה לכמה ימי שימוש רגילים.',
+'wr.sab':'בלאי בשבת זו (₪)','wr.year':'לדירה בשנה (₪)','wr.cyc':'עצירות בשבת','wr.life':'ימי שימוש רגילים','wr.yeard':'ימי שימוש בשנה','st.daily':'עצירות ביום רגיל',
+'wr.k1':'שעות הפעלה × עצירות לשעה','wr.k2':'עלות שיפוץ צפויה','wr.k3':'תוחלת חיים בעצירות',
+'wr.k4':'עלות לעצירה','wr.k5':'חשמל + בלאי לשבת','wr.k6':'עצירות ביום רגיל בבניין',
 'wr.note':'המספרים כאן הם הערכה גסה שנועדה להמחיש סדר גודל, לא חישוב הנדסי. תוחלת החיים ומספר המחזורים תלויים בדגם, בגובה הבניין ובתחזוקה. כדאי לבקש מחברת המעליות את הנתונים האמיתיים ולעדכן בהגדרות.',
-'st.over':'עלות שיפוץ צפויה (₪)','st.life':'תוחלת חיים (מחזורים)','st.cph':'מחזורים לשעת הפעלה',
+'st.over':'עלות שיפוץ צפויה (₪)','st.life':'תוחלת חיים (עצירות)','st.cph':'עצירות לשעת הפעלה',
 'ct.eyebrow':'שקוף לכל הדיירים','ct.h1':'כמה זה עולה',
 'ct.p':'כל המספרים והנוסחה גלויים. כל דייר יכול לבדוק ולעדכן את ההנחות בהגדרות.',
 'ct.now':'עלות המעלית בשבת הזו','ct.per':'לכל דירה:','ct.vs':'לעומת הפעלה רצופה',
@@ -1555,11 +1555,11 @@ en:{
 'bd.empty':'No requests yet. Once the first resident saves, the windows appear here.','bd.hrs':'{n} h',
 'wr.h':'Elevator wear','wr.est':'estimate only',
 'wr.p':'An elevator wears by cycles, not by hours. On Shabbat it runs with nobody inside — so one Shabbat equals several normal days of use.',
-'wr.sab':'Wear this Shabbat (₪)','wr.year':'Per apartment per year (₪)','wr.cyc':'Cycles this Shabbat','wr.life':'Normal-use days','wr.yeard':'Use-days per year','st.daily':'Cycles on a normal day',
-'wr.k1':'Running hours × cycles per hour','wr.k2':'Expected overhaul cost','wr.k3':'Life expectancy in cycles',
-'wr.k4':'Cost per cycle','wr.k5':'Electricity + wear per Shabbat','wr.k6':'Cycles on a normal day',
+'wr.sab':'Wear this Shabbat (₪)','wr.year':'Per apartment per year (₪)','wr.cyc':'Stops this Shabbat','wr.life':'Normal-use days','wr.yeard':'Use-days per year','st.daily':'Stops on a normal day',
+'wr.k1':'Running hours × stops per hour','wr.k2':'Expected overhaul cost','wr.k3':'Life expectancy in stops',
+'wr.k4':'Cost per stop','wr.k5':'Electricity + wear per Shabbat','wr.k6':'Stops on a normal day',
 'wr.note':'A rough estimate meant to show orders of magnitude, not an engineering calculation. Life expectancy and cycle counts depend on the model, the building height and maintenance. Ask your elevator company for the real numbers and update them in settings.',
-'st.over':'Expected overhaul cost (₪)','st.life':'Life expectancy (cycles)','st.cph':'Cycles per running hour',
+'st.over':'Expected overhaul cost (₪)','st.life':'Life expectancy (stops)','st.cph':'Stops per running hour',
 'ct.eyebrow':'Open to every resident','ct.h1':'What it costs',
 'ct.p':'Every number and the formula are visible. Any resident can check them and update the assumptions in settings.',
 'ct.now':'Elevator cost this Shabbat','ct.per':'Per apartment:','ct.vs':'Versus running non-stop',
@@ -3052,7 +3052,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.35';
+const APP_VERSION = '2026.08.19.36';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
