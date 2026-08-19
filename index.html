@@ -815,6 +815,31 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
           <div class="stat"><b class="num" id="sYear">—</b><span data-i18n="ct.year"></span></div>
         </div>
       </div>
+      <div class="card" id="wearCard">
+        <div class="row" style="justify-content:space-between">
+          <h3 data-i18n="wr.h"></h3>
+          <span class="badge kind" data-i18n="wr.est"></span>
+        </div>
+        <p class="muted" style="font-size:.84rem" data-i18n="wr.p"></p>
+        <div class="stats">
+          <div class="stat gold"><b class="num" id="wLife">—</b><span data-i18n="wr.life"></span></div>
+          <div class="stat"><b class="num" id="wYearD">—</b><span data-i18n="wr.yeard"></span></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b class="num" id="wCyc">—</b><span data-i18n="wr.cyc"></span></div>
+          <div class="stat"><b class="num" id="wSab">—</b><span data-i18n="wr.sab"></span></div>
+        </div>
+        <table class="calc" style="margin-top:14px">
+          <tr><td data-i18n="wr.k1"></td><td id="wk1">—</td></tr>
+          <tr><td data-i18n="wr.k2"></td><td id="wk2">—</td></tr>
+          <tr><td data-i18n="wr.k3"></td><td id="wk3">—</td></tr>
+          <tr><td data-i18n="wr.k4"></td><td id="wk4">—</td></tr>
+          <tr><td data-i18n="wr.k6"></td><td id="wk6">—</td></tr>
+          <tr><td data-i18n="wr.k5"></td><td id="wk5">—</td></tr>
+        </table>
+        <p class="note" data-i18n="wr.note"></p>
+      </div>
+
       <div class="card">
         <h3 data-i18n="ct.calc"></h3>
         <table class="calc">
@@ -1151,6 +1176,10 @@ html[data-theme=dark] .shr button.wa{color:#7ee2a8}
       <div><label class="fld" for="cName" data-i18n="st.name"></label><input id="cName"></div>
       <div><label class="fld" for="cGap" data-i18n="st.gap"></label><input id="cGap" type="number" step="30" min="0" max="240"></div>
       <div><label class="fld" for="cLock" data-i18n="st.lock"></label><input id="cLock" type="number" step="0.5" min="0" max="48"></div>
+      <div><label class="fld" for="cOver" data-i18n="st.over"></label><input id="cOver" type="number" step="1000" min="0"></div>
+      <div><label class="fld" for="cLife" data-i18n="st.life"></label><input id="cLife" type="number" step="50000" min="1000"></div>
+      <div><label class="fld" for="cCph" data-i18n="st.cph"></label><input id="cCph" type="number" step="1" min="1" max="120"></div>
+      <div><label class="fld" for="cDaily" data-i18n="st.daily"></label><input id="cDaily" type="number" step="10" min="1"></div>
       <div><label class="fld" for="cSlot" data-i18n="st.slot"></label>
         <select id="cSlot"><option value="15">15</option><option value="30">30</option><option value="60">60</option></select></div>
       <div><label class="fld" for="cCandle" data-i18n="st.candle"></label><input id="cCandle" type="number" min="0" max="60"></div>
@@ -1355,6 +1384,13 @@ he:{
 'bd.p':'שעה שדייר אחד לפחות ביקש — דולקת. ככל שהזהב חזק יותר, יותר דיירים צריכים אותה.',
 'bd.on':'פועלת','bd.off':'מנוחה','bd.win':'חלונות לתכנות שעון השבת','bd.print':'הדפסה',
 'bd.empty':'עדיין אין בקשות. ברגע שדייר ראשון ישמור — חלונות ההפעלה יופיעו כאן.','bd.hrs':'{n} שעות',
+'wr.h':'בלאי המעלית','wr.est':'הערכה בלבד',
+'wr.p':'מעלית נשחקת לפי מספר מחזורים, לא לפי שעות. בשבת היא נוסעת גם כשאיש לא נוסע בה — ולכן שבת אחת שווה לכמה ימי שימוש רגילים.',
+'wr.sab':'בלאי בשבת זו (₪)','wr.year':'לדירה בשנה (₪)','wr.cyc':'מחזורים בשבת','wr.life':'ימי שימוש רגילים','wr.yeard':'ימי שימוש בשנה','st.daily':'מחזורים ביום רגיל',
+'wr.k1':'שעות הפעלה × מחזורים לשעה','wr.k2':'עלות שיפוץ צפויה','wr.k3':'תוחלת חיים במחזורים',
+'wr.k4':'עלות למחזור','wr.k5':'חשמל + בלאי לשבת','wr.k6':'מחזורים ביום רגיל בבניין',
+'wr.note':'המספרים כאן הם הערכה גסה שנועדה להמחיש סדר גודל, לא חישוב הנדסי. תוחלת החיים ומספר המחזורים תלויים בדגם, בגובה הבניין ובתחזוקה. כדאי לבקש מחברת המעליות את הנתונים האמיתיים ולעדכן בהגדרות.',
+'st.over':'עלות שיפוץ צפויה (₪)','st.life':'תוחלת חיים (מחזורים)','st.cph':'מחזורים לשעת הפעלה',
 'ct.eyebrow':'שקוף לכל הדיירים','ct.h1':'כמה זה עולה',
 'ct.p':'כל המספרים והנוסחה גלויים. כל דייר יכול לבדוק ולעדכן את ההנחות בהגדרות.',
 'ct.now':'עלות המעלית בשבת הזו','ct.per':'לכל דירה:','ct.vs':'לעומת הפעלה רצופה',
@@ -1517,6 +1553,13 @@ en:{
 'bd.p':'Any hour at least one resident asked for is on. Stronger gold means more residents need it.',
 'bd.on':'Running','bd.off':'Resting','bd.win':'Windows to program into the timer','bd.print':'Print',
 'bd.empty':'No requests yet. Once the first resident saves, the windows appear here.','bd.hrs':'{n} h',
+'wr.h':'Elevator wear','wr.est':'estimate only',
+'wr.p':'An elevator wears by cycles, not by hours. On Shabbat it runs with nobody inside — so one Shabbat equals several normal days of use.',
+'wr.sab':'Wear this Shabbat (₪)','wr.year':'Per apartment per year (₪)','wr.cyc':'Cycles this Shabbat','wr.life':'Normal-use days','wr.yeard':'Use-days per year','st.daily':'Cycles on a normal day',
+'wr.k1':'Running hours × cycles per hour','wr.k2':'Expected overhaul cost','wr.k3':'Life expectancy in cycles',
+'wr.k4':'Cost per cycle','wr.k5':'Electricity + wear per Shabbat','wr.k6':'Cycles on a normal day',
+'wr.note':'A rough estimate meant to show orders of magnitude, not an engineering calculation. Life expectancy and cycle counts depend on the model, the building height and maintenance. Ask your elevator company for the real numbers and update them in settings.',
+'st.over':'Expected overhaul cost (₪)','st.life':'Life expectancy (cycles)','st.cph':'Cycles per running hour',
 'ct.eyebrow':'Open to every resident','ct.h1':'What it costs',
 'ct.p':'Every number and the formula are visible. Any resident can check them and update the assumptions in settings.',
 'ct.now':'Elevator cost this Shabbat','ct.per':'Per apartment:','ct.vs':'Versus running non-stop',
@@ -1660,12 +1703,16 @@ function rowToCfg(r) {
     penthouse: r.penthouse, penthouseUnits: r.penthouse_units,
     parkingOn: r.parking_enabled === true, tuyaDev: r.tuya_device_id || '',
     slotMin: +r.slot_minutes || 30,
+    overhaul: +r.overhaul_cost || 0, lifeCycles: +r.life_cycles || 0,
+    cph: +r.cycles_per_hour || 0, wearShown: r.wear_shown !== false,
+    dailyCycles: +r.daily_cycles || 120,
     lockHours: r.lock_hours_before === null || r.lock_hours_before === undefined ? 3 : +r.lock_hours_before };
 }
 const cfgPatch = c => ({
   name: c.name, candle_min: c.candle, tzeit_min: c.tzeit, kw: c.kw, rate: c.rate,
   gap_min: c.gap, dues: c.dues, lat: c.lat, lng: c.lng, lock_hours_before: c.lockHours,
-  slot_minutes: c.slotMin
+  slot_minutes: c.slotMin, overhaul_cost: c.overhaul, life_cycles: c.lifeCycles,
+  cycles_per_hour: c.cph, wear_shown: c.wearShown, daily_cycles: c.dailyCycles
 });
 const structPatch = c => ({
   floors: c.floors, first_floor: c.firstFloor, per_floor: c.perFloor,
@@ -2081,6 +2128,7 @@ function fridayUTC(off) {
 /* ============ מצב ============ */
 const DEF = { id: null, name: '', address: '', units: 15, lat: 31.7497, lng: 34.9887,
   candle: 40, tzeit: 40, kw: 1.6, rate: 0.62, gap: 60, vaadApt: 0, fixed: [], dues: 150, lockHours: 3, slotMin: 30,
+  overhaul: 45000, lifeCycles: 1500000, cph: 15, wearShown: true, dailyCycles: 120,
   plan: 'pending', floors: 8, firstFloor: 1, perFloor: 2, penthouse: true, penthouseUnits: 1 };
 let cfg = { ...DEF }, weekOff = 0, sabb = null, slots = [], reqs = {}, people = {};
 let me = null, isVaad = false, isAdmin = false, sel = new Set(), fixDraft = new Set(), keyMs = {};
@@ -2282,6 +2330,25 @@ function renderAll() {
   $('#kRate').textContent = t('ct.kwh', { r: cfg.rate });
   $('#kUnits').textContent = cfg.units;
   $('#kTot').textContent = '₪' + cost.toFixed(2);
+
+  /* בלאי — הערכה לפי מחזורים */
+  const cph = cfg.cph || 0, life = cfg.lifeCycles || 0, over = cfg.overhaul || 0;
+  const perCycle = life > 0 ? over / life : 0;
+  const cycles = onH * cph;
+  const wear = cycles * perCycle;
+  $('#wearCard').hidden = !(cfg.wearShown && cph > 0 && life > 0);
+  const daily = Math.max(1, cfg.dailyCycles || 120);
+  const days = cycles / daily;
+  count($('#wSab'), wear, 0, '₪ ');
+  $('#wCyc').textContent = Math.round(cycles);
+  $('#wLife').textContent = days.toFixed(1).replace('.0', '');
+  $('#wYearD').textContent = Math.round(days * 52);
+  $('#wk1').textContent = onH.toFixed(1).replace('.0', '') + ' × ' + cph + ' = ' + Math.round(cycles);
+  $('#wk2').textContent = '₪' + over.toLocaleString();
+  $('#wk3').textContent = life.toLocaleString();
+  $('#wk4').textContent = '₪' + perCycle.toFixed(3);
+  $('#wk6').textContent = daily;
+  $('#wk5').textContent = '₪' + (cost + wear).toFixed(0);
 
   const map = byApt(), answered = {};
   Object.values(reqs).forEach(r => answered[r.apt] = (answered[r.apt] || 0) + 1);
@@ -2937,7 +3004,9 @@ $('#saveCfg').addEventListener('click', async () => {
     candle: +$('#cCandle').value, tzeit: +$('#cTzeit').value,
     kw: +$('#cKw').value, rate: +$('#cRate').value, gap: +$('#cGap').value,
     lat: +$('#cLat').value, lng: +$('#cLng').value, lockHours: +$('#cLock').value,
-    slotMin: +$('#cSlot').value || 30 };
+    slotMin: +$('#cSlot').value || 30, overhaul: +$('#cOver').value || 0,
+    lifeCycles: +$('#cLife').value || 0, cph: +$('#cCph').value || 0,
+    dailyCycles: +$('#cDaily').value || 120 };
   const ok = await DB.saveBuilding(cfg.id, { ...cfgPatch(cfg), ...structPatch(cfg) });
   if (!ok) return toast(t('ts.conn'));
   openSheet(false); toast(t('ts.structsaved')); boot(false);
@@ -2983,7 +3052,7 @@ $('#gateSkip').addEventListener('click', () => {
   $('#gate').classList.remove('on'); document.body.style.overflow = '';
 });
 /* ---------- זיהוי עדכון והפעלה מחדש ---------- */
-const APP_VERSION = '2026.08.19.33';
+const APP_VERSION = '2026.08.19.35';
 let swReg = null, waitingSW = null, reloading = false;
 
 function showUpdate(worker) {
@@ -3030,6 +3099,8 @@ function fillCfgForm() {
   $('#cRate').value = cfg.rate; $('#cGap').value = cfg.gap; $('#cLat').value = cfg.lat; $('#cLng').value = cfg.lng;
   $('#cLock').value = cfg.lockHours;
   $('#cSlot').value = String(cfg.slotMin);
+  $('#cOver').value = cfg.overhaul; $('#cLife').value = cfg.lifeCycles; $('#cCph').value = cfg.cph;
+  $('#cDaily').value = cfg.dailyCycles;
   $('#cFloors').value = cfg.floors; $('#cFirst').value = cfg.firstFloor;
   $('#cPer').value = cfg.perFloor; $('#cPentU').value = cfg.penthouseUnits;
   sw($('#swPent'), cfg.penthouse);
